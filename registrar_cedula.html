@@ -26,10 +26,17 @@
         body { font-family: 'Montserrat', sans-serif; background-color: var(--oscuro-puro); color: var(--blanco); line-height: 1.6; position: relative; }
         h1, h2, h3, .nav-links a, .form-section-title, label, .btn-action, .btn-boleta { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
 
-        nav { background-color: rgba(13, 13, 13, 0.95); padding: 20px 8%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--naranja); position: sticky; top: 0; z-index: 1000; }
+        /* --- Header / Logotipo en 3 Líneas --- */
+        nav { background-color: rgba(13, 13, 13, 0.95); padding: 15px 8%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--naranja); position: sticky; top: 0; z-index: 1000; }
+        .logo-container { display: flex; align-items: center; gap: 20px; }
+        .logo-stack { display: flex; flex-direction: column; line-height: 0.95; font-family: 'Oswald', sans-serif; font-weight: 700; text-transform: uppercase; border-right: 2px solid var(--oscuro-claro); padding-right: 20px; }
+        .logo-stack .line-1 { color: var(--blanco); font-size: 1.1rem; letter-spacing: 2px; }
+        .logo-stack .line-2 { color: var(--naranja); font-size: 1.7rem; letter-spacing: 1px; }
+        .logo-stack .line-3 { color: var(--dorado); font-size: 1.3rem; letter-spacing: 4px; }
+        
         .logo-wrapper { display: flex; align-items: baseline; gap: 10px; }
-        .logo-irc { color: var(--dorado); font-size: 1.6rem; font-weight: 700; }
-        .logo-irc span { color: var(--blanco); }
+        .logo-irc { color: var(--blanco); font-size: 1.6rem; font-weight: 700; font-family: 'Oswald', sans-serif; }
+        .logo-irc span { color: var(--naranja); }
         .metax-badge-nav { font-size: 0.65rem; color: rgba(255, 85, 0, 0.4); font-family: monospace; letter-spacing: 1px; }
 
         /* --- Slider de Patrocinadores --- */
@@ -69,6 +76,7 @@
         input, select, textarea { width: 100%; padding: 12px 15px; background-color: var(--oscuro-puro); border: 1px solid var(--oscuro-claro); color: white; font-family: 'Montserrat', sans-serif; font-size: 1rem; border-radius: 4px; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
         input:focus, select:focus, textarea:focus { outline: none; border-color: var(--naranja); box-shadow: 0 0 12px var(--naranja-neon); }
         input[disabled], select[disabled] { background-color: #111; color: #888; cursor: not-allowed; box-shadow: none !important; }
+        option { background-color: var(--oscuro-tarjeta); color: white; }
 
         .btn-inline-mod { padding: 12px 15px; background-color: var(--oscuro-claro); border: 1px solid var(--naranja); color: var(--blanco); font-family: 'Oswald'; cursor: pointer; border-radius: 4px; text-transform: uppercase; transition: background 0.3s; height: 49px; }
         .btn-inline-mod:hover { background-color: var(--naranja); }
@@ -76,14 +84,13 @@
         .btn-action { display: block; width: 100%; padding: 15px; background-color: var(--naranja); color: white; border: none; font-size: 1.2rem; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.3s; margin-top: 20px; }
         .btn-action:hover { background-color: #ff6622; box-shadow: 0 0 15px rgba(255,85,0,0.6); }
 
-        /* --- Ficha de Inscripción (Papel Físico) --- */
+        /* --- Ficha de Inscripción --- */
         .boleta-papel { background-color: var(--papel); color: var(--papel-texto); padding: 40px; border-radius: 4px; box-shadow: 10px 10px 25px rgba(0,0,0,0.8); border-left: 8px dashed #aaa; margin-top: 30px; display: none; }
         .boleta-papel h3 { text-align: center; border-bottom: 2px solid var(--papel-texto); padding-bottom: 10px; margin-bottom: 20px; font-size: 1.8rem; color: #111; }
         .boleta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; font-size: 0.95rem; }
         .boleta-field { border-bottom: 1px dotted #666; padding: 5px 0; display: flex; flex-direction: column; }
         .boleta-field.full-width { grid-column: span 2; }
         .boleta-label { font-weight: bold; text-transform: uppercase; font-size: 0.8rem; color: #444; display: flex; align-items: center; gap: 6px; }
-        .boleta-icon { font-size: 1rem; }
         .boleta-value { font-family: Courier, monospace; font-size: 1.1rem; font-weight: bold; color: #000; background: transparent; border: none; width: 100%; padding-top: 2px; }
         .boleta-value:focus { background: #fff; outline: 1px solid var(--naranja); }
         
@@ -116,15 +123,23 @@
         .contenedor-deslinde input[type="checkbox"] { width: auto; margin-top: 5px; cursor: pointer; }
         .contenedor-deslinde label { margin-bottom: 0; cursor: pointer; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; text-transform: none; color: var(--blanco); text-align: justify; }
 
-        @media (max-width: 768px) { .form-grid, .boleta-grid { grid-template-columns: 1fr; } .form-group.flex-row { flex-direction: column; align-items: stretch; } .modal-img { width: 100%; } }
+        @media (max-width: 768px) { .logo-container { flex-direction: column; align-items: flex-start; gap: 10px; } .logo-stack { border-right: none; padding-right: 0; border-bottom: 2px solid var(--oscuro-claro); padding-bottom: 10px; width: 100%; } .form-grid, .boleta-grid { grid-template-columns: 1fr; } .form-group.flex-row { flex-direction: column; align-items: stretch; } .modal-img { width: 100%; } }
     </style>
 </head>
 <body>
 
     <nav>
-        <div class="logo-wrapper">
-            <div class="logo-irc">IRC <span>MÉXICO</span></div>
-            <div class="metax-badge-nav">// Powered by MTX</div>
+        <div class="logo-container">
+            <!-- 3 Líneas Solicitadas -->
+            <div class="logo-stack">
+                <span class="line-1">Maratón</span>
+                <span class="line-2">Moroleón</span>
+                <span class="line-3">2027</span>
+            </div>
+            <div class="logo-wrapper">
+                <div class="logo-irc">IRC <span>MÉXICO</span></div>
+                <div class="metax-badge-nav">// Powered by MTX</div>
+            </div>
         </div>
     </nav>
 
@@ -173,17 +188,74 @@
                     <label for="curp">CURP (18 caracteres)</label>
                     <input type="text" id="curp" placeholder="Ingresa tu CURP" maxlength="18" required style="text-transform: uppercase;" oninput="analizarCURP()">
                 </div>
+                
+                <!-- Ajuste: País de Residencia (20 más comunes en maratones) -->
                 <div class="form-group"><label>País de Residencia</label>
                     <select id="pais_residencia" required>
-                        <option value="México" selected>México</option><option value="Estados Unidos">Estados Unidos</option><option value="Otro">Otro País</option>
+                        <option value="" disabled selected>Selecciona tu país</option>
+                        <option value="México">México</option>
+                        <option value="Estados Unidos">Estados Unidos</option>
+                        <option value="Kenia">Kenia</option>
+                        <option value="Etiopía">Etiopía</option>
+                        <option value="España">España</option>
+                        <option value="Colombia">Colombia</option>
+                        <option value="Argentina">Argentina</option>
+                        <option value="Brasil">Brasil</option>
+                        <option value="Canadá">Canadá</option>
+                        <option value="Reino Unido">Reino Unido</option>
+                        <option value="Francia">Francia</option>
+                        <option value="Alemania">Alemania</option>
+                        <option value="Japón">Japón</option>
+                        <option value="Chile">Chile</option>
+                        <option value="Perú">Perú</option>
+                        <option value="Costa Rica">Costa Rica</option>
+                        <option value="Guatemala">Guatemala</option>
+                        <option value="Venezuela">Venezuela</option>
+                        <option value="Italia">Italia</option>
+                        <option value="Países Bajos">Países Bajos</option>
                     </select>
                 </div>
+
+                <!-- Ajuste: Los 32 Estados de México -->
                 <div class="form-group"><label>Estado de Residencia</label>
                     <select id="estado_residencia" required>
                         <option value="" disabled selected>Selecciona tu estado</option>
-                        <option value="Aguascalientes">Aguascalientes</option><option value="Guanajuato">Guanajuato</option><option value="Nuevo León">Nuevo León</option>
+                        <option value="Aguascalientes">Aguascalientes</option>
+                        <option value="Baja California">Baja California</option>
+                        <option value="Baja California Sur">Baja California Sur</option>
+                        <option value="Campeche">Campeche</option>
+                        <option value="Chiapas">Chiapas</option>
+                        <option value="Chihuahua">Chihuahua</option>
+                        <option value="Ciudad de México">Ciudad de México</option>
+                        <option value="Coahuila">Coahuila</option>
+                        <option value="Colima">Colima</option>
+                        <option value="Durango">Durango</option>
+                        <option value="Estado de México">Estado de México</option>
+                        <option value="Guanajuato">Guanajuato</option>
+                        <option value="Guerrero">Guerrero</option>
+                        <option value="Hidalgo">Hidalgo</option>
+                        <option value="Jalisco">Jalisco</option>
+                        <option value="Michoacán">Michoacán</option>
+                        <option value="Morelos">Morelos</option>
+                        <option value="Nayarit">Nayarit</option>
+                        <option value="Nuevo León">Nuevo León</option>
+                        <option value="Oaxaca">Oaxaca</option>
+                        <option value="Puebla">Puebla</option>
+                        <option value="Querétaro">Querétaro</option>
+                        <option value="Quintana Roo">Quintana Roo</option>
+                        <option value="San Luis Potosí">San Luis Potosí</option>
+                        <option value="Sinaloa">Sinaloa</option>
+                        <option value="Sonora">Sonora</option>
+                        <option value="Tabasco">Tabasco</option>
+                        <option value="Tamaulipas">Tamaulipas</option>
+                        <option value="Tlaxcala">Tlaxcala</option>
+                        <option value="Veracruz">Veracruz</option>
+                        <option value="Yucatán">Yucatán</option>
+                        <option value="Zacatecas">Zacatecas</option>
+                        <option value="Extranjero">Extranjero / Otro</option>
                     </select>
                 </div>
+
                 <div class="form-group"><label>Edad (Auto)</label><input type="text" id="auto_edad" disabled></div>
                 <div class="form-group"><label>Género (Auto)</label><input type="text" id="auto_genero" disabled></div>
                 <div class="form-group"><label>Entidad de Origen (Auto)</label><input type="text" id="auto_origen" disabled></div>
@@ -193,21 +265,29 @@
                     <label>Categoría Asignada</label>
                     <select id="categoria" required>
                         <option value="" disabled selected>Selecciona Categoría</option>
-                        <option value="Libre">Libre (18-39 años)</option><option value="Máster">Máster (40-49 años)</option>
+                        <option value="Libre">Libre (18-39 años)</option>
+                        <option value="Máster">Máster (40-49 años)</option>
+                        <option value="Veteranos">Veteranos (50+ años)</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Talla de Playera</label>
                     <select id="talla_playera" required>
                         <option value="" disabled selected>Selecciona Talla</option>
-                        <option value="CH">Chica (CH)</option><option value="M">Mediana (M)</option><option value="G">Grande (G)</option>
+                        <option value="XCH">Extra Chica (XCH)</option>
+                        <option value="CH">Chica (CH)</option>
+                        <option value="M">Mediana (M)</option>
+                        <option value="G">Grande (G)</option>
+                        <option value="XG">Extra Grande (XG)</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Perfil del Corredor</label>
                     <select id="perfil_corredor" required>
                         <option value="" disabled selected>Selecciona tu perfil</option>
-                        <option value="Corredor por gusto o placer">Corredor por gusto o placer</option><option value="Corredor avanzado">Corredor avanzado</option>
+                        <option value="Corredor por gusto o placer">Corredor por gusto o placer</option>
+                        <option value="Corredor avanzado">Corredor avanzado</option>
+                        <option value="Atleta Élite / Profesional">Atleta Élite / Profesional</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -215,7 +295,7 @@
                     <input type="file" id="foto_corredor" accept="image/*" required onchange="convertirFotoBase64()">
                 </div>
 
-                <!-- Acción 2: Caja de verificación dinámica para Deslinde Legal -->
+                <!-- Caja de verificación dinámica para Deslinde Legal -->
                 <div class="contenedor-deslinde" id="bloqueDeslinde">
                     <input type="checkbox" id="chk_deslinde" required>
                     <label for="chk_deslinde">Doy mi consentimiento para que mi fotografía y datos registrados sean usados para fines administrativos, operativos y comerciales, deslindando al comité organizador de cualquier conflicto legal o jurídico con una tercera parte.</label>
@@ -226,16 +306,43 @@
             <div class="form-grid">
                 <div class="form-group"><label>Tipo de Sangre</label>
                     <select id="tipo_sangre" required>
-                        <option value="" disabled selected>Selecciona tipo</option><option value="O+">O Positivo (O+)</option><option value="A+">A Positivo (A+)</option>
+                        <option value="" disabled selected>Selecciona tipo</option>
+                        <option value="O+">O Positivo (O+)</option>
+                        <option value="O-">O Negativo (O-)</option>
+                        <option value="A+">A Positivo (A+)</option>
+                        <option value="A-">A Negativo (A-)</option>
+                        <option value="B+">B Positivo (B+)</option>
+                        <option value="B-">B Negativo (B-)</option>
+                        <option value="AB+">AB Positivo (AB+)</option>
+                        <option value="AB-">AB Negativo (AB-)</option>
                     </select>
                 </div>
                 <div class="form-group"><label>Contacto Emergencia (Nombre)</label><input type="text" id="contacto_emergencia" required></div>
                 <div class="form-group"><label>Teléfono Emergencia</label><input type="tel" id="tel_emergencia" required></div>
+                
+                <!-- Ajuste: Listado completo de Alergias -->
                 <div class="form-group"><label>Alergias Conocidas</label>
-                    <select id="alergias" required><option value="Ninguna" selected>Ninguna</option></select>
+                    <select id="alergias" required>
+                        <option value="Ninguna" selected>Ninguna</option>
+                        <option value="Medicamentos (Aspirina/Penicilina/etc)">Medicamentos (Aspirina/Penicilina/etc)</option>
+                        <option value="Alimentos (Nueces/Mariscos/etc)">Alimentos (Nueces/Mariscos/etc)</option>
+                        <option value="Picaduras de Insectos">Picaduras de Insectos</option>
+                        <option value="Látex / Materiales Sintéticos">Látex / Materiales Sintéticos</option>
+                        <option value="Otra alergia no especificada">Otra alergia no especificada</option>
+                    </select>
                 </div>
+                
+                <!-- Ajuste: Listado completo de Padecimientos -->
                 <div class="form-group full-width"><label>Padecimientos Crónicos</label>
-                    <select id="padecimientos" required><option value="Ninguno" selected>Ninguno</option></select>
+                    <select id="padecimientos" required>
+                        <option value="Ninguno" selected>Ninguno</option>
+                        <option value="Hipertensión Arterial">Hipertensión Arterial</option>
+                        <option value="Diabetes Mellitus">Diabetes Mellitus</option>
+                        <option value="Asma / Problemas Respiratorios">Asma / Problemas Respiratorios</option>
+                        <option value="Arritmias / Cardiopatías">Arritmias / Cardiopatías</option>
+                        <option value="Epilepsia / Convulsiones">Epilepsia / Convulsiones</option>
+                        <option value="Lesiones Articulares Crónicas">Lesiones Articulares Crónicas</option>
+                    </select>
                 </div>
                 <div class="form-group full-width"><label>Situaciones Extraoficiales</label><input type="text" id="situaciones_extraoficiales"></div>
             </div>
@@ -294,7 +401,7 @@
         </div>
     </main>
 
-    <!-- Acción 3: Pop-up de Pre-Registro Exitoso -->
+    <!-- Pop-up de Pre-Registro Exitoso -->
     <div id="popupPreRegistro" class="modal-emergente">
         <div class="modal-contenido">
             <span class="modal-cerrar" onclick="cerrarPopup()">&times;</span>
@@ -313,7 +420,7 @@
 
     <script>
         const SUPABASE_URL = "https://xhiprzmvleolibzprqom.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_LVD_xghTp8MmfutMs3RoDA_v1c4rxrg"; // IMPORTANTE: Cambia esto por tu clave real para quitar el 401
+        const SUPABASE_KEY = "TU_NUEVA_PUBLISHABLE_KEY_AQUI_COMPLETA"; 
         let supabaseClient = null;
         
         try {
@@ -350,10 +457,8 @@
             const hoy = new Date();
             document.getElementById('reg_fecha').value = `${String(hoy.getDate()).padStart(2, '0')}/${String(hoy.getMonth() + 1).padStart(2, '0')}/${hoy.getFullYear()}`;
 
-            // Aseguramos el cálculo inicial por si la CURP ya venía en los parámetros de la URL
             if(document.getElementById('curp').value) { analizarCURP(); }
 
-            // Acción 3: El pop-up se ejecuta de forma limpia a los 3 segundos exactos
             setTimeout(() => {
                 document.getElementById('popupPreRegistro').style.display = 'flex';
             }, 3000);
@@ -389,7 +494,6 @@
                 
                 document.getElementById('auto_edad').value = isNaN(edad) ? '' : edad;
 
-                // Acción 1: Validación nativa interactiva inmediata
                 if (!isNaN(edad) && edad < 18 && edad > 0) {
                     alert("Se identifica que el corredor a registrar es menor de edad, por lo cual se sugiere que para completar su registro es necesario presentar acta de nacimiento, una carta responsiva firmada por los padres o el tutor legal del corredor o del menor y credencial para votar del tutor o de los padres que firman la carta.");
                 }
@@ -397,6 +501,7 @@
                 let catSelect = document.getElementById('categoria');
                 if (edad >= 18 && edad <= 39) catSelect.value = "Libre";
                 else if (edad >= 40 && edad <= 49) catSelect.value = "Máster";
+                else if (edad >= 50) catSelect.value = "Veteranos";
             }
             if (curp.length >= 12) {
                 let edoClave = curp.substring(11,13);
@@ -409,8 +514,6 @@
             const reader = new FileReader();
             reader.onloadend = function() { 
                 fotoBase64Global = reader.result; 
-                
-                // Acción 2: Forzar aparición visual del bloque del deslinde legal al cargar imagen
                 if (file) {
                     document.getElementById('bloqueDeslinde').style.display = 'flex';
                     document.getElementById('chk_deslinde').checked = false;
@@ -422,13 +525,11 @@
         function procesarFormulario(event) {
             event.preventDefault();
 
-            // Respaldo de Acción 1: Si no se disparó antes por autofill, se bloquea y avisa aquí obligatoriamente
             const edadCalculada = parseInt(document.getElementById('auto_edad').value);
             if (!isNaN(edadCalculada) && edadCalculada < 18 && edadCalculada > 0) {
                 alert("Atención: El corredor es menor de edad. Recuerde que es obligatorio presentar la documentación física solicitada del tutor legal en el módulo.");
             }
             
-            // Pasamos datos a la ficha oficial
             document.getElementById('b_fecha').value = document.getElementById('reg_fecha').value;
             document.getElementById('b_nombre').value = document.getElementById('reg_nombre').value;
             document.getElementById('b_apellido1').value = document.getElementById('reg_apellido1').value;
@@ -475,7 +576,7 @@
             
             bloquearCamposBoleta(true);
             
-            if(!supabaseClient) {
+            if(!supabaseClient || SUPABASE_KEY === "TU_NUEVA_PUBLISHABLE_KEY_AQUI_COMPLETA") {
                 alert("Modo Demostración: Los datos son correctos. (Configura una clave Supabase válida para persistir en la base de datos).");
                 mostrarCredencial();
                 return;
