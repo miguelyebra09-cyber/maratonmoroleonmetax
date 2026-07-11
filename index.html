@@ -1,297 +1,3 @@
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maratón Internacional Moroleón 2027 | Segunda Edición</title>
-    <!-- Google Fonts para emular la fuerza tipográfica del póster -->
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;700&family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --naranja-moroleon: #FF5500;
-            --oscuro-fondo: #111111;
-            --oscuro-tarjeta: #1A1A1A;
-            --blanco-texto: #EAEAEA;
-            --dorado-irc: #D4AF37;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            background-color: var(--oscuro-fondo);
-            color: var(--blanco-texto);
-            line-height: 1.6;
-        }
-
-        h1, h2, h3, .btn-action {
-            font-family: 'Oswald', sans-serif;
-            text-transform: uppercase;
-        }
-
-        /* Navbar */
-        nav {
-            background-color: rgba(17, 17, 17, 0.95);
-            padding: 15px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--naranja-moroleon);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        nav .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--dorado-irc);
-            letter-spacing: 2px;
-        }
-
-        /* Hero Section con vibra de atardecer */
-        .hero {
-            background: linear-gradient(rgba(17, 17, 17, 0.4), rgba(17, 17, 17, 0.95)), 
-                        url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=1920') no-repeat center center/cover;
-            height: 70vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-        }
-
-        .hero h1 {
-            font-size: 4rem;
-            color: var(--naranja-moroleon);
-            text-shadow: 3px 3px 0px #000;
-            letter-spacing: 3px;
-        }
-
-        .hero h2 {
-            font-size: 2.5rem;
-            color: var(--blanco-texto);
-            margin-bottom: 10px;
-            letter-spacing: 1px;
-        }
-
-        .hero p {
-            font-size: 1.2rem;
-            color: var(--dorado-irc);
-            margin-bottom: 25px;
-            font-weight: bold;
-        }
-
-        .btn-action {
-            background-color: var(--naranja-moroleon);
-            color: white;
-            padding: 12px 35px;
-            border: none;
-            font-size: 1.3rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            border-radius: 3px;
-            box-shadow: 0px 4px 15px rgba(255, 85, 0, 0.4);
-        }
-
-        .btn-action:hover {
-            background-color: white;
-            color: var(--naranja-moroleon);
-            transform: translateY(-2px);
-        }
-
-        /* Contenedor Formulario METAX */
-        .registration-container {
-            max-width: 700px;
-            margin: -50px auto 50px auto;
-            background-color: var(--oscuro-tarjeta);
-            padding: 40px;
-            border-radius: 8px;
-            border: 1px solid rgba(212, 175, 55, 0.3);
-            box-shadow: 0px 10px 30px rgba(0,0,0,0.7);
-            position: relative;
-            z-index: 10;
-        }
-
-        .registration-container h3 {
-            font-size: 2rem;
-            color: var(--blanco-texto);
-            text-align: center;
-            margin-bottom: 30px;
-            border-bottom: 2px solid var(--naranja-moroleon);
-            padding-bottom: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-            color: var(--dorado-irc);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            background-color: #222;
-            border: 1px solid #444;
-            color: white;
-            font-size: 1rem;
-            border-radius: 4px;
-            transition: border-color 0.3s;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--naranja-moroleon);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        /* Footer con marca METAX sutil */
-        footer {
-            background-color: #0b0b0b;
-            text-align: center;
-            padding: 30px 20px;
-            font-size: 0.85rem;
-            color: #666;
-            border-top: 1px solid #222;
-        }
-
-        footer .metax-signature {
-            margin-top: 10px;
-            color: #444;
-            font-size: 0.75rem;
-            letter-spacing: 1px;
-        }
-
-        footer .metax-signature span {
-            color: var(--naranja-moroleon);
-            font-weight: bold;
-        }
-
-        /* Adaptabilidad móvil */
-        @media (max-width: 768px) {
-            .hero h1 { font-size: 2.5rem; }
-            .hero h2 { font-size: 1.8rem; }
-            .form-row { grid-template-columns: 1fr; gap: 0; }
-            .registration-container { margin: 20px; padding: 20px; }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- Navegación -->
-    <nav>
-        <div class="logo">IRC MEXICO</div>
-        <div style="color: var(--blanco-texto); font-weight: bold;">MOROLEÓN 2027</div>
-    </nav>
-
-    <!-- Sección de Impacto Visual -->
-    <section class="hero">
-        <h2>Sede del Maratón Internacional</h2>
-        <h1>Moroleón 2027</h1>
-        <p>Segunda Edición • 42K | 21K | 10K</p>
-        <a href="#registro" class="btn-action">Registrarme Ahora</a>
-    </section>
-
-    <!-- Módulo de Registro Integrado (Core METAX) -->
-    <section class="registration-container" id="registro">
-        <h3>Cédula de Inscripción Oficial</h3>
-        <form id="form-metax-registro">
-            
-            <div class="form-group">
-                <label for="nombre">Nombre Completo</label>
-                <input type="text" id="nombre" class="form-control" required placeholder="Ej. Juan Pérez">
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="correo">Correo Electrónico</label>
-                    <input type="email" id="correo" class="form-control" required placeholder="juan@correo.com">
-                </div>
-                <div class="form-group">
-                    <label for="telefono">Teléfono de Emergencia</label>
-                    <input type="tel" id="telefono" class="form-control" required placeholder="445 123 4567">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="distancia">Distancia a Competir</label>
-                    <select id="distancia" class="form-control" required>
-                        <option value="">Selecciona distancia</option>
-                        <option value="42k">Maratón Completo (42.195 Km)</option>
-                        <option value="21k">Medio Maratón (21.097 Km)</option>
-                        <option value="10k">Carrera Recreativa (10 Km)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="playera">Talla de Playera</label>
-                    <select id="playera" class="form-control" required>
-                        <option value="">Selecciona talla</option>
-                        <option value="CH">Chica (S)</option>
-                        <option value="M">Mediana (M)</option>
-                        <option value="G">Grande (L)</option>
-                        <option value="XG">Extra Grande (XL)</option>
-                    </select>
-                </div>
-            </div>
-
-            <div style="text-align: center; margin-top: 20px;">
-                <button type="submit" class="btn-action" style="width: 100%;">Proceder al Pago / Confirmar</button>
-            </div>
-        </form>
-    </section>
-
-    <!-- Footer Institucional con Marca Oculta/Discreta -->
-    <footer>
-        <p>© 2027 Maratón Internacional de Moroleón. Todos los derechos reservados.</p>
-        <p>Evento avalado por el International Running Circuit.</p>
-        <div class="metax-signature">Tecnología de cronometraje y registro por <span>METAX</span> v2.0</div>
-    </footer>
-
-    <script>
-        // Lógica inicial del motor METAX para manejo del formulario
-        document.getElementById('form-metax-registro').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // Recolección de datos listos para enviar a tu tabla en Supabase
-            const datosAtleta = {
-                nombre: document.getElementById('nombre').value,
-                correo: document.getElementById('correo').value,
-                telefono: document.getElementById('telefono').value,
-                distancia: document.getElementById('distancia').value,
-                playera: document.getElementById('playera').value,
-                fecha_registro: new Date().toISOString()
-            };
-
-            console.log("Datos capturados por METAX Engine:", datosAtleta);
-            alert("¡Procesando registro en el sistema METAX para Moroleón 2027!");
-            // Aquí acoplaremos la función Supabase próximamente
-        });
-    </script>
-</body>
-</html>
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -372,7 +78,7 @@
         /* Hero Section */
         .hero {
             position: relative;
-            height: 85vh;
+            height: 80vh;
             background: linear-gradient(135deg, rgba(13, 13, 13, 0.9) 30%, rgba(255, 85, 0, 0.2) 100%),
                         url('https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=1920') no-repeat center center/cover;
             display: flex;
@@ -413,25 +119,6 @@
             color: #CCCCCC;
         }
 
-        .btn-primary {
-            background-color: var(--naranja);
-            color: white;
-            padding: 15px 40px;
-            border: none;
-            font-size: 1.3rem;
-            cursor: pointer;
-            text-decoration: none;
-            border-radius: 4px;
-            box-shadow: 0 5px 15px rgba(255, 85, 0, 0.4);
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--blanco);
-            color: var(--naranja);
-            transform: translateY(-3px);
-        }
-
         /* Secciones Generales */
         section {
             padding: 80px 8%;
@@ -454,6 +141,181 @@
             margin: 10px auto 0 auto;
         }
 
+        /* Cronómetro Vistoso Avanzado */
+        .countdown-section {
+            background: linear-gradient(rgba(13, 13, 13, 0.95), rgba(13, 13, 13, 0.95)),
+                        url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=1920') no-repeat center center/cover;
+            text-align: center;
+            position: relative;
+            border-top: 1px solid #1a1a1a;
+            border-bottom: 1px solid #1a1a1a;
+        }
+
+        .countdown-display {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            background: #111;
+            padding: 30px 50px;
+            border-radius: 12px;
+            border: 2px solid var(--naranja);
+            box-shadow: 0 0 30px rgba(255, 85, 0, 0.2);
+            position: relative;
+        }
+
+        .countdown-segment {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .countdown-number {
+            font-family: 'Oswald', sans-serif;
+            font-size: 4.5rem;
+            font-weight: 700;
+            color: var(--blanco);
+            line-height: 1;
+            min-width: 100px;
+        }
+
+        .countdown-number.seconds {
+            color: var(--naranja);
+            text-shadow: 0 0 10px rgba(255, 85, 0, 0.5);
+        }
+
+        .countdown-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            color: var(--dorado);
+            letter-spacing: 2px;
+            margin-top: 10px;
+            font-weight: 600;
+        }
+
+        .countdown-separator {
+            font-family: 'Oswald', sans-serif;
+            font-size: 4rem;
+            color: rgba(255, 255, 255, 0.2);
+            line-height: 1;
+            margin-bottom: 30px;
+        }
+
+        /* Barra de Signos Vitales / Gráfica de Hospital Animada */
+        .vital-signals-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 35px auto 0 auto;
+            position: relative;
+            height: 60px;
+            background: #050505;
+            border: 1px solid #222;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .vital-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,85,0,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,85,0,0.05) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .ecg-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            stroke: var(--naranja);
+            stroke-width: 3;
+            fill: none;
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: ecg-pulse 4s linear infinite;
+        }
+
+        @keyframes ecg-pulse {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+
+        /* Sección Pre-Registro Corto METAX */
+        .pre-registration-section {
+            background-color: var(--oscuro-puro);
+        }
+
+        .pre-reg-card {
+            max-width: 550px;
+            margin: 0 auto;
+            background-color: var(--oscuro-tarjeta);
+            padding: 40px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 85, 0, 0.3);
+            box-shadow: 0px 10px 30px rgba(0,0,0,0.7);
+        }
+
+        .pre-reg-card p {
+            text-align: center;
+            color: #AAA;
+            margin-bottom: 25px;
+            font-size: 0.95rem;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--dorado);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            background-color: #0D0D0D;
+            border: 1px solid #333;
+            color: white;
+            font-size: 1rem;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--naranja);
+        }
+
+        .btn-primary {
+            display: block;
+            width: 100%;
+            background-color: var(--naranja);
+            color: white;
+            padding: 15px;
+            border: none;
+            font-size: 1.3rem;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 4px;
+            box-shadow: 0 5px 15px rgba(255, 85, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--blanco);
+            color: var(--naranja);
+        }
+
         /* Sección Historial */
         .history-content {
             background-color: var(--oscuro-tarjeta);
@@ -462,7 +324,6 @@
             border-radius: 4px;
             max-width: 900px;
             margin: 0 auto;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
 
         .history-content p {
@@ -483,7 +344,7 @@
             padding: 35px;
             border-radius: 8px;
             text-align: center;
-            border: 1px solid var(--oscuro-claro);
+            border: 1px solid #222;
             transition: transform 0.3s, border-color 0.3s;
         }
 
@@ -501,7 +362,6 @@
         .benefit-card h3 {
             font-size: 1.4rem;
             margin-bottom: 15px;
-            color: var(--blanco);
         }
 
         .benefit-card p {
@@ -509,7 +369,7 @@
             color: #AAAAAA;
         }
 
-        /* Sección Categorías y Distancias */
+        /* Sección Categorías */
         .distancias-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -518,19 +378,15 @@
 
         .distancia-card {
             background-color: var(--oscuro-claro);
-            position: relative;
             padding: 40px 20px;
             border-radius: 6px;
             text-align: center;
-            overflow: hidden;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            border-bottom: 4px solid var(--oscuro-tarjeta);
             transition: all 0.3s;
         }
 
         .distancia-card:hover {
-            border-bottom-color: var(--naranja);
             transform: scale(1.03);
+            box-shadow: 0 5px 15px rgba(255,85,0,0.1);
         }
 
         .distancia-number {
@@ -545,8 +401,6 @@
         .distancia-tag {
             font-weight: 600;
             text-transform: uppercase;
-            color: var(--blanco);
-            letter-spacing: 1px;
             margin-bottom: 15px;
         }
 
@@ -557,44 +411,6 @@
             padding-top: 15px;
         }
 
-        /* Sección Cuenta Regresiva (Sugerencia) */
-        .countdown-section {
-            background: linear-gradient(rgba(26, 26, 26, 0.9), rgba(26, 26, 26, 0.9)),
-                        url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=1920') no-repeat center center/cover;
-            text-align: center;
-        }
-
-        .countdown-container {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin-top: 40px;
-            flex-wrap: wrap;
-        }
-
-        .countdown-box {
-            background-color: rgba(13, 13, 13, 0.8);
-            padding: 20px 30px;
-            border-radius: 6px;
-            min-width: 120px;
-            border: 1px solid var(--naranja);
-        }
-
-        .countdown-time {
-            font-family: 'Oswald', sans-serif;
-            font-size: 3rem;
-            color: var(--blanco);
-            font-weight: bold;
-            line-height: 1;
-        }
-
-        .countdown-label {
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            color: var(--dorado);
-            letter-spacing: 1px;
-        }
-
         /* Footer */
         footer {
             background-color: #050505;
@@ -603,10 +419,6 @@
             border-top: 1px solid var(--oscuro-claro);
             font-size: 0.9rem;
             color: #666666;
-        }
-
-        footer p {
-            margin-bottom: 10px;
         }
 
         .metax-footer {
@@ -621,9 +433,11 @@
             font-weight: bold;
         }
 
-        /* Responsivo */
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.8rem; }
+            .countdown-display { padding: 20px; gap: 8px; }
+            .countdown-number { font-size: 2.5rem; min-width: 60px; }
+            .countdown-separator { font-size: 2rem; }
             nav { flex-direction: column; gap: 15px; }
             .nav-links { gap: 15px; }
             section { padding: 50px 5%; }
@@ -637,6 +451,8 @@
         <div class="logo-irc">IRC <span>MÉXICO</span></div>
         <ul class="nav-links">
             <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#cronometro">Cuenta Regresiva</a></li>
+            <li><a href="#registro-corto">Pre-Registro</a></li>
             <li><a href="#historia">Historial</a></li>
             <li><a href="#beneficios">Beneficios</a></li>
             <li><a href="#categorias">Categorías</a></li>
@@ -647,40 +463,76 @@
     <section class="hero" id="inicio">
         <div class="hero-badge">Sede Oficial Circuit 2027</div>
         <h1>Maratón Internacional<br><span>Moroleón 2027</span></h1>
-        <p>Segunda Edición. Desafía tus límites en una de las rutas más demandantes e inspiradoras de México. Siente la energía, la cultura y el apoyo de toda una ciudad.</p>
-        <button class="btn-primary" onclick="alert('Próximamente se habilitará el módulo de registro oficial de METAX')">Próximamente Inscripciones</button>
+        <p>Segunda Edición. Prepárate para conquistar el asfalto. Tu viaje hacia la gloria inicia aquí.</p>
     </section>
 
-    <!-- Cuenta Regresiva (Sugerencia) -->
-    <section class="countdown-section">
-        <h2 class="section-title">El tiempo corre</h2>
-        <div class="countdown-container">
-            <div class="countdown-box">
-                <div class="countdown-time">240</div>
+    <!-- Cuenta Regresiva Dinámica con Gráfica ECG -->
+    <section class="countdown-section" id="cronometro">
+        <h2 class="section-title">El Latido del Asfalto</h2>
+        
+        <div class="countdown-display">
+            <div class="countdown-segment">
+                <div class="countdown-number" id="days">00</div>
                 <div class="countdown-label">Días</div>
             </div>
-            <div class="countdown-box">
-                <div class="countdown-time">14</div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-segment">
+                <div class="countdown-number" id="hours">00</div>
                 <div class="countdown-label">Horas</div>
             </div>
-            <div class="countdown-box">
-                <div class="countdown-time">45</div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-segment">
+                <div class="countdown-number" id="minutes">00</div>
                 <div class="countdown-label">Minutos</div>
             </div>
+            <div class="countdown-separator">:</div>
+            <div class="countdown-segment">
+                <div class="countdown-number seconds" id="seconds">00</div>
+                <div class="countdown-label">Segundos</div>
+            </div>
+        </div>
+
+        <!-- Barra Estilo Hospital / Electrocardiograma Dinámico -->
+        <div class="vital-signals-container">
+            <div class="vital-grid"></div>
+            <svg viewBox="0 0 1000 60" preserveAspectRatio="none" style="width: 100%; height: 100%;">
+                <path class="ecg-line" d="M0,30 L300,30 L315,10 L330,50 L345,5 L360,55 L375,30 L400,30 L700,30 L715,10 L730,50 L745,5 L760,55 L775,30 L1000,30" />
+            </svg>
+        </div>
+    </section>
+
+    <!-- Sección Pre-Registro Corto (METAX Core V2) -->
+    <section class="pre-registration-section" id="registro-corto">
+        <h2 class="section-title">Asegura tu Lugar</h2>
+        <div class="pre-reg-card">
+            <p>Introduce tus datos básicos para iniciar tu proceso. Serás redirigido a la cédula de inscripción completa.</p>
+            <form action="cedula_inscripcion.html" method="GET">
+                <div class="form-group">
+                    <label for="nombre">Nombre y Apellidos</label>
+                    <input type="text" id="nombre" name="nombre_completo" class="form-control" required placeholder="Ej. Juan Pérez López">
+                </div>
+                <div class="form-group">
+                    <label for="correo">Correo Electrónico</label>
+                    <input type="email" id="correo" name="email" class="form-control" required placeholder="correo@ejemplo.com">
+                </div>
+                <div style="margin-top: 30px;">
+                    <button type="submit" class="btn-primary">Ir a Cédula de Inscripción</button>
+                </div>
+            </form>
         </div>
     </section>
 
     <!-- Sección Historial -->
-    <section id="history" style="background-color: var(--oscuro-puro);">
+    <section id="history" style="background-color: #121212;">
         <h2 class="section-title" id="historia">Historial del Maratón</h2>
         <div class="history-content">
             <p>El Maratón Internacional de Moroleón nació con el firme propósito de integrar a Guanajuato en el mapa del atletismo mundial de gran fondo. Avalado por la International Running Circuit (IRC), nuestra primera edición consolidó la participación de corredores provenientes de Colombia, Italia, Canadá y todo el territorio mexicano.</p>
-            <p>Para este 2027, la <strong>Segunda Edición</strong> promete duplicar el número de atletas élite, optimizar las transiciones de tiempo y ofrecer una fiesta deportiva inolvidable en el corazón del bajío, teniendo como marco la emblemática Parroquia del centro histórico al amanecer.</p>
+            <p>Para este 2027, la <strong>Segunda Edición</strong> promete duplicar el número de atletas élite, optimizar las transiciones de tiempo y ofrecer una fiesta deportiva inolvidable en el corazón del bajío.</p>
         </div>
     </section>
 
     <!-- Sección Beneficios -->
-    <section id="benefits" style="background-color: #121212;">
+    <section id="benefits">
         <h2 class="section-title" id="beneficios">Beneficios del Corredor</h2>
         <div class="benefits-grid">
             <div class="benefit-card">
@@ -707,7 +559,7 @@
     </section>
 
     <!-- Sección Categorías y Distancias -->
-    <section id="categories" style="background-color: var(--oscuro-puro);">
+    <section id="categories" style="background-color: #121212;">
         <h2 class="section-title" id="categorias">Distancias Oficiales</h2>
         <div class="distancias-grid">
             <div class="distancia-card">
@@ -740,5 +592,37 @@
         <div class="metax-footer">Estructura base de interfaz protegida por <span>METAX</span> v2.0</div>
     </footer>
 
+    <!-- JavaScript para el Cronómetro en Vivo -->
+    <script>
+        // Configurar la fecha objetivo (Ejemplo: 15 de Noviembre 2027)
+        const targetDate = new Date("Nov 15, 2027 07:00:00").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const difference = targetDate - now;
+
+            // Cálculos de tiempo
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+            // Insertar en el HTML con formato de dos dígitos
+            document.getElementById("days").innerText = days < 10 ? "0" + days : days;
+            document.getElementById("hours").innerText = hours < 10 ? "0" + hours : hours;
+            document.getElementById("minutes").innerText = minutes < 10 ? "0" + minutes : minutes;
+            document.getElementById("seconds").innerText = seconds < 10 ? "0" + seconds : seconds;
+
+            // Si el conteo termina
+            if (difference < 0) {
+                clearInterval(interval);
+                document.getElementById("cronometro").innerHTML = "<h2 class='section-title'>¡EL MARATÓN HA COMENZADO!</h2>";
+            }
+        }
+
+        // Ejecutar cada segundo
+        const interval = setInterval(updateCountdown, 1000);
+        updateCountdown(); // Ejecución inicial
+    </script>
 </body>
 </html>
