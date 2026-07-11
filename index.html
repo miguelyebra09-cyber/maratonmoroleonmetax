@@ -13,6 +13,7 @@
             --oscuro-claro: #262626;
             --blanco: #EAEAEA;
             --dorado: #D4AF37;
+            --neon-green: #00ffcc;
         }
 
         * {
@@ -75,17 +76,116 @@
             color: var(--naranja);
         }
 
-        /* Hero Section */
+        /* Hero Section con Slideshow Integrado de 5 Fotos */
         .hero {
             position: relative;
             height: 85vh;
-            background: linear-gradient(135deg, rgba(13, 13, 13, 0.9) 30%, rgba(255, 85, 0, 0.2) 100%),
-                        url('https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=1920') no-repeat center center/cover;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: flex-start;
             padding: 0 8%;
+            overflow: hidden;
+        }
+
+        /* Contenedor del Carrusel de imágenes */
+        .hero-slideshow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0;
+            animation: sliderAnim 25s infinite ease-in-out;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Degradado oscuro persistente sobre el slider */
+        .hero-slideshow::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(13, 13, 13, 0.92) 30%, rgba(255, 85, 0, 0.25) 100%);
+            z-index: 2;
+        }
+
+        /* 5 Fotos con vivos naranjas y la imagen especial */
+        .slide:nth-child(1) {
+            background-image: url('https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?q=80&w=1920'); /* Maratón línea meta tintes naranja */
+            animation-delay: 0s;
+        }
+        .slide:nth-child(2) {
+            background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=1920'); /* Corredores al amanecer */
+            animation-delay: 5s;
+        }
+        .slide:nth-child(3) {
+            background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=1920'); /* Calzado y asfalto enfoque circuito */
+            animation-delay: 10s;
+        }
+        .slide:nth-child(4) {
+            background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=1920'); /* Esfuerzo atleta vivos atardecer */
+            animation-delay: 15s;
+        }
+        /* Quinta Imagen: Calle semicolonial con letreros neón vistosos e institucionales */
+        .slide:nth-child(5) {
+            background-image: url('https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?q=80&w=1920'); 
+            animation-delay: 20s;
+        }
+
+        /* Letrero Neón integrado directamente dentro de la quinta foto */
+        .subliminal-banner {
+            text-align: center;
+            z-index: 3;
+            transform: translateY(-40px);
+        }
+
+        .subliminal-banner .neon-text {
+            font-family: 'Oswald', sans-serif;
+            font-size: 5rem;
+            color: #fff;
+            text-shadow: 0 0 10px var(--naranja), 0 0 20px var(--naranja), 0 0 40px #ff0000;
+            letter-spacing: 4px;
+            font-weight: 700;
+            line-height: 1;
+        }
+
+        .subliminal-banner .neon-subtext {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.4rem;
+            color: var(--neon-green);
+            text-shadow: 0 0 5px var(--neon-green), 0 0 15px var(--neon-green);
+            font-weight: bold;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        @keyframes sliderAnim {
+            0% { opacity: 0; transform: scale(1); }
+            4% { opacity: 1; }
+            20% { opacity: 1; }
+            24% { opacity: 0; transform: scale(1.05); }
+            100% { opacity: 0; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 10;
+            max-width: 700px;
         }
 
         .hero-badge {
@@ -162,90 +262,115 @@
             margin: 10px auto 0 auto;
         }
 
-        /* Sección Cuenta Regresiva Optimizada */
+        /* Sección Cuenta Regresiva de Alto Impacto */
         .countdown-section {
-            background: linear-gradient(rgba(26, 26, 26, 0.92), rgba(13, 13, 13, 0.95)),
-                        url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=1920') no-repeat center center/cover;
+            background: linear-gradient(180deg, #111 0%, var(--oscuro-puro) 100%);
             text-align: center;
-            border-top: 1px solid rgba(255, 85, 0, 0.3);
-            border-bottom: 1px solid rgba(255, 85, 0, 0.3);
+            border-top: 1px solid rgba(255, 85, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 85, 0, 0.2);
+            padding: 60px 8%;
         }
 
         .countdown-container {
             display: flex;
             justify-content: center;
             gap: 25px;
-            margin-top: 30px;
-            margin-bottom: 35px;
+            margin-top: 10px;
+            margin-bottom: 40px;
             flex-wrap: wrap;
         }
 
         .countdown-box {
-            background: linear-gradient(145deg, var(--oscuro-tarjeta), #111111);
+            background: linear-gradient(145deg, #161616, #0a0a0a);
             padding: 25px 20px;
-            border-radius: 10px;
+            border-radius: 12px;
             min-width: 140px;
-            border: 1px solid rgba(255, 85, 0, 0.4);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+            border: 1px solid rgba(255, 85, 0, 0.25);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(255,255,255,0.05);
             position: relative;
-            overflow: hidden;
         }
 
-        .countdown-box::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background-color: var(--naranja);
+        .countdown-box.seconds-box {
+            border-color: rgba(255, 85, 0, 0.7);
+            box-shadow: 0 0 15px rgba(255, 85, 0, 0.2);
         }
 
         .countdown-time {
             font-family: 'Oswald', sans-serif;
-            font-size: 3.5rem;
+            font-size: 3.8rem;
             color: #FFFFFF;
             font-weight: 700;
             line-height: 1;
-            text-shadow: 0 2px 10px rgba(255, 85, 0, 0.3);
+        }
+
+        /* Segundos destacados explícitamente en color naranja */
+        .seconds-box .countdown-time {
+            color: var(--naranja);
+            text-shadow: 0 0 10px rgba(255, 85, 0, 0.5);
         }
 
         .countdown-label {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
-            color: var(--dorado);
-            letter-spacing: 1.5px;
+            color: #888888;
+            letter-spacing: 2px;
             margin-top: 8px;
             font-weight: 600;
         }
 
-        /* Estilos de la Barra de Progreso del Cronómetro */
-        .progress-wrapper {
-            max-width: 640px;
-            margin: 0 auto;
-            background-color: rgba(255, 255, 255, 0.05);
-            padding: 6px;
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        .seconds-box .countdown-label {
+            color: var(--dorado);
         }
 
-        .progress-container {
-            width: 100%;
-            background-color: var(--oscuro-puro);
-            border-radius: 20px;
-            height: 16px;
-            overflow: hidden;
+        /* Barra de Monitoreo Médico Hospitalario (Incremento/Decremento Electrocardiograma) */
+        .hospital-monitor-wrapper {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #050505;
+            border: 2px solid #222;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: inset 0 0 20px rgba(0,0,0,1);
             position: relative;
         }
 
-        .progress-bar {
+        .hospital-monitor-wrapper::before {
+            content: 'ECG VITAL MONITOR';
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #050505;
+            padding: 0 8px;
+            font-size: 0.7rem;
+            color: var(--neon-green);
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        .hospital-screen {
+            width: 100%;
+            height: 45px;
+            background-color: #030a08;
+            border: 1px solid #112b24;
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+
+        /* Línea de pulso clínica continua en movimiento */
+        .ecg-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 200%;
             height: 100%;
-            width: 78%; /* Representación visual de progreso hacia el evento */
-            background: linear-gradient(90deg, #FF3300, #FF7700, var(--naranja));
-            border-radius: 20px;
-            box-shadow: 0 0 12px var(--naranja);
-            transition: width 0.5s ease-in-out;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='45' viewBox='0 0 200 45'%3E%3Cpath d='M0,22.5 L60,22.5 L70,5 L80,40 L90,22.5 L130,22.5 L135,15 L140,30 L145,22.5 L200,22.5' fill='none' stroke='%2300ffcc' stroke-width='2'/%3E%3C/svg%3E") repeat-x;
+            animation: ecgScroll 2.5s linear infinite;
+        }
+
+        @keyframes ecgScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
         }
 
         /* Sección Historial */
@@ -380,6 +505,8 @@
         /* Responsivo */
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.8rem; }
+            .subliminal-banner .neon-text { font-size: 3.2rem; }
+            .subliminal-banner .neon-subtext { font-size: 1rem; }
             nav { flex-direction: column; gap: 15px; }
             .nav-links { gap: 15px; }
             section { padding: 50px 5%; }
@@ -402,16 +529,31 @@
         </ul>
     </nav>
 
-    <!-- Hero Section -->
+    <!-- Hero Section con Slideshow Alternante -->
     <section class="hero" id="inicio">
-        <div class="hero-badge">Sede Oficial Circuit 2027</div>
-        <h1>Maratón Internacional<br><span>Moroleón 2027</span></h1>
-        <p>Segunda Edición. Desafía tus límites en una de las rutas más demandantes e inspiradoras de México. Siente la energía, la cultura y el apoyo de toda una ciudad.</p>
-        <!-- Cédula reducida y optimizada para redirigir directamente a la página cédula de registro -->
-        <a href="cedula_registro.html" class="btn-primary">Inscríbete Ahora</a>
+        <div class="hero-slideshow">
+            <div class="slide"></div>
+            <div class="slide"></div>
+            <div class="slide"></div>
+            <div class="slide"></div>
+            <div class="slide">
+                <!-- Capa de texto neón exclusiva dentro de la foto semicolonial -->
+                <div class="subliminal-banner">
+                    <div class="neon-text">MOROLEÓN</div>
+                    <div class="neon-subtext">EN MOVIMIENTO 2027</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-content">
+            <div class="hero-badge">Sede Oficial Circuit 2027</div>
+            <h1>Maratón Internacional<br><span>Moroleón 2027</span></h1>
+            <p>Segunda Edición. Desafía tus límites en una de las rutas más demandantes e inspiradoras de México. Siente la energía, la cultura y el apoyo de toda una ciudad.</p>
+            <a href="cedula_registro.html" class="btn-primary">Inscríbete Ahora</a>
+        </div>
     </section>
 
-    <!-- Cuenta Regresiva (Actualizada con mejoras visuales y barra de progreso) -->
+    <!-- Cuenta Regresiva de Alto Impacto + Monitor Médico -->
     <section class="countdown-section">
         <h2 class="section-title">El tiempo corre</h2>
         <div class="countdown-container">
@@ -427,16 +569,16 @@
                 <div class="countdown-time" id="minutes">45</div>
                 <div class="countdown-label">Minutos</div>
             </div>
-            <div class="countdown-box">
+            <div class="countdown-box seconds-box">
                 <div class="countdown-time" id="seconds">00</div>
                 <div class="countdown-label">Segundos</div>
             </div>
         </div>
         
-        <!-- Barra de Progreso integrada -->
-        <div class="progress-wrapper">
-            <div class="progress-container">
-                <div class="progress-bar" id="progressBar"></div>
+        <!-- Barra de incremento/decremento simulada como monitor médico de hospital -->
+        <div class="hospital-monitor-wrapper">
+            <div class="hospital-screen">
+                <div class="ecg-line"></div>
             </div>
         </div>
     </section>
@@ -513,43 +655,25 @@
 
     <!-- Lógica del Cronómetro Dinámico -->
     <script>
-        // Configura aquí la fecha del evento objetivo
         const eventDate = new Date("Dec 31, 2027 07:00:00").getTime();
-        // Fecha base para calcular el porcentaje de progreso (ejemplo: inicio de año 2027)
-        const startDate = new Date("Jan 01, 2027 00:00:00").getTime();
 
         const updateCountdown = setInterval(function() {
             const now = new Date().getTime();
             const distance = eventDate - now;
 
-            // Cálculos de tiempo
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-            // Inyección de valores en el HTML de forma dinámica
             document.getElementById("days").innerHTML = days;
             document.getElementById("hours").innerHTML = hours < 10 ? "0" + hours : hours;
             document.getElementById("minutes").innerHTML = minutes < 10 ? "0" + minutes : minutes;
             document.getElementById("seconds").innerHTML = seconds < 10 ? "0" + seconds : seconds;
 
-            // Cálculo dinámico del porcentaje para la barra de progreso
-            const totalDuration = eventDate - startDate;
-            const elapsed = now - startDate;
-            let progressPercent = (elapsed / totalDuration) * 100;
-            
-            // Limitadores para que no desborde del 0% al 100%
-            if (progressPercent > 100) progressPercent = 100;
-            if (progressPercent < 0) progressPercent = 0;
-            
-            document.getElementById("progressBar").style.width = progressPercent + "%";
-
-            // Si la cuenta regresiva termina
             if (distance < 0) {
                 clearInterval(updateCountdown);
                 document.querySelector(".countdown-container").innerHTML = "<div class='countdown-time' style='font-size:2rem; color:var(--naranja);'>¡EL MARATÓN HA COMENZADO!</div>";
-                document.getElementById("progressBar").style.width = "100%";
             }
         }, 1000);
     </script>
