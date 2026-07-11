@@ -1,1 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cédula de Registro Oficial | Maratón Moroleón 2027</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- CDN de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <style>
+        :root {
+            --naranja: #FF5500;
+            --oscuro-puro: #0D0D0D;
+            --oscuro-tarjeta: #1A1A1A;
+            --oscuro-claro: #262626;
+            --blanco: #EAEAEA;
+            --dorado: #D4AF37;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--oscuro-puro);
+            color: var(--blanco);
+            line-height: 1.6;
+        }
+
+        h1, h2, h3, .nav-links a, .form-section-title, label {
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Navbar idéntica */
+        nav {
+            background-color: rgba(13, 13, 13, 0.95);
+            padding: 20px 8%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--naranja);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-wrapper {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
+        .logo-irc {
+            color: var(--dorado);
+            font-size: 1.6rem;
+            font-weight: 700;
+        }
+
+        .logo-irc span {
+            color: var(--blanco);
+        }
+
+        .metax-badge-nav {
+            font-size: 0.65rem;
+            color: rgba(255, 85, 0, 0.4);
+            font-family: monospace;
+            letter-spacing: 1px;
+        }
+
+        /* --- Scroll de Patrocinadores e Imágenes --- */
+        .sponsor-scroll-container {
+            width: 100%;
+            overflow: hidden;
+            background-color: #111;
+            border-bottom: 1px solid var(--oscuro-claro);
+            padding: 20px 0;
+            position: relative;
+        }
+
+        .sponsor-track {
+            display: flex;
+            gap: 20px;
+            width: calc(300px * 7 + 140px); /* Ajuste dinámico para las 7 imágenes */
+        }
+
+        .sponsor-card {
+            width: 300px;
+            height: 150px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 6px;
+            flex-shrink: 0;
+            border: 1px solid rgba(255, 85, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 15px;
+            position: relative;
+            background-color: var(--oscuro-tarjeta);
+        }
+
+        /* Estilo especial para la tarjeta de tu marca METAX */
+        .card-metax {
+            background: linear-gradient(135deg, #1a1a1a 0%, #050505 100%);
+            border: 2px solid var(--naranja);
+            box-shadow: 0 0 15px rgba(255, 85, 0, 0.2);
+        }
+
+        .metax-main-text {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px var(--naranja);
+            line-height: 1;
+        }
+
+        .metax-sub-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--dorado);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+
+        .sponsor-overlay-text {
+            background: rgba(0, 0, 0, 0.6);
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            padding: 5px;
+            font-size: 0.75rem;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* --- Formulario de Registro Oficial --- */
+        .main-container {
+            padding: 50px 8%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .form-header-box {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .form-header-box h2 {
+            font-size: 2.5rem;
+            color: var(--blanco);
+        }
+
+        .form-header-box h2 span {
+            color: var(--naranja);
+        }
+
+        .form-header-box p {
+            color: #888;
+            font-size: 1rem;
+            margin-top: 5px;
+        }
+
+        .registration-form {
+            background-color: var(--oscuro-tarjeta);
+            padding: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--oscuro-claro);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
+
+        .form-section-title {
+            font-size: 1.3rem;
+            color: var(--dorado);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+            padding-bottom: 8px;
+            margin-bottom: 25px;
+            margin-top: 15px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #BBBBBB;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: var(--oscuro-puro);
+            border: 1px solid var(--oscuro-claro);
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--naranja);
+        }
+
+        input[disabled] {
+            background-color: #111;
+            color: #666;
+            border-color: #1a1a1a;
+            cursor: not-allowed;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            background-color: var(--oscuro-puro);
+            border: 1px dashed var(--naranja);
+            padding: 20px;
+            text-align: center;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .form-group.full-width { grid-column: span 1; }
+            .main-container { padding: 30px 4%; }
+            .registration-form { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <div class="logo-wrapper">
+            <div class="logo-irc">IRC <span>MÉXICO</span></div>
+            <div class="metax-badge-nav">// Powered by MTX</div>
+        </div>
+    </nav>
+
+    <!-- Scroll de Patrocinadores e Imágenes en el Orden Solicitado -->
+    <div class="sponsor-scroll-container">
+        <div class="sponsor-track">
+            <!-- 1. Patrocinador Inventado (Calzado) -->
+            <div class="sponsor-card" style="background-image: url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=400');">
+                <div class="sponsor-overlay-text">Patrocinador Oficial: VOLT RUNNING</div>
+            </div>
+            <!-- 2. Gente corriendo Maratón -->
+            <div class="sponsor-card" style="background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=400');"></div>
+            <!-- 3. Otro Patrocinador Inventado (Suplementos) -->
+            <div class="sponsor-card" style="background-image: url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400');">
+                <div class="sponsor-overlay-text">Nutrición: KINETIC NUTRITION</div>
+            </div>
+            <!-- 4. Más gente corriendo -->
+            <div class="sponsor-card" style="background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=400');"></div>
+            <!-- 5. Tu Marca METAX Timing Pro -->
+            <div class="sponsor-card card-metax">
+                <div class="metax-main-text">METAX</div>
+                <div class="metax-sub-text">timing pro</div>
+            </div>
+            <!-- 6. Gente corriendo Maratón -->
+            <div class="sponsor-card" style="background-image: url('https://images.unsplash.com/photo-1532444458855-a41a37b3b3a0?q=80&w=400');"></div>
+            <!-- 7. Patrocinador de Hidratación Inventado -->
+            <div class="sponsor-card" style="background-image: url('https://images.unsplash.com/photo-1523362628745-0c100150b504?q=80&w=400');">
+                <div class="sponsor-overlay-text">Hidratación Oficial: AQUA-HYDRO</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Contenedor Principal Formulario -->
+    <main class="main-container">
+        <div class="form-header-box">
+            <h2>Cédula de <span>Registro Oficial</span></h2>
+            <p>Completa tus datos de competidor para generar tu número de corredor.</p>
+        </div>
+
+        <form class="registration-form" id="registroOficialForm">
+            
+            <!-- SECCIÓN 1: DATOS RECUPERADOS (Lectura / Jalados automáticamente) -->
+            <div class="form-section-title">Datos del Pre-Registro (Verificados)</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Nombre(s)</label>
+                    <input type="text" id="reg_nombre" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Apellidos</label>
+                    <input type="text" id="reg_apellidos" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="reg_correo" disabled>
+                </div>
+                <div class="form-group">
+                    <label>Teléfono Celular</label>
+                    <input type="tel" id="reg_telefono" disabled>
+                </div>
+                <div class="form-group full-width">
+                    <label>Distancia Asignada</label>
+                    <input type="text" id="reg_distancia" disabled style="color: var(--naranja); font-weight: bold;">
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2: CAMPOS ADICIONALES SOLICITADOS -->
+            <div class="form-section-title">Información de Identidad y Residencia</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="curp">CURP (18 caracteres)</label>
+                    <input type="text" id="curp" placeholder="Ingresa tu CURP" maxlength="18" required style="text-transform: uppercase;">
+                </div>
+                <div class="form-group">
+                    <label for="estado">Estado de Residencia</label>
+                    <select id="estado" required>
+                        <option value="" disabled selected>Selecciona tu estado</option>
+                        <option value="Guanajuato">Guanajuato</option>
+                        <option value="Querétaro">Querétaro</option>
+                        <option value="Michoacán">Michoacán</option>
+                        <option value="Jalisco">Jalisco</option>
+                        <option value="CDMX">Ciudad de México</option>
+                        <option value="Otro">Otro Estado / Extranjero</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label>Fotografía Oficial del Corredor (Perfil para gafete)</label>
+                    <div class="file-input-wrapper">
+                        <input type="file" id="foto_corredor" accept="image/*" required style="border:none; background:transparent; padding:0;">
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 3: EXPEDIENTE MÉDICO Y EMERGENCIAS -->
+            <div class="form-section-title">Expediente Médico de Seguridad</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="tipo_sangre">Tipo de Sangre</label>
+                    <select id="tipo_sangre" required>
+                        <option value="" disabled selected>Selecciona tipo</option>
+                        <option value="O+">O Positivo (O+)</option>
+                        <option value="O-">O Negativo (O-)</option>
+                        <option value="A+">A Positivo (A+)</option>
+                        <option value="A-">A Negativo (A-)</option>
+                        <option value="B+">B Positivo (B+)</option>
+                        <option value="AB+">AB Positivo (AB+)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tel_emergencia">Teléfono de Emergencia (Familiar directo)</label>
+                    <input type="tel" id="tel_emergencia" placeholder="Ej: 4661112233" required>
+                </div>
+                <div class="form-group full-width">
+                    <label for="alergias">Alergias Conocidas (Medicamentos, Alimentos, etc.)</label>
+                    <input type="text" id="alergias" placeholder="Ninguna / Describa detalladamente" required>
+                </div>
+                <div class="form-group full-width">
+                    <label for="padecimientos">Padecimientos o Enfermedades Crónicas</label>
+                    <input type="text" id="padecimientos" placeholder="Ej: Asma, Hipertensión, Diabetes / Ninguno" required>
+                </div>
+                <div class="form-group full-width">
+                    <label for="cuidados">Cuidados Médicos Especiales Requeridos</label>
+                    <textarea id="cuidados" rows="3" placeholder="Instrucciones específicas en caso de requerir asistencia en ruta..."></textarea>
+                </div>
+            </div>
+
+            <!-- Aquí se acoplará la segunda parte del código (Botones, validaciones o pasarelas) -->
+            <div id="seccion_contingencia_segunda_parte"></div>
+
+        </form>
+    </main>
+
+    <script>
+        // CAPTURA AUTOMÁTICA DE PARÁMETROS DE LA URL (Jalados del pre-registro anterior)
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            
+            // Mapeamos los elementos de lectura en pantalla
+            document.getElementById('reg_nombre').value = params.get('nombre') || '';
+            document.getElementById('reg_apellidos').value = params.get('apellidos') || '';
+            document.getElementById('reg_correo').value = params.get('correo') || '';
+            document.getElementById('reg_telefono').value = params.get('telefono') || '';
+            document.getElementById('reg_distancia').value = params.get('distancia') || '';
+        });
+    </script>
+</body>
+</html>
