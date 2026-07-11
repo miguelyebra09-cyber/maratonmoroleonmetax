@@ -13,7 +13,6 @@
             --oscuro-claro: #262626;
             --blanco: #EAEAEA;
             --dorado: #D4AF37;
-            --neon-green: #00ffcc;
         }
 
         * {
@@ -30,7 +29,7 @@
             overflow-x: hidden;
         }
 
-        h1, h2, h3, .btn-primary, .nav-links a {
+        h1, h2, h3, .btn-primary, .nav-links a, .form-group label {
             font-family: 'Oswald', sans-serif;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -76,10 +75,10 @@
             color: var(--naranja);
         }
 
-        /* Hero Section con Slideshow Integrado de 5 Fotos */
+        /* Hero Section con Slideshow Deportivo de 5 Fotos */
         .hero {
             position: relative;
-            height: 85vh;
+            height: 90vh;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -88,7 +87,6 @@
             overflow: hidden;
         }
 
-        /* Contenedor del Carrusel de imágenes */
         .hero-slideshow {
             position: absolute;
             top: 0;
@@ -111,7 +109,6 @@
             justify-content: center;
         }
 
-        /* Degradado oscuro persistente sobre el slider */
         .hero-slideshow::after {
             content: '';
             position: absolute;
@@ -119,66 +116,70 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(13, 13, 13, 0.92) 30%, rgba(255, 85, 0, 0.25) 100%);
+            background: linear-gradient(135deg, rgba(13, 13, 13, 0.95) 25%, rgba(255, 85, 0, 0.15) 100%);
             z-index: 2;
         }
 
-        /* 5 Fotos con vivos naranjas y la imagen especial */
+        /* Fotos 100% Deportivas y de Maratón con Enfoques de Acción y vivos Naranja/Atardecer */
         .slide:nth-child(1) {
-            background-image: url('https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?q=80&w=1920'); /* Maratón línea meta tintes naranja */
+            background-image: url('https://images.unsplash.com/photo-1532444458855-a41a37b3b3a0?q=80&w=1920'); /* Corredores de maratón en asfalto con iluminación cálida */
             animation-delay: 0s;
         }
         .slide:nth-child(2) {
-            background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=1920'); /* Corredores al amanecer */
+            background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=1920'); /* Atletas élite en ruta */
             animation-delay: 5s;
         }
         .slide:nth-child(3) {
-            background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=1920'); /* Calzado y asfalto enfoque circuito */
+            background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=1920'); /* Enfoque deportivo tenis y pista */
             animation-delay: 10s;
         }
         .slide:nth-child(4) {
-            background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=1920'); /* Esfuerzo atleta vivos atardecer */
+            background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=1920'); /* Corredora en carrera urbana */
             animation-delay: 15s;
         }
-        /* Quinta Imagen: Calle semicolonial con letreros neón vistosos e institucionales */
+        /* Quinta Imagen: Entorno de asfalto semicolonial deportivo y despejado */
         .slide:nth-child(5) {
-            background-image: url('https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?q=80&w=1920'); 
+            background-image: url('https://images.unsplash.com/photo-1547483238-2cbf88bf2443?q=80&w=1920'); 
             animation-delay: 20s;
         }
 
-        /* Letrero Neón integrado directamente dentro de la quinta foto */
+        /* Letrero Neón Subliminal Corregido */
         .subliminal-banner {
             text-align: center;
             z-index: 3;
-            transform: translateY(-40px);
+            display: inline-block;
+            transform: translateY(-20px);
         }
 
         .subliminal-banner .neon-text {
             font-family: 'Oswald', sans-serif;
-            font-size: 5rem;
-            color: #fff;
-            text-shadow: 0 0 10px var(--naranja), 0 0 20px var(--naranja), 0 0 40px #ff0000;
-            letter-spacing: 4px;
+            font-size: 5.5rem;
+            color: #ffffff;
+            text-shadow: 0 0 10px var(--naranja), 0 0 20px var(--naranja), 0 0 40px #ff2200;
+            letter-spacing: 3px;
             font-weight: 700;
             line-height: 1;
         }
 
         .subliminal-banner .neon-subtext {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.4rem;
-            color: var(--neon-green);
-            text-shadow: 0 0 5px var(--neon-green), 0 0 15px var(--neon-green);
-            font-weight: bold;
+            font-size: 1.15rem; /* Ajustado para no rebasar el ancho de MOROLEÓN */
+            color: #ffffff;
+            text-shadow: 0 0 8px var(--naranja), 0 0 15px rgba(255, 85, 0, 0.6);
+            font-weight: 600;
             letter-spacing: 5px;
             text-transform: uppercase;
             margin-top: 5px;
+            display: block;
+            text-align: justify;
+            text-align-last: justify; /* Hace que se alinee perfectamente de extremo a extremo */
         }
 
         @keyframes sliderAnim {
             0% { opacity: 0; transform: scale(1); }
             4% { opacity: 1; }
             20% { opacity: 1; }
-            24% { opacity: 0; transform: scale(1.05); }
+            24% { opacity: 0; transform: scale(1.03); }
             100% { opacity: 0; }
         }
 
@@ -262,12 +263,12 @@
             margin: 10px auto 0 auto;
         }
 
-        /* Sección Cuenta Regresiva de Alto Impacto */
+        /* Cuenta Regresiva Modificada */
         .countdown-section {
             background: linear-gradient(180deg, #111 0%, var(--oscuro-puro) 100%);
             text-align: center;
-            border-top: 1px solid rgba(255, 85, 0, 0.2);
-            border-bottom: 1px solid rgba(255, 85, 0, 0.2);
+            border-top: 1px solid rgba(255, 85, 0, 0.15);
+            border-bottom: 1px solid rgba(255, 85, 0, 0.15);
             padding: 60px 8%;
         }
 
@@ -285,14 +286,12 @@
             padding: 25px 20px;
             border-radius: 12px;
             min-width: 140px;
-            border: 1px solid rgba(255, 85, 0, 0.25);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), inset 0 1px 2px rgba(255,255,255,0.05);
-            position: relative;
+            border: 1px solid rgba(255, 85, 0, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
         }
 
         .countdown-box.seconds-box {
-            border-color: rgba(255, 85, 0, 0.7);
-            box-shadow: 0 0 15px rgba(255, 85, 0, 0.2);
+            border-color: rgba(255, 85, 0, 0.6);
         }
 
         .countdown-time {
@@ -303,10 +302,10 @@
             line-height: 1;
         }
 
-        /* Segundos destacados explícitamente en color naranja */
+        /* Segundos explícitamente en color naranja */
         .seconds-box .countdown-time {
             color: var(--naranja);
-            text-shadow: 0 0 10px rgba(255, 85, 0, 0.5);
+            text-shadow: 0 0 12px rgba(255, 85, 0, 0.4);
         }
 
         .countdown-label {
@@ -322,55 +321,124 @@
             color: var(--dorado);
         }
 
-        /* Barra de Monitoreo Médico Hospitalario (Incremento/Decremento Electrocardiograma) */
+        /* Monitor de Hospital Ajustado (Naranja y Semitransparente) */
         .hospital-monitor-wrapper {
             max-width: 600px;
             margin: 0 auto;
-            background-color: #050505;
-            border: 2px solid #222;
-            padding: 15px;
+            background-color: rgba(13, 13, 13, 0.5); /* Semitransparente */
+            border: 1px solid rgba(255, 85, 0, 0.2);
+            padding: 12px;
             border-radius: 8px;
-            box-shadow: inset 0 0 20px rgba(0,0,0,1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
             position: relative;
         }
 
         .hospital-monitor-wrapper::before {
-            content: 'ECG VITAL MONITOR';
+            content: 'PULSE RHYTHM';
             position: absolute;
-            top: -10px;
+            top: -9px;
             left: 20px;
-            background: #050505;
-            padding: 0 8px;
-            font-size: 0.7rem;
-            color: var(--neon-green);
+            background: var(--oscuro-puro);
+            padding: 0 6px;
+            font-size: 0.65rem;
+            color: var(--naranja);
             font-family: monospace;
             letter-spacing: 1px;
+            opacity: 0.8;
         }
 
         .hospital-screen {
             width: 100%;
-            height: 45px;
-            background-color: #030a08;
-            border: 1px solid #112b24;
+            height: 40px;
+            background-color: rgba(255, 85, 0, 0.03); /* Fondo interno muy tenue */
             position: relative;
             overflow: hidden;
             border-radius: 4px;
         }
 
-        /* Línea de pulso clínica continua en movimiento */
+        /* Línea ECG en color naranja y con opacidad controlada */
         .ecg-line {
             position: absolute;
             top: 0;
             left: 0;
             width: 200%;
             height: 100%;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='45' viewBox='0 0 200 45'%3E%3Cpath d='M0,22.5 L60,22.5 L70,5 L80,40 L90,22.5 L130,22.5 L135,15 L140,30 L145,22.5 L200,22.5' fill='none' stroke='%2300ffcc' stroke-width='2'/%3E%3C/svg%3E") repeat-x;
-            animation: ecgScroll 2.5s linear infinite;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='40' viewBox='0 0 200 40'%3E%3Cpath d='M0,20 L60,20 L70,4 L80,36 L90,20 L130,20 L135,12 L140,28 L145,20 L200,20' fill='none' stroke='%23FF5500' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") repeat-x;
+            animation: ecgScroll 3s linear infinite;
+            opacity: 0.85;
         }
 
         @keyframes ecgScroll {
             0% { transform: translateX(0); }
             100% { transform: translateX(-50%); }
+        }
+
+        /* Sección de Cédula de Pre-registro Restaurada */
+        .preregistro-section {
+            background-color: var(--oscuro-tarjeta);
+            border-top: 1px solid #222;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: var(--oscuro-puro);
+            padding: 40px;
+            border-radius: 8px;
+            border: 1px solid var(--oscuro-claro);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            color: #BBBBBB;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background-color: var(--oscuro-tarjeta);
+            border: 1px solid var(--oscuro-claro);
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--naranja);
+        }
+
+        .btn-submit {
+            width: 100%;
+            background-color: var(--naranja);
+            color: white;
+            font-family: 'Oswald', sans-serif;
+            text-transform: uppercase;
+            padding: 15px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        .btn-submit:hover {
+            background-color: white;
+            color: var(--naranja);
         }
 
         /* Sección Historial */
@@ -505,8 +573,8 @@
         /* Responsivo */
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.8rem; }
-            .subliminal-banner .neon-text { font-size: 3.2rem; }
-            .subliminal-banner .neon-subtext { font-size: 1rem; }
+            .subliminal-banner .neon-text { font-size: 3.5rem; }
+            .subliminal-banner .neon-subtext { font-size: 0.85rem; letter-spacing: 3px; }
             nav { flex-direction: column; gap: 15px; }
             .nav-links { gap: 15px; }
             section { padding: 50px 5%; }
@@ -523,13 +591,14 @@
         <div class="logo-irc">IRC <span>MÉXICO</span></div>
         <ul class="nav-links">
             <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#preregistro">Inscripción</a></li>
             <li><a href="#historia">Historial</a></li>
             <li><a href="#beneficios">Beneficios</a></li>
             <li><a href="#categorias">Categorías</a></li>
         </ul>
     </nav>
 
-    <!-- Hero Section con Slideshow Alternante -->
+    <!-- Hero Section con Slideshow Deportivo -->
     <section class="hero" id="inicio">
         <div class="hero-slideshow">
             <div class="slide"></div>
@@ -537,10 +606,10 @@
             <div class="slide"></div>
             <div class="slide"></div>
             <div class="slide">
-                <!-- Capa de texto neón exclusiva dentro de la foto semicolonial -->
+                <!-- Banner Neón Corregido e Integrado en la 5ta foto sin rebasar dimensiones -->
                 <div class="subliminal-banner">
-                    <div class="neon-text">MOROLEÓN</div>
-                    <div class="neon-subtext">EN MOVIMIENTO 2027</div>
+                    <span class="neon-text">MOROLEÓN</span>
+                    <span class="neon-subtext">en movimiento 2027</span>
                 </div>
             </div>
         </div>
@@ -549,11 +618,11 @@
             <div class="hero-badge">Sede Oficial Circuit 2027</div>
             <h1>Maratón Internacional<br><span>Moroleón 2027</span></h1>
             <p>Segunda Edición. Desafía tus límites en una de las rutas más demandantes e inspiradoras de México. Siente la energía, la cultura y el apoyo de toda una ciudad.</p>
-            <a href="cedula_registro.html" class="btn-primary">Inscríbete Ahora</a>
+            <a href="#preregistro" class="btn-primary">Aparta tu lugar</a>
         </div>
     </section>
 
-    <!-- Cuenta Regresiva de Alto Impacto + Monitor Médico -->
+    <!-- Cuenta Regresiva de Alto Impacto + Monitor Médico Naranja -->
     <section class="countdown-section">
         <h2 class="section-title">El tiempo corre</h2>
         <div class="countdown-container">
@@ -575,11 +644,40 @@
             </div>
         </div>
         
-        <!-- Barra de incremento/decremento simulada como monitor médico de hospital -->
+        <!-- Monitor Clínico Semitransparente con ondas Naranjas -->
         <div class="hospital-monitor-wrapper">
             <div class="hospital-screen">
                 <div class="ecg-line"></div>
             </div>
+        </div>
+    </section>
+
+    <!-- Sección de Cédula de Pre-registro -->
+    <section id="preregistro" class="preregistro-section">
+        <h2 class="section-title">Cédula de Pre-Registro</h2>
+        <div class="form-container">
+            <form action="#" onsubmit="event.preventDefault();">
+                <div class="form-group">
+                    <label for="nombre">Nombre Completo</label>
+                    <input type="text" id="nombre" placeholder="Tu nombre y apellidos" required>
+                </div>
+                <div class="form-group">
+                    <label for="correo">Correo Electrónico</label>
+                    <input type="email" id="correo" placeholder="ejemplo@correo.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="distancia">Distancia a Competir</label>
+                    <select id="distancia" required>
+                        <option value="" disabled selected>Selecciona tu distancia</option>
+                        <option value="5k">5K - Recreativa</option>
+                        <option value="10k">10K - Competitiva</option>
+                        <option value="21k">21K - Medio Maratón</option>
+                        <option value="42k">42K - Maratón Completo</option>
+                    </select>
+                </div>
+                <!-- Botón que redirige de inmediato a la Cédula de Registro oficial -->
+                <a href="cedula_registro.html" class="btn-submit">Continuar a Cédula de Registro</a>
+            </form>
         </div>
     </section>
 
