@@ -17,246 +17,77 @@
             --oscuro-claro: #262626;
             --blanco: #EAEAEA;
             --dorado: #D4AF37;
+            --papel: #F4F1EA;
+            --papel-texto: #2B2B2B;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Montserrat', sans-serif; background-color: var(--oscuro-puro); color: var(--blanco); line-height: 1.6; }
+        h1, h2, h3, .nav-links a, .form-section-title, label, .btn-action { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
 
-        body {
-            font-family: 'Montserrat', sans-serif;
-            background-color: var(--oscuro-puro);
-            color: var(--blanco);
-            line-height: 1.6;
-        }
+        nav { background-color: rgba(13, 13, 13, 0.95); padding: 20px 8%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--naranja); position: sticky; top: 0; z-index: 1000; }
+        .logo-wrapper { display: flex; align-items: baseline; gap: 10px; }
+        .logo-irc { color: var(--dorado); font-size: 1.6rem; font-weight: 700; }
+        .logo-irc span { color: var(--blanco); }
+        .metax-badge-nav { font-size: 0.65rem; color: rgba(255, 85, 0, 0.4); font-family: monospace; letter-spacing: 1px; }
 
-        h1, h2, h3, .nav-links a, .form-section-title, label {
-            font-family: 'Oswald', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        /* Patrocinadores */
+        .sponsor-scroll-container { width: 100%; overflow: hidden; background-color: #111; border-bottom: 1px solid var(--oscuro-claro); padding: 20px 0; }
+        .sponsor-track { display: flex; gap: 20px; width: calc(300px * 7 + 140px); }
+        .sponsor-card { width: 300px; height: 150px; background-size: cover; background-position: center; border-radius: 6px; flex-shrink: 0; border: 1px solid rgba(255, 85, 0, 0.15); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 15px; position: relative; background-color: var(--oscuro-tarjeta); }
+        .card-metax { background: linear-gradient(135deg, #1a1a1a 0%, #050505 100%); border: 2px solid var(--naranja); box-shadow: 0 0 15px rgba(255, 85, 0, 0.2); }
+        .metax-main-text { font-family: 'Oswald', sans-serif; font-size: 2.8rem; font-weight: 700; color: #FFFFFF; letter-spacing: 3px; text-shadow: 0 0 10px var(--naranja); line-height: 1; }
+        .metax-sub-text { font-family: 'Montserrat', sans-serif; font-size: 1rem; font-weight: 600; color: var(--dorado); letter-spacing: 4px; text-transform: uppercase; margin-top: 5px; }
+        .sponsor-overlay-text { background: rgba(0, 0, 0, 0.6); width: 100%; position: absolute; bottom: 0; left: 0; padding: 5px; font-size: 0.75rem; text-align: center; font-weight: bold; }
 
-        /* Navbar idéntica */
-        nav {
-            background-color: rgba(13, 13, 13, 0.95);
-            padding: 20px 8%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid var(--naranja);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
+        /* Contenedor e Interfaz */
+        .main-container { padding: 50px 8%; max-width: 900px; margin: 0 auto; }
+        .form-header-box { text-align: center; margin-bottom: 40px; }
+        .form-header-box h2 { font-size: 2.5rem; }
+        .form-header-box h2 span { color: var(--naranja); }
+        .form-header-box p { color: #888; margin-top: 5px; }
 
-        .logo-wrapper {
-            display: flex;
-            align-items: baseline;
-            gap: 10px;
-        }
+        .registration-form { background-color: var(--oscuro-tarjeta); padding: 40px; border-radius: 8px; border: 1px solid var(--oscuro-claro); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
+        .form-section-title { font-size: 1.3rem; color: var(--dorado); border-bottom: 1px solid rgba(212, 175, 55, 0.2); padding-bottom: 8px; margin-bottom: 25px; margin-top: 25px; }
+        .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group.full-width { grid-column: span 2; }
+        label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #BBBBBB; }
+        input, select, textarea { width: 100%; padding: 12px 15px; background-color: var(--oscuro-puro); border: 1px solid var(--oscuro-claro); color: white; font-family: 'Montserrat', sans-serif; font-size: 1rem; border-radius: 4px; transition: border-color 0.3s; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--naranja); }
+        input[disabled] { background-color: #111; color: #888; cursor: not-allowed; }
 
-        .logo-irc {
-            color: var(--dorado);
-            font-size: 1.6rem;
-            font-weight: 700;
-        }
+        .btn-action { display: block; width: 100%; padding: 15px; background-color: var(--naranja); color: white; border: none; font-size: 1.2rem; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.3s; margin-top: 20px; }
+        .btn-action:hover { background-color: #ff6622; }
 
-        .logo-irc span {
-            color: var(--blanco);
-        }
+        /* --- Ficha de Inscripción (Efecto Papel Físico) --- */
+        .boleta-papel { background-color: var(--papel); color: var(--papel-texto); padding: 40px; border-radius: 4px; box-shadow: 10px 10px 25px rgba(0,0,0,0.8); border-left: 8px dashed #aaa; margin-top: 30px; display: none; }
+        .boleta-papel h3 { text-align: center; border-bottom: 2px solid var(--papel-texto); padding-bottom: 10px; margin-bottom: 20px; font-size: 1.8rem; }
+        .boleta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; font-size: 0.95rem; }
+        .boleta-field { border-bottom: 1px dotted #666; padding: 5px 0; }
+        .boleta-label { font-weight: bold; text-transform: uppercase; font-size: 0.8rem; color: #555; }
+        .boleta-value { font-family: Courier, monospace; font-size: 1.1rem; font-weight: bold; color: #000; background: transparent; border: none; width: 100%; }
+        .boleta-value:focus { background: #fff; outline: 1px solid var(--naranja); }
+        .boleta-botones { display: flex; gap: 20px; margin-top: 30px; }
+        .btn-boleta { flex: 1; padding: 12px; font-weight: bold; border: none; cursor: pointer; text-transform: uppercase; font-family: 'Oswald'; }
+        .btn-confirmar { background: #27ae60; color: white; }
+        .btn-editar { background: #f39c12; color: white; }
 
-        .metax-badge-nav {
-            font-size: 0.65rem;
-            color: rgba(255, 85, 0, 0.4);
-            font-family: monospace;
-            letter-spacing: 1px;
-        }
+        /* --- Credencial Virtual --- */
+        .credencial-virtual { background: linear-gradient(135deg, #1e1e1e 0%, #0a0a0a 100%); width: 350px; border: 3px solid var(--dorado); border-radius: 12px; padding: 20px; margin: 40px auto 0 auto; box-shadow: 0 0 25px var(--dorado); display: none; text-align: center; }
+        .credencial-header { font-family: 'Oswald'; font-size: 1.4rem; color: var(--blanco); border-bottom: 2px solid var(--naranja); padding-bottom: 5px; margin-bottom: 15px; }
+        .credencial-foto { width: 150px; height: 180px; border: 2px solid var(--blanco); background: #222; margin: 0 auto 15px auto; background-size: cover; background-position: center; }
+        .credencial-nombre { font-family: 'Oswald'; font-size: 1.3rem; color: var(--naranja); text-transform: uppercase; }
+        .credencial-datos { text-align: left; margin: 15px 0; font-size: 0.85rem; border-top: 1px solid var(--oscuro-claro); padding-top: 10px; }
+        .credencial-linea { display: flex; justify-content: space-between; margin-bottom: 5px; }
+        .credencial-linea span { font-weight: bold; color: var(--dorado); }
+        .credencial-qr { width: 120px; height: 120px; margin: 15px auto 0 auto; background: white; padding: 5px; }
 
-        /* --- Scroll de Patrocinadores e Imágenes --- */
-        .sponsor-scroll-container {
-            width: 100%;
-            overflow: hidden;
-            background-color: #111;
-            border-bottom: 1px solid var(--oscuro-claro);
-            padding: 20px 0;
-            position: relative;
-        }
-
-        .sponsor-track {
-            display: flex;
-            gap: 20px;
-            width: calc(300px * 7 + 140px); /* Ajuste dinámico para las 7 imágenes */
-        }
-
-        .sponsor-card {
-            width: 300px;
-            height: 150px;
-            background-size: cover;
-            background-position: center;
-            border-radius: 6px;
-            flex-shrink: 0;
-            border: 1px solid rgba(255, 85, 0, 0.15);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 15px;
-            position: relative;
-            background-color: var(--oscuro-tarjeta);
-        }
-
-        /* Estilo especial para la tarjeta de tu marca METAX */
-        .card-metax {
-            background: linear-gradient(135deg, #1a1a1a 0%, #050505 100%);
-            border: 2px solid var(--naranja);
-            box-shadow: 0 0 15px rgba(255, 85, 0, 0.2);
-        }
-
-        .metax-main-text {
-            font-family: 'Oswald', sans-serif;
-            font-size: 2.8rem;
-            font-weight: 700;
-            color: #FFFFFF;
-            letter-spacing: 3px;
-            text-shadow: 0 0 10px var(--naranja);
-            line-height: 1;
-        }
-
-        .metax-sub-text {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1rem;
-            font-weight: 600;
-            color: var(--dorado);
-            letter-spacing: 4px;
-            text-transform: uppercase;
-            margin-top: 5px;
-        }
-
-        .sponsor-overlay-text {
-            background: rgba(0, 0, 0, 0.6);
-            width: 100%;
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            padding: 5px;
-            font-size: 0.75rem;
-            text-align: center;
-            font-weight: bold;
-        }
-
-        /* --- Formulario de Registro Oficial --- */
-        .main-container {
-            padding: 50px 8%;
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .form-header-box {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .form-header-box h2 {
-            font-size: 2.5rem;
-            color: var(--blanco);
-        }
-
-        .form-header-box h2 span {
-            color: var(--naranja);
-        }
-
-        .form-header-box p {
-            color: #888;
-            font-size: 1rem;
-            margin-top: 5px;
-        }
-
-        .registration-form {
-            background-color: var(--oscuro-tarjeta);
-            padding: 40px;
-            border-radius: 8px;
-            border: 1px solid var(--oscuro-claro);
-            box-shadow: 0 15px 30px rgba(0,0,0,0.5);
-        }
-
-        .form-section-title {
-            font-size: 1.3rem;
-            color: var(--dorado);
-            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-            padding-bottom: 8px;
-            margin-bottom: 25px;
-            margin-top: 15px;
-        }
-
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group.full-width {
-            grid-column: span 2;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 0.9rem;
-            color: #BBBBBB;
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 15px;
-            background-color: var(--oscuro-puro);
-            border: 1px solid var(--oscuro-claro);
-            color: white;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1rem;
-            border-radius: 4px;
-            transition: border-color 0.3s;
-        }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--naranja);
-        }
-
-        input[disabled] {
-            background-color: #111;
-            color: #666;
-            border-color: #1a1a1a;
-            cursor: not-allowed;
-        }
-
-        .file-input-wrapper {
-            position: relative;
-            background-color: var(--oscuro-puro);
-            border: 1px dashed var(--naranja);
-            padding: 20px;
-            text-align: center;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .form-grid { grid-template-columns: 1fr; }
-            .form-group.full-width { grid-column: span 1; }
-            .main-container { padding: 30px 4%; }
-            .registration-form { padding: 20px; }
-        }
+        @media (max-width: 768px) { .form-grid, .boleta-grid { grid-template-columns: 1fr; } .main-container { padding: 20px 4%; } }
     </style>
 </head>
 <body>
 
-    <!-- Navbar -->
     <nav>
         <div class="logo-wrapper">
             <div class="logo-irc">IRC <span>MÉXICO</span></div>
@@ -264,79 +95,53 @@
         </div>
     </nav>
 
-    <!-- Scroll de Patrocinadores e Imágenes en el Orden Solicitado -->
+    <!-- Patrocinadores -->
     <div class="sponsor-scroll-container">
         <div class="sponsor-track">
-            <!-- 1. Patrocinador Inventado (Calzado) -->
             <div class="sponsor-card" style="background-image: url('https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=400');">
-                <div class="sponsor-overlay-text">Patrocinador Oficial: VOLT RUNNING</div>
+                <div class="sponsor-overlay-text">VOLT RUNNING</div>
             </div>
-            <!-- 2. Gente corriendo Maratón -->
             <div class="sponsor-card" style="background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=400');"></div>
-            <!-- 3. Otro Patrocinador Inventado (Suplementos) -->
             <div class="sponsor-card" style="background-image: url('https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=400');">
-                <div class="sponsor-overlay-text">Nutrición: KINETIC NUTRITION</div>
+                <div class="sponsor-overlay-text">KINETIC NUTRITION</div>
             </div>
-            <!-- 4. Más gente corriendo -->
             <div class="sponsor-card" style="background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=400');"></div>
-            <!-- 5. Tu Marca METAX Timing Pro -->
             <div class="sponsor-card card-metax">
                 <div class="metax-main-text">METAX</div>
                 <div class="metax-sub-text">timing pro</div>
             </div>
-            <!-- 6. Gente corriendo Maratón -->
             <div class="sponsor-card" style="background-image: url('https://images.unsplash.com/photo-1532444458855-a41a37b3b3a0?q=80&w=400');"></div>
-            <!-- 7. Patrocinador de Hidratación Inventado -->
             <div class="sponsor-card" style="background-image: url('https://images.unsplash.com/photo-1523362628745-0c100150b504?q=80&w=400');">
-                <div class="sponsor-overlay-text">Hidratación Oficial: AQUA-HYDRO</div>
+                <div class="sponsor-overlay-text">AQUA-HYDRO</div>
             </div>
         </div>
     </div>
 
-    <!-- Contenedor Principal Formulario -->
     <main class="main-container">
         <div class="form-header-box">
             <h2>Cédula de <span>Registro Oficial</span></h2>
             <p>Completa tus datos de competidor para generar tu número de corredor.</p>
         </div>
 
-        <form class="registration-form" id="registroOficialForm">
-            
-            <!-- SECCIÓN 1: DATOS RECUPERADOS (Lectura / Jalados automáticamente) -->
+        <!-- FORMULARIO PRINCIPAL -->
+        <form class="registration-form" id="registroOficialForm" onsubmit="procesarFormulario(event)">
             <div class="form-section-title">Datos del Pre-Registro (Verificados)</div>
             <div class="form-grid">
-                <div class="form-group">
-                    <label>Nombre(s)</label>
-                    <input type="text" id="reg_nombre" disabled>
-                </div>
-                <div class="form-group">
-                    <label>Apellidos</label>
-                    <input type="text" id="reg_apellidos" disabled>
-                </div>
-                <div class="form-group">
-                    <label>Correo Electrónico</label>
-                    <input type="email" id="reg_correo" disabled>
-                </div>
-                <div class="form-group">
-                    <label>Teléfono Celular</label>
-                    <input type="tel" id="reg_telefono" disabled>
-                </div>
-                <div class="form-group full-width">
-                    <label>Distancia Asignada</label>
-                    <input type="text" id="reg_distancia" disabled style="color: var(--naranja); font-weight: bold;">
-                </div>
+                <div class="form-group"><label>Nombre(s)</label><input type="text" id="reg_nombre" disabled></div>
+                <div class="form-group"><label>Apellidos</label><input type="text" id="reg_apellidos" disabled></div>
+                <div class="form-group"><label>Correo Electrónico</label><input type="email" id="reg_correo" disabled></div>
+                <div class="form-group"><label>Teléfono Celular</label><input type="tel" id="reg_telefono" disabled></div>
+                <div class="form-group full-width"><label>Distancia Asignada</label><input type="text" id="reg_distancia" disabled style="color: var(--naranja); font-weight: bold;"></div>
             </div>
 
-            <!-- SECCIÓN 2: CAMPOS ADICIONALES SOLICITADOS -->
             <div class="form-section-title">Información de Identidad y Residencia</div>
             <div class="form-grid">
                 <div class="form-group">
                     <label for="curp">CURP (18 caracteres)</label>
-                    <input type="text" id="curp" placeholder="Ingresa tu CURP" maxlength="18" required style="text-transform: uppercase;">
+                    <input type="text" id="curp" placeholder="Ingresa tu CURP" maxlength="18" required style="text-transform: uppercase;" oninput="analizarCURP()">
                 </div>
-                <div class="form-group">
-                    <label for="estado">Estado de Residencia</label>
-                    <select id="estado" required>
+                <div class="form-group"><label>Estado de Residencia</label>
+                    <select id="estado_residencia" required>
                         <option value="" disabled selected>Selecciona tu estado</option>
                         <option value="Guanajuato">Guanajuato</option>
                         <option value="Querétaro">Querétaro</option>
@@ -346,19 +151,41 @@
                         <option value="Otro">Otro Estado / Extranjero</option>
                     </select>
                 </div>
+                <div class="form-group"><label>Edad (Auto)</label><input type="text" id="auto_edad" disabled></div>
+                <div class="form-group"><label>Género (Auto)</label><input type="text" id="auto_genero" disabled></div>
+                <div class="form-group"><label>Entidad de Origen (Auto)</label><input type="text" id="auto_origen" disabled></div>
+                <div class="form-group"><label>Rama Competencia (Auto)</label><input type="text" id="auto_rama" disabled style="color: var(--dorado); font-weight: bold;"></div>
+                
+                <div class="form-group">
+                    <label>Categoría Asignada</label>
+                    <select id="categoria" required>
+                        <option value="" disabled selected>Selecciona Categoría</option>
+                        <option value="Libre">Libre (18-39 años)</option>
+                        <option value="Máster">Máster (40-49 años)</option>
+                        <option value="Veteranos A">Veteranos A (50-59 años)</option>
+                        <option value="Veteranos B">Veteranos B (60 años o más)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Talla de Playera</label>
+                    <select id="talla_playera" required>
+                        <option value="" disabled selected>Selecciona Talla</option>
+                        <option value="CH">Chica (CH)</option>
+                        <option value="M">Mediana (M)</option>
+                        <option value="G">Grande (G)</option>
+                        <option value="XG">Extra Grande (XG)</option>
+                    </select>
+                </div>
                 <div class="form-group full-width">
-                    <label>Fotografía Oficial del Corredor (Perfil para gafete)</label>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="foto_corredor" accept="image/*" required style="border:none; background:transparent; padding:0;">
-                    </div>
+                    <label>Fotografía Oficial (Perfil para gafete)</label>
+                    <input type="file" id="foto_corredor" accept="image/*" required onchange="convertirFotoBase64()">
                 </div>
             </div>
 
-            <!-- SECCIÓN 3: EXPEDIENTE MÉDICO Y EMERGENCIAS -->
             <div class="form-section-title">Expediente Médico de Seguridad</div>
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="tipo_sangre">Tipo de Sangre</label>
+                    <label>Tipo de Sangre</label>
                     <select id="tipo_sangre" required>
                         <option value="" disabled selected>Selecciona tipo</option>
                         <option value="O+">O Positivo (O+)</option>
@@ -369,42 +196,205 @@
                         <option value="AB+">AB Positivo (AB+)</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label for="tel_emergencia">Teléfono de Emergencia (Familiar directo)</label>
-                    <input type="tel" id="tel_emergencia" placeholder="Ej: 4661112233" required>
-                </div>
-                <div class="form-group full-width">
-                    <label for="alergias">Alergias Conocidas (Medicamentos, Alimentos, etc.)</label>
-                    <input type="text" id="alergias" placeholder="Ninguna / Describa detalladamente" required>
-                </div>
-                <div class="form-group full-width">
-                    <label for="padecimientos">Padecimientos o Enfermedades Crónicas</label>
-                    <input type="text" id="padecimientos" placeholder="Ej: Asma, Hipertensión, Diabetes / Ninguno" required>
-                </div>
-                <div class="form-group full-width">
-                    <label for="cuidados">Cuidados Médicos Especiales Requeridos</label>
-                    <textarea id="cuidados" rows="3" placeholder="Instrucciones específicas en caso de requerir asistencia en ruta..."></textarea>
-                </div>
+                <div class="form-group"><label>Contacto Emergencia (Nombre)</label><input type="text" id="contacto_emergencia" placeholder="Nombre completo del contacto" required></div>
+                <div class="form-group"><label>Teléfono Emergencia</label><input type="tel" id="tel_emergencia" placeholder="Ej: 4661112233" required></div>
+                <div class="form-group"><label>Alergias Conocidas</label><input type="text" id="alergias" placeholder="Ninguna / Descripción" required></div>
+                <div class="form-group full-width"><label>Padecimientos o Enfermedades Crónicas</label><input type="text" id="padecimientos" placeholder="Ninguno / Descripción" required></div>
+                <div class="form-group full-width"><label>Situaciones Extraoficiales / Notas</label><input type="text" id="situaciones_extraoficiales" placeholder="Notas adicionales relevantes"></div>
             </div>
 
-            <!-- Aquí se acoplará la segunda parte del código (Botones, validaciones o pasarelas) -->
-            <div id="seccion_contingencia_segunda_parte"></div>
-
+            <button type="submit" class="btn-action">Registrar Datos</button>
         </form>
+
+        <!-- FICHA DE INSCRIPCIÓN VIRTUAL (BOLETA DE PAPEL) -->
+        <div class="boleta-papel" id="boletaVirtual">
+            <h3>Ficha de Inscripción Oficial</h3>
+            <div class="boleta-grid">
+                <div class="boleta-field"><div class="boleta-label">Nombre del Corredor</div><input type="text" class="boleta-value" id="b_nombre"></div>
+                <div class="boleta-field"><div class="boleta-label">CURP</div><input type="text" class="boleta-value" id="b_curp" disabled></div>
+                <div class="boleta-field"><div class="boleta-label">Edad</div><input type="text" class="boleta-value" id="b_edad"></div>
+                <div class="boleta-field"><div class="boleta-label">Rama</div><input type="text" class="boleta-value" id="b_rama"></div>
+                <div class="boleta-field"><div class="boleta-label">Categoría</div><input type="text" class="boleta-value" id="b_categoria"></div>
+                <div class="boleta-field"><div class="boleta-label">Distancia</div><input type="text" class="boleta-value" id="b_distancia" disabled></div>
+                <div class="boleta-field"><div class="boleta-label">Talla Playera</div><input type="text" class="boleta-value" id="b_talla"></div>
+                <div class="boleta-field"><div class="boleta-label">Tipo Sangre</div><input type="text" class="boleta-value" id="b_sangre"></div>
+                <div class="boleta-field"><div class="boleta-label">Contacto Emergencia</div><input type="text" class="boleta-value" id="b_contacto"></div>
+                <div class="boleta-field"><div class="boleta-label">Tel. Emergencia</div><input type="text" class="boleta-value" id="b_telemerg"></div>
+                <div class="boleta-field"><div class="boleta-label">Origen</div><input type="text" class="boleta-value" id="b_origen"></div>
+                <div class="boleta-field"><div class="boleta-label">Residencia</div><input type="text" class="boleta-value" id="b_residencia"></div>
+            </div>
+            <div class="boleta-botones">
+                <button class="btn-boleta btn-editar" onclick="activarEdicionBoleta()">Editar Datos</button>
+                <button class="btn-boleta btn-confirmar" onclick="confirmarBoletaOficial()">Confirmar Datos de Registro</button>
+            </div>
+        </div>
+
+        <!-- CREDENCIAL VIRTUAL -->
+        <div class="credencial-virtual" id="credencialVirtual">
+            <div class="credencial-header">Pase Oficial de Corredor</div>
+            <div class="credencial-foto" id="c_foto"></div>
+            <div class="credencial-nombre" id="c_nombre">NOMBRE</div>
+            <div class="credencial-datos">
+                <div class="credencial-linea">Distancia: <span id="c_distancia">0K</span></div>
+                <div class="credencial-linea">Rama: <span id="c_rama">-</span></div>
+                <div class="credencial-linea">Talla Playera: <span id="c_talla">-</span></div>
+                <div class="credencial-linea">Tipo de Sangre: <span id="c_sangre">-</span></div>
+                <div class="credencial-linea">Tel. Celular: <span id="c_tel">-</span></div>
+                <div class="credencial-linea">Contacto Emerg.: <span id="c_emerg">-</span></div>
+            </div>
+            <div class="credencial-qr" id="c_qr"></div>
+        </div>
     </main>
 
     <script>
-        // CAPTURA AUTOMÁTICA DE PARÁMETROS DE LA URL (Jalados del pre-registro anterior)
+        const SUPABASE_URL = "https://xhiprzmvleolibzprqom.supabase.co";
+        const SUPABASE_KEY = "TU_NUEVA_PUBLISHABLE_KEY_AQUI_COMPLETA";
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        let fotoBase64Global = "";
+
+        const estadosMap = {
+            'AS':'Aguascalientes','BC':'Baja California','BS':'Baja California Sur','CC':'Campeche','CL':'Coahuila','CM':'Colima','CS':'Chiapas','CH':'Chihuahua','DF':'Ciudad de México','DG':'Durango','GT':'Guanajuato','GR':'Guerrero','HG':'Hidalgo','JC':'Jalisco','MC':'México','MN':'Michoacán','MS':'Morelos','NT':'Nayarit','NL':'Nuevo León','OC':'Oaxaca','PL':'Puebla','QT':'Querétaro','QR':'Quintana Roo','SP':'San Luis Potosí','SL':'Sinaloa','SR':'Sonora','TC':'Tabasco','TS':'Tamaulipas','TL':'Tlaxcala','VZ':'Veracruz','YN':'Yucatán','ZS':'Zacatecas','NE':'Extranjero'
+        };
+
         window.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
-            
-            // Mapeamos los elementos de lectura en pantalla
             document.getElementById('reg_nombre').value = params.get('nombre') || '';
             document.getElementById('reg_apellidos').value = params.get('apellidos') || '';
             document.getElementById('reg_correo').value = params.get('correo') || '';
             document.getElementById('reg_telefono').value = params.get('telefono') || '';
             document.getElementById('reg_distancia').value = params.get('distancia') || '';
         });
+
+        function analizarCURP() {
+            let curp = document.getElementById('curp').value.toUpperCase();
+            if (curp.length >= 10) {
+                // Género
+                let sexo = curp.charAt(10);
+                let genero = (sexo === 'H') ? 'Hombre' : (sexo === 'M') ? 'Mujer' : '';
+                document.getElementById('auto_genero').value = genero;
+                document.getElementById('auto_rama').value = (sexo === 'H') ? 'Varonil' : (sexo === 'M') ? 'Femenil' : '';
+
+                // Edad aproximada
+                let anioStr = curp.substring(4,6);
+                let mesStr = curp.substring(6,8);
+                let diaStr = curp.substring(8,10);
+                let anioCompleto = parseInt(anioStr) + (parseInt(anioStr) > 26 ? 1900 : 2000);
+                let nacimiento = new Date(anioCompleto, parseInt(mesStr) - 1, parseInt(diaStr));
+                let hoy = new Date();
+                let edad = hoy.getFullYear() - nacimiento.getFullYear();
+                if (hoy.getMonth() < nacimiento.getMonth() || (hoy.getMonth() === nacimiento.getMonth() && hoy.getDate() < nacimiento.getDate())) {
+                    edad--;
+                }
+                document.getElementById('auto_edad').value = isNaN(edad) ? '' : edad;
+
+                // Asignación automática de categoría sugerida por edad
+                let catSelect = document.getElementById('categoria');
+                if (edad >= 18 && edad <= 39) catSelect.value = "Libre";
+                else if (edad >= 40 && edad <= 49) catSelect.value = "Máster";
+                else if (edad >= 50 && edad <= 59) catSelect.value = "Veteranos A";
+                else if (edad >= 60) catSelect.value = "Veteranos B";
+            }
+            if (curp.length >= 12) {
+                let edoClave = curp.substring(11,13);
+                document.getElementById('auto_origen').value = estadosMap[edoClave] || 'Desconocido';
+            }
+        }
+
+        function convertirFotoBase64() {
+            const file = document.getElementById('foto_corredor').files[0];
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                fotoBase64Global = reader.result;
+            }
+            if (file) { reader.readAsDataURL(file); }
+        }
+
+        function procesarFormulario(event) {
+            event.preventDefault();
+            document.getElementById('b_nombre').value = document.getElementById('reg_nombre').value + ' ' + document.getElementById('reg_apellidos').value;
+            document.getElementById('b_curp').value = document.getElementById('curp').value;
+            document.getElementById('b_edad').value = document.getElementById('auto_edad').value;
+            document.getElementById('b_rama').value = document.getElementById('auto_rama').value;
+            document.getElementById('b_categoria').value = document.getElementById('categoria').value;
+            document.getElementById('b_distancia').value = document.getElementById('reg_distancia').value;
+            document.getElementById('b_talla').value = document.getElementById('talla_playera').value;
+            document.getElementById('b_sangre').value = document.getElementById('tipo_sangre').value;
+            document.getElementById('b_contacto').value = document.getElementById('contacto_emergencia').value;
+            document.getElementById('b_telemerg').value = document.getElementById('tel_emergencia').value;
+            document.getElementById('b_origen').value = document.getElementById('auto_origen').value;
+            document.getElementById('b_residencia').value = document.getElementById('estado_residencia').value;
+
+            // Bloqueamos los campos inicialmente en la boleta
+            bloquearCamposBoleta(true);
+            
+            document.getElementById('registroOficialForm').style.display = 'none';
+            document.getElementById('boletaVirtual').style.display = 'block';
+        }
+
+        function bloquearCamposBoleta(estado) {
+            const inputs = document.querySelectorAll('.boleta-value');
+            inputs.forEach(input => {
+                if(input.id !== 'b_curp' && input.id !== 'b_distancia') {
+                    input.disabled = estado;
+                }
+            });
+        }
+
+        function activarEdicionBoleta() {
+            bloquearCamposBoleta(false);
+        }
+
+        function confirmarBoletaOficial() {
+            const respuesta = confirm("¿Estás seguro de los datos aquí registrados?\n\nYa que no podrán ser modificados con posterioridad en el sistema, de lo contrario tendrá que comunicarse directamente con la administración del comité organizador.");
+            
+            if (respuesta) {
+                bloquearCamposBoleta(true);
+                
+                // Generamos Inserción en Supabase
+                supabaseClient.from('cedula_registro').insert([{
+                    nombre_completo: document.getElementById('b_nombre').value,
+                    curp: document.getElementById('b_curp').value,
+                    correo: document.getElementById('reg_correo').value,
+                    telefono_celular: document.getElementById('reg_telefono').value,
+                    edad: parseInt(document.getElementById('b_edad').value),
+                    genero: document.getElementById('auto_genero').value,
+                    entidad_origen: document.getElementById('b_origen').value,
+                    entidad_residencia: document.getElementById('b_residencia').value,
+                    rama: document.getElementById('b_rama').value,
+                    categoria: document.getElementById('b_categoria').value,
+                    distancia: document.getElementById('b_distancia').value,
+                    talla_playera: document.getElementById('b_talla').value,
+                    tipo_sangre: document.getElementById('b_sangre').value,
+                    contacto_emergencia: document.getElementById('b_contacto').value,
+                    telefono_emergencia: document.getElementById('b_telemerg').value,
+                    alergias: document.getElementById('alergias').value,
+                    padecimientos: document.getElementById('padecimientos').value,
+                    situaciones_extraoficiales: document.getElementById('situaciones_extraoficiales').value,
+                    foto_base64: fotoBase64Global
+                }]).then(({error}) => {
+                    if(error) {
+                        alert("Error al sincronizar con el servidor: " + error.message);
+                    } else {
+                        // Dibujamos e inyectamos valores a la Credencial Virtual
+                        document.getElementById('c_foto').style.backgroundImage = `url('${fotoBase64Global}')`;
+                        document.getElementById('c_nombre').innerText = document.getElementById('b_nombre').value;
+                        document.getElementById('c_distancia').innerText = document.getElementById('b_distancia').value;
+                        document.getElementById('c_rama').innerText = document.getElementById('b_rama').value;
+                        document.getElementById('c_talla').innerText = document.getElementById('b_talla').value;
+                        document.getElementById('c_sangre').innerText = document.getElementById('b_sangre').value;
+                        document.getElementById('c_tel').innerText = document.getElementById('reg_telefono').value;
+                        document.getElementById('c_emerg').innerText = document.getElementById('b_telemerg').value;
+
+                        // QR Dinámico utilizando la API de gráficos de Google apuntando a la boleta actual
+                        const urlInfo = encodeURIComponent(window.location.href + '?curp=' + document.getElementById('b_curp').value);
+                        document.getElementById('c_qr').innerHTML = `<img src="https://chart.googleapis.com/chart?chs=120x120&cht=qr&chl=${urlInfo}" alt="QR">`;
+
+                        document.getElementById('credencialVirtual').style.display = 'block';
+                    }
+                });
+            }
+        }
     </script>
 </body>
 </html>
