@@ -13,6 +13,7 @@
             --oscuro-claro: #262626;
             --blanco: #EAEAEA;
             --dorado: #D4AF37;
+            --whatsapp-color: #25D366;
         }
 
         * {
@@ -29,7 +30,7 @@
             overflow-x: hidden;
         }
 
-        h1, h2, h3, .btn-primary, .nav-links a, .form-group label {
+        h1, h2, h3, .btn-primary, .nav-links a, .form-group label, .neon-text-modal {
             font-family: 'Oswald', sans-serif;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -86,6 +87,107 @@
 
         .nav-links a:hover {
             color: var(--naranja);
+        }
+
+        /* Ventana Emergente / Modal Inicial */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.85);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5000;
+            opacity: 1;
+            transition: opacity 0.4s ease;
+        }
+
+        .modal-container {
+            background-color: var(--oscuro-tarjeta);
+            width: 90%;
+            max-width: 650px;
+            height: 400px;
+            border-radius: 12px;
+            border: 2px solid var(--naranja);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 30px rgba(255, 85, 0, 0.3);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            z-index: 5100;
+            transition: color 0.3s;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: var(--naranja);
+        }
+
+        .modal-carousel {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .modal-slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+            background-size: cover;
+            background-position: center;
+        }
+
+        .modal-slide.active {
+            opacity: 1;
+        }
+
+        /* Estilo Slide 1 del Modal (Centrado, Sin tapiz) */
+        .modal-slide-design {
+            background: radial-gradient(circle, #1a1a1a 0%, #0d0d0d 100%);
+        }
+
+        .neon-text-modal {
+            font-size: 3.8rem;
+            color: #ffffff;
+            text-shadow: 0 0 10px var(--naranja), 0 0 20px var(--naranja);
+            font-weight: 700;
+            line-height: 1.1;
+        }
+
+        .neon-subtext-modal {
+            font-size: 1.1rem;
+            color: #ffffff;
+            text-shadow: 0 0 8px var(--naranja);
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        /* Estilo Slide 2 del Modal (Espacio reservado para tu imagen adjunta) */
+        .modal-slide-adjunta {
+            background-color: #111;
+            border: 1px dashed rgba(255, 85, 0, 0.3);
         }
 
         /* Hero Section */
@@ -149,13 +251,11 @@
             z-index: 2;
         }
 
-        /* 4 Fotos Deportivas */
         .slide:nth-child(1) { background-image: url('https://images.unsplash.com/photo-1532444458855-a41a37b3b3a0?q=80&w=1920'); animation-delay: 0s; }
         .slide:nth-child(2) { background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=1920'); animation-delay: 5s; }
         .slide:nth-child(3) { background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=1920'); animation-delay: 10s; }
         .slide:nth-child(4) { background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=1920'); animation-delay: 15s; }
         
-        /* Modificación 1: Quinta Imagen con tapiz corregido en dos renglones repetitivos */
         .slide:nth-child(5) {
             background: radial-gradient(circle, rgba(26,26,26,0.3) 0%, rgba(13,13,13,0.95) 100%),
                         url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='70' viewBox='0 0 180 70'%3E%3Ctext x='10' y='30' fill='%23FF5500' font-family='Oswald' font-size='15' font-weight='bold' letter-spacing='1'%3EMOROLEÓN%3C/text%3E%3Ctext x='10' y='50' fill='%23EAEAEA' font-family='Oswald' font-size='11' font-weight='bold' letter-spacing='1'%3EEN MOVIMIENTO 2027%3C/text%3E%3C/svg%3E") repeat;
@@ -442,7 +542,7 @@
             color: var(--naranja);
         }
 
-        /* Sección Historial y Modificación 3: Tira del Carrusel */
+        /* Sección Historial */
         .history-content {
             background-color: var(--oscuro-tarjeta);
             border-left: 5px solid var(--dorado);
@@ -459,7 +559,7 @@
             color: #D1D1D1;
         }
 
-        /* Contenedor Carrusel Tira de 8 Fotos */
+        /* Contenedor Carrusel Tira de 8 Fotos Deportivas Específicas */
         .history-carousel-wrapper {
             max-width: 1100px;
             margin: 0 auto;
@@ -473,7 +573,7 @@
         .history-track {
             display: flex;
             gap: 15px;
-            width: calc(260px * 16 + 240px); /* Ajuste del ancho para duplicado infinito uniforme */
+            width: calc(260px * 16 + 240px);
             animation: continuousScroll 35s linear infinite;
         }
 
@@ -498,14 +598,13 @@
             border-color: var(--naranja);
         }
 
-        /* Superposición discreta para la foto del módulo */
         .overlay-module-brand {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             background: linear-gradient(0deg, rgba(13,13,13,0.95) 0%, rgba(13,13,13,0) 100%);
-            padding: 10px;
+            padding: 12px;
             text-align: left;
         }
 
@@ -526,11 +625,17 @@
             100% { transform: translateX(calc(-260px * 8 - 120px)); }
         }
 
-        /* Sección Beneficios */
+        /* Sección Beneficios (Actualizada con Enlaces Activos) */
         .benefits-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
+        }
+
+        .benefit-link {
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
 
         .benefit-card {
@@ -539,12 +644,14 @@
             border-radius: 8px;
             text-align: center;
             border: 1px solid var(--oscuro-claro);
-            transition: transform 0.3s, border-color 0.3s;
+            transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+            height: 100%;
         }
 
         .benefit-card:hover {
             transform: translateY(-5px);
             border-color: var(--naranja);
+            box-shadow: 0 10px 20px rgba(255, 85, 0, 0.1);
         }
 
         .benefit-icon {
@@ -612,6 +719,74 @@
             padding-top: 15px;
         }
 
+        /* Widget Flotante de WhatsApp */
+        .whatsapp-floating {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 4000;
+            display: flex;
+            align-items: center;
+            background-color: var(--whatsapp-color);
+            color: white;
+            text-decoration: none;
+            padding: 12px 18px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.4);
+            transition: transform 0.3s, background-color 0.3s;
+        }
+
+        .whatsapp-floating:hover {
+            transform: scale(1.05);
+            background-color: #20ba5a;
+        }
+
+        .whatsapp-icon {
+            font-size: 1.4rem;
+            margin-right: 10px;
+            line-height: 1;
+        }
+
+        /* Bloque Redes Sociales (Pre-footer) */
+        .social-networks-section {
+            background-color: #090909;
+            padding: 30px 8%;
+            text-align: center;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .social-title {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1rem;
+            color: #888;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .social-icons-wrapper {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+        }
+
+        .social-icon-btn {
+            color: var(--blanco);
+            font-size: 1.3rem;
+            text-decoration: none;
+            font-family: 'Oswald', sans-serif;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .social-icon-btn:hover {
+            color: var(--naranja);
+        }
+
         /* Footer */
         footer {
             background-color: #050505;
@@ -649,10 +824,34 @@
             .countdown-container { gap: 15px; }
             .countdown-box { min-width: 100px; padding: 15px 10px; }
             .countdown-time { font-size: 2.3rem; }
+            .whatsapp-floating span { display: none; }
+            .whatsapp-floating { padding: 15px; border-radius: 50%; }
+            .whatsapp-icon { margin-right: 0; }
         }
     </style>
 </head>
 <body>
+
+    <!-- Ventana Emergente Automática (Pop-up Inicial) -->
+    <div class="modal-overlay" id="welcomeModal">
+        <div class="modal-container">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            <div class="modal-carousel">
+                <!-- Foto 1: Tipografía Limpia Diseñada (Sin tapiz) -->
+                <div class="modal-slide modal-slide-design active">
+                    <h2 class="neon-text-modal">MOROLEÓN</h2>
+                    <p class="neon-subtext-modal">en movimiento 2027</p>
+                </div>
+                <!-- Foto 2: Espacio reservado para tu imagen adjunta -->
+                <div class="modal-slide modal-slide-adjunta" id="slideAdjunto" style="background-image: url('https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=650');">
+                    <!-- Aquí se renderizará de fondo la imagen que nos compartas en tus archivos locales -->
+                    <div style="background: rgba(0,0,0,0.6); padding: 15px; width: 100%; position: absolute; bottom: 0; left: 0;">
+                        <p style="font-family:'Oswald'; font-size: 1.2rem; color: var(--naranja);">¡PRE-REGISTROS ABIERTOS!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Navbar -->
     <nav>
@@ -745,13 +944,12 @@
                         <option value="42k">42K - Maratón Completo</option>
                     </select>
                 </div>
-                <!-- Modificación 2: Ruta del botón corregida a cedula_registrar.html -->
                 <a href="cedula_registrar.html" class="btn-submit">Continuar a Cédula de Registro</a>
             </form>
         </div>
     </section>
 
-    <!-- Sección Historial con Modificación 3 (Tira de 8 fotos continuas) -->
+    <!-- Sección Historial -->
     <section id="history" style="background-color: var(--oscuro-puro);">
         <h2 class="section-title" id="historia">Historial del Maratón</h2>
         <div class="history-content">
@@ -759,83 +957,95 @@
             <p>Para este 2027, la <strong>Segunda Edición</strong> promete duplicar el número de atletas élite, optimizar las transiciones de tiempo y ofrecer una fiesta deportiva inolvidable en el corazón del bajío, teniendo como marco la emblemática Parroquia del centro histórico al amanecer.</p>
         </div>
 
-        <!-- Tira/Carrusel Infinito de 8 Fotos Deportivas Medianas -->
+        <!-- Tira de 8 Fotos Renovada Bajo Nuevos Conceptos Deportivos Exigidos -->
         <div class="history-carousel-wrapper">
             <div class="history-track">
-                <!-- Foto 1: Corredor Individual -->
-                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=400');"></div>
-                <!-- Foto 2: Salida grupal del maratón -->
-                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=400');"></div>
-                <!-- Foto 3: Modulo de Inscripciones (Requerimiento Especial) -->
+                <!-- Foto 1: Maratonistas de color africanos liderando carrera -->
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=400');"></div>
+                <!-- Foto 2: Atletas haciendo calistenia y estiramientos previos -->
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=400');"></div>
+                <!-- Foto 3: Modulo de Inscripciones con branding específico -->
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=400');">
                     <div class="overlay-module-brand">
                         <p>Módulo de Registro <span>Maratón Moroleón</span></p>
                         <p style="font-size:0.55rem; opacity:0.7;">Sistemas // METAX</p>
                     </div>
                 </div>
-                <!-- Foto 4: Maratonistas en la calle -->
-                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=400');"></div>
-                <!-- Foto 5: Corredores cruzando el puente -->
-                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1532444458855-a41a37b3b3a0?q=80&w=400');"></div>
-                <!-- Foto 6: Gente estirando pre-carrera -->
-                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=400');"></div>
-                <!-- Foto 7: Siluetas de corredores al amanecer -->
+                <!-- Foto 4: Corredores cruzando puntos de hidratación -->
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=400');"></div>
+                <!-- Foto 5: Gente en las calles apoyando y alentando con banderas -->
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?q=80&w=400');"></div>
-                <!-- Foto 8: Meta del circuito -->
+                <!-- Foto 6: Corredores profesionales en plena calle -->
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=400');"></div>
+                <!-- Foto 7: Grupo compacto de atletas en ruta de asfalto -->
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1532444458855-a41a37b3b3a0?q=80&w=400');"></div>
+                <!-- Foto 8: Gente aplaudiendo a corredores cerca de la meta -->
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=400');"></div>
                 
-                <!-- Duplicado del track para asegurar el efecto visual infinito sin saltos abruptos -->
-                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=400');"></div>
-                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=400');"></div>
+                <!-- Espejo duplicado exacto para transición infinita sin saltos -->
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=400');"></div>
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=400');"></div>
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=400');">
                     <div class="overlay-module-brand">
                         <p>Módulo de Registro <span>Maratón Moroleón</span></p>
                         <p style="font-size:0.55rem; opacity:0.7;">Sistemas // METAX</p>
                     </div>
                 </div>
-                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=400');"></div>
-                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1532444458855-a41a37b3b3a0?q=80&w=400');"></div>
-                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=400');"></div>
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=400');"></div>
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?q=80&w=400');"></div>
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=400');"></div>
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1532444458855-a41a37b3b3a0?q=80&w=400');"></div>
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=400');"></div>
             </div>
         </div>
     </section>
 
-    <!-- Sección Beneficios -->
+    <!-- Sección Beneficios hipervinculados de manera individual -->
     <section id="benefits" style="background-color: #121212;">
         <h2 class="section-title" id="beneficios">Beneficios del Corredor</h2>
         <div class="benefits-grid">
-            <div class="benefit-card">
-                <div class="benefit-icon">🏅</div>
-                <h3>Medalla Conmemorativa</h3>
-                <p>Una pieza de colección de alta calidad con diseño tridimensional exclusivo de la Segunda Edición.</p>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">👕</div>
-                <h3>Playera Premium</h3>
-                <p>Tecnología dry-fit de última generación, ligera y transpirable, diseñada con los colores del circuito.</p>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">⏱️</div>
-                <h3>Cronometraje Avanzado</h3>
-                <p>Monitoreo de tiempos parciales y finales con chip electrónico de alta precisión en tiempo real.</p>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">💧</div>
-                <h3>Hidratación y Recuperación</h3>
-                <p>Zonas de abastecimiento cada 2.5 km con agua, isotónicos, asistencia médica y área de masajes en meta.</p>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">🏨</div>
-                <h3>Descuentos Exclusivos</h3>
-                <p>Tarifas y promociones especiales en los principales hoteles y restaurantes locales de la ciudad.</p>
-            </div>
-            <div class="benefit-card">
-                <div class="benefit-icon">🎉</div>
-                <h3>Rifas Atractivas</h3>
-                <p>Participa en sorteos exclusivos de equipo deportivo premium al completar tu inscripción temprana.</p>
-            </div>
+            <a href="beneficio_medalla.html" class="benefit-link">
+                <div class="benefit-card">
+                    <div class="benefit-icon">🏅</div>
+                    <h3>Medalla Conmemorativa</h3>
+                    <p>Una pieza de colección de alta calidad con diseño tridimensional exclusivo de la Segunda Edición.</p>
+                </div>
+            </a>
+            <a href="beneficio_playera.html" class="benefit-link">
+                <div class="benefit-card">
+                    <div class="benefit-icon">👕</div>
+                    <h3>Playera Premium</h3>
+                    <p>Tecnología dry-fit de última generación, ligera y transpirable, diseñada con los colores del circuito.</p>
+                </div>
+            </a>
+            <a href="beneficio_cronometraje.html" class="benefit-link">
+                <div class="benefit-card">
+                    <div class="benefit-icon">⏱️</div>
+                    <h3>Cronometraje Avanzado</h3>
+                    <p>Monitoreo de tiempos parciales y finales con chip electrónico de alta precisión en tiempo real.</p>
+                </div>
+            </a>
+            <a href="beneficio_hidratacion.html" class="benefit-link">
+                <div class="benefit-card">
+                    <div class="benefit-icon">💧</div>
+                    <h3>Hidratación y Recuperación</h3>
+                    <p>Zonas de abastecimiento cada 2.5 km con agua, isotónicos, asistencia médica y área de masajes en meta.</p>
+                </div>
+            </a>
+            <a href="beneficio_descuentos.html" class="benefit-link">
+                <div class="benefit-card">
+                    <div class="benefit-icon">🏨</div>
+                    <h3>Descuentos Exclusivos</h3>
+                    <p>Tarifas y promociones especiales en los principales hoteles y restaurantes locales de la ciudad.</p>
+                </div>
+            </a>
+            <a href="beneficio_rifas.html" class="benefit-link">
+                <div class="benefit-card">
+                    <div class="benefit-icon">🎉</div>
+                    <h3>Rifas Atractivas</h3>
+                    <p>Participa en sorteos exclusivos de equipo deportivo premium al completar tu inscripción temprana.</p>
+                </div>
+            </a>
         </div>
     </section>
 
@@ -866,6 +1076,22 @@
         </div>
     </section>
 
+    <!-- Botón Flotante Emergente de WhatsApp -->
+    <a href="https://wa.me/521234567890?text=Hola,%20necesito%20ayuda%20con%20mi%20registro%20al%20Maratón%20Moroleón%202027" class="whatsapp-floating" target="_blank">
+        <span class="whatsapp-icon">💬</span>
+        <span>¿Necesitas ayuda con tu registro? Escríbenos</span>
+    </a>
+
+    <!-- Bloque Redes Sociales (Pre-footer) -->
+    <div class="social-networks-section">
+        <div class="social-title">Sigue a la comunidad Moroleón 2027</div>
+        <div class="social-icons-wrapper">
+            <a href="https://facebook.com/maratonmoroleon" class="social-icon-btn" target="_blank">🌐 Facebook</a>
+            <a href="https://instagram.com/maratonmoroleon" class="social-icon-btn" target="_blank">📸 Instagram</a>
+            <a href="https://youtube.com/maratonmoroleon" class="social-icon-btn" target="_blank">📺 YouTube</a>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer>
         <p>© 2027 Maratón Internacional de Moroleón. Evento oficial del International Running Circuit.</p>
@@ -873,8 +1099,29 @@
         <div class="metax-footer">Desarrollo tecnológico e interfaz bajo la arquitectura de <span>METAX Layouts</span> v2.0</div>
     </footer>
 
-    <!-- Lógica del Cronómetro Dinámico -->
+    <!-- Scripts de Interacción Dinámica -->
     <script>
+        // --- LÓGICA DE LA VENTANA EMERGENTE (POP-UP) ---
+        function closeModal() {
+            const modal = document.getElementById('welcomeModal');
+            modal.style.opacity = '0';
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 400);
+        }
+
+        // Cambio automático de las dos fotos del modal cada 5 segundos
+        let modalSlideIndex = 0;
+        const modalSlides = document.querySelectorAll('.modal-slide');
+        
+        setInterval(() => {
+            modalSlides[modalSlideIndex].classList.remove('active');
+            modalSlideIndex = (modalSlideIndex + 1) % modalSlides.length;
+            modalSlides[modalSlideIndex].classList.add('active');
+        }, 5000);
+
+
+        // --- CRONÓMETRO DEL EVENTO ---
         const eventDate = new Date("Dec 31, 2027 07:00:00").getTime();
 
         const updateCountdown = setInterval(function() {
