@@ -100,7 +100,6 @@
             overflow: hidden;
         }
 
-        /* Sutil marca de agua METAX en esquina superior */
         .metax-watermark {
             position: absolute;
             top: 30px;
@@ -150,31 +149,19 @@
             z-index: 2;
         }
 
-        /* 4 Fotos Deportivas y la 5ta con Tapiz Dinámico */
-        .slide:nth-child(1) {
-            background-image: url('https://images.unsplash.com/photo-1532444458855-a41a37b3b3a0?q=80&w=1920');
-            animation-delay: 0s;
-        }
-        .slide:nth-child(2) {
-            background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=1920');
-            animation-delay: 5s;
-        }
-        .slide:nth-child(3) {
-            background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=1920');
-            animation-delay: 10s;
-        }
-        .slide:nth-child(4) {
-            background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=1920');
-            animation-delay: 15s;
-        }
-        /* Quinta Imagen con Tapiz Generado por CSS de fondo repetido */
+        /* 4 Fotos Deportivas */
+        .slide:nth-child(1) { background-image: url('https://images.unsplash.com/photo-1532444458855-a41a37b3b3a0?q=80&w=1920'); animation-delay: 0s; }
+        .slide:nth-child(2) { background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=1920'); animation-delay: 5s; }
+        .slide:nth-child(3) { background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=1920'); animation-delay: 10s; }
+        .slide:nth-child(4) { background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=1920'); animation-delay: 15s; }
+        
+        /* Modificación 1: Quinta Imagen con tapiz corregido en dos renglones repetitivos */
         .slide:nth-child(5) {
-            background: radial-gradient(circle, rgba(26,26,26,0.8) 0%, rgba(13,13,13,1) 100%),
-                        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='40' viewBox='0 0 220 40'%3E%3Ctext x='10' y='25' fill='rgba(255,85,0,0.12)' font-family='Oswald' font-size='10' font-weight='bold' letter-spacing='1'%3EMOROLEÓN EN MOVIMIENTO 2027%3C/text%3E%3C/svg%3E") repeat;
+            background: radial-gradient(circle, rgba(26,26,26,0.3) 0%, rgba(13,13,13,0.95) 100%),
+                        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='70' viewBox='0 0 180 70'%3E%3Ctext x='10' y='30' fill='%23FF5500' font-family='Oswald' font-size='15' font-weight='bold' letter-spacing='1'%3EMOROLEÓN%3C/text%3E%3Ctext x='10' y='50' fill='%23EAEAEA' font-family='Oswald' font-size='11' font-weight='bold' letter-spacing='1'%3EEN MOVIMIENTO 2027%3C/text%3E%3C/svg%3E") repeat;
             animation-delay: 20s;
         }
 
-        /* Letrero Neón Subliminal Alineado sin desbordes */
         .subliminal-banner {
             text-align: center;
             z-index: 3;
@@ -351,7 +338,7 @@
             color: var(--dorado);
         }
 
-        /* Monitor Clínico de Neón (Sin textos, semitransparente) */
+        /* Monitor Clínico */
         .hospital-monitor-wrapper {
             max-width: 600px;
             margin: 0 auto;
@@ -371,7 +358,6 @@
             border-radius: 4px;
         }
 
-        /* Línea ECG Naranja Neón Fluida */
         .ecg-line {
             position: absolute;
             top: 0;
@@ -456,14 +442,14 @@
             color: var(--naranja);
         }
 
-        /* Sección Historial */
+        /* Sección Historial y Modificación 3: Tira del Carrusel */
         .history-content {
             background-color: var(--oscuro-tarjeta);
             border-left: 5px solid var(--dorado);
             padding: 40px;
             border-radius: 4px;
             max-width: 900px;
-            margin: 0 auto;
+            margin: 0 auto 40px auto;
             box-shadow: 0 10px 20px rgba(0,0,0,0.5);
         }
 
@@ -473,7 +459,74 @@
             color: #D1D1D1;
         }
 
-        /* Sección Beneficios (Ampliación a 6 elementos) */
+        /* Contenedor Carrusel Tira de 8 Fotos */
+        .history-carousel-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            overflow: hidden;
+            position: relative;
+            padding: 10px 0;
+            border-top: 1px solid rgba(255, 85, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 85, 0, 0.1);
+        }
+
+        .history-track {
+            display: flex;
+            gap: 15px;
+            width: calc(260px * 16 + 240px); /* Ajuste del ancho para duplicado infinito uniforme */
+            animation: continuousScroll 35s linear infinite;
+        }
+
+        .history-track:hover {
+            animation-play-state: paused;
+        }
+
+        .history-img-card {
+            width: 260px;
+            height: 170px;
+            background-size: cover;
+            background-position: center;
+            border-radius: 6px;
+            flex-shrink: 0;
+            border: 2px solid var(--oscuro-claro);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            transition: border-color 0.3s;
+            position: relative;
+        }
+
+        .history-img-card:hover {
+            border-color: var(--naranja);
+        }
+
+        /* Superposición discreta para la foto del módulo */
+        .overlay-module-brand {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(0deg, rgba(13,13,13,0.95) 0%, rgba(13,13,13,0) 100%);
+            padding: 10px;
+            text-align: left;
+        }
+
+        .overlay-module-brand p {
+            font-size: 0.65rem;
+            font-family: 'Oswald', sans-serif;
+            color: var(--blanco);
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .overlay-module-brand span {
+            color: var(--naranja);
+        }
+
+        @keyframes continuousScroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(-260px * 8 - 120px)); }
+        }
+
+        /* Sección Beneficios */
         .benefits-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -511,7 +564,7 @@
             color: #AAAAAA;
         }
 
-        /* Sección Categorías y Distancias */
+        /* Sección Categorías */
         .distancias-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -616,7 +669,7 @@
         </ul>
     </nav>
 
-    <!-- Hero Section con Slideshow y Presencia Sutil METAX -->
+    <!-- Hero Section -->
     <section class="hero" id="inicio">
         <div class="metax-watermark">ENGINE SYSTEM <span>METAX 2.0</span></div>
         <div class="hero-slideshow">
@@ -625,7 +678,6 @@
             <div class="slide"></div>
             <div class="slide"></div>
             <div class="slide">
-                <!-- Banner Integrado en la 5ta sección sobre el tapiz dinámico -->
                 <div class="subliminal-banner">
                     <span class="neon-text">MOROLEÓN</span>
                     <span class="neon-subtext">en movimiento 2027</span>
@@ -641,7 +693,7 @@
         </div>
     </section>
 
-    <!-- Cuenta Regresiva + Monitor Clínico Neón Transparente -->
+    <!-- Cuenta Regresiva + Monitor Clínico Neón -->
     <section class="countdown-section">
         <h2 class="section-title">El tiempo corre</h2>
         <div class="countdown-container">
@@ -663,7 +715,6 @@
             </div>
         </div>
         
-        <!-- Monitor Clínico Limpio de Neón Naranja -->
         <div class="hospital-monitor-wrapper">
             <div class="hospital-screen">
                 <div class="ecg-line"></div>
@@ -694,21 +745,64 @@
                         <option value="42k">42K - Maratón Completo</option>
                     </select>
                 </div>
-                <a href="cedula_registro.html" class="btn-submit">Continuar a Cédula de Registro</a>
+                <!-- Modificación 2: Ruta del botón corregida a cedula_registrar.html -->
+                <a href="cedula_registrar.html" class="btn-submit">Continuar a Cédula de Registro</a>
             </form>
         </div>
     </section>
 
-    <!-- Sección Historial -->
+    <!-- Sección Historial con Modificación 3 (Tira de 8 fotos continuas) -->
     <section id="history" style="background-color: var(--oscuro-puro);">
         <h2 class="section-title" id="historia">Historial del Maratón</h2>
         <div class="history-content">
             <p>El Maratón Internacional de Moroleón nació con el firme propósito de integrar a Guanajuato en el mapa del atletismo mundial de gran fondo. Avalado por la International Running Circuit (IRC), nuestra primera edición consolidó la participación de corredores provenientes de Colombia, Italia, Canadá y todo el territorio mexicano.</p>
             <p>Para este 2027, la <strong>Segunda Edición</strong> promete duplicar el número de atletas élite, optimizar las transiciones de tiempo y ofrecer una fiesta deportiva inolvidable en el corazón del bajío, teniendo como marco la emblemática Parroquia del centro histórico al amanecer.</p>
         </div>
+
+        <!-- Tira/Carrusel Infinito de 8 Fotos Deportivas Medianas -->
+        <div class="history-carousel-wrapper">
+            <div class="history-track">
+                <!-- Foto 1: Corredor Individual -->
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=400');"></div>
+                <!-- Foto 2: Salida grupal del maratón -->
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=400');"></div>
+                <!-- Foto 3: Modulo de Inscripciones (Requerimiento Especial) -->
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=400');">
+                    <div class="overlay-module-brand">
+                        <p>Módulo de Registro <span>Maratón Moroleón</span></p>
+                        <p style="font-size:0.55rem; opacity:0.7;">Sistemas // METAX</p>
+                    </div>
+                </div>
+                <!-- Foto 4: Maratonistas en la calle -->
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=400');"></div>
+                <!-- Foto 5: Corredores cruzando el puente -->
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1532444458855-a41a37b3b3a0?q=80&w=400');"></div>
+                <!-- Foto 6: Gente estirando pre-carrera -->
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=400');"></div>
+                <!-- Foto 7: Siluetas de corredores al amanecer -->
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?q=80&w=400');"></div>
+                <!-- Foto 8: Meta del circuito -->
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=400');"></div>
+                
+                <!-- Duplicado del track para asegurar el efecto visual infinito sin saltos abruptos -->
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=400');"></div>
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=400');"></div>
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=400');">
+                    <div class="overlay-module-brand">
+                        <p>Módulo de Registro <span>Maratón Moroleón</span></p>
+                        <p style="font-size:0.55rem; opacity:0.7;">Sistemas // METAX</p>
+                    </div>
+                </div>
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=400');"></div>
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1532444458855-a41a37b3b3a0?q=80&w=400');"></div>
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=400');"></div>
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?q=80&w=400');"></div>
+                <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=400');"></div>
+            </div>
+        </div>
     </section>
 
-    <!-- Sección Beneficios Actualizada -->
+    <!-- Sección Beneficios -->
     <section id="benefits" style="background-color: #121212;">
         <h2 class="section-title" id="beneficios">Beneficios del Corredor</h2>
         <div class="benefits-grid">
@@ -732,13 +826,11 @@
                 <h3>Hidratación y Recuperación</h3>
                 <p>Zonas de abastecimiento cada 2.5 km con agua, isotónicos, asistencia médica y área de masajes en meta.</p>
             </div>
-            <!-- Nueva Sección 5 -->
             <div class="benefit-card">
                 <div class="benefit-icon">🏨</div>
                 <h3>Descuentos Exclusivos</h3>
                 <p>Tarifas y promociones especiales en los principales hoteles y restaurantes locales de la ciudad.</p>
             </div>
-            <!-- Nueva Sección 6 -->
             <div class="benefit-card">
                 <div class="benefit-icon">🎉</div>
                 <h3>Rifas Atractivas</h3>
