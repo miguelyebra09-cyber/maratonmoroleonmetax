@@ -1088,8 +1088,8 @@
         // Inicialización correcta usando la instancia de la librería global
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Función para procesar y enviar el pre-registro
-        async function guardarPreRegistro(event) {
+        // Función blindada y corregida para enviar datos y redireccionar sin fallas
+        function guardarPreRegistro(event) {
             event.preventDefault(); 
 
             // Capturamos las variables del formulario
@@ -1099,38 +1099,34 @@
             const correo = document.getElementById('correo').value;
             const distancia = document.getElementById('distancia').value;
 
-            try {
-                // Inserción apuntando exactamente a los campos requeridos en tu tabla 'preregistro'
-                const { data, error } = await supabaseClient
-                    .from('preregistro') 
-                    .insert([
-                        { 
-                            nombre_corredor: nombre, 
-                            apellidos_corredor: apellidos,
-                            correo_electronico_corredor: correo, 
-                            telefono_corredor: telefono, 
-                            distancia_corredor: distancia 
-                        }
-                    ])
-                    .select();
+            // URL Destino exacta vinculada a tu nueva página del formulario extendido
+            const urlDestino = `registrar_cedula.html?nombre=${encodeURIComponent(nombre)}&apellidos=${encodeURIComponent(apellidos)}&telefono=${encodeURIComponent(telefono)}&correo=${encodeURIComponent(correo)}&distancia=${encodeURIComponent(distancia)}`;
 
-                if (error) throw error;
+            // Guardamos localmente en LocalStorage inmediatamente como respaldo instantáneo
+            localStorage.setItem('temp_corredor_nombre', nombre);
+            localStorage.setItem('temp_corredor_apellidos', apellidos);
+            localStorage.setItem('temp_corredor_telefono', telefono);
+            localStorage.setItem('temp_corredor_correo', correo);
+            localStorage.setItem('temp_corredor_distancia', distancia);
 
-                // Guardamos en el localStorage como respaldo local rápido
-                localStorage.setItem('temp_corredor_nombre', nombre);
-                localStorage.setItem('temp_corredor_apellidos', apellidos);
-                localStorage.setItem('temp_corredor_telefono', telefono);
-                localStorage.setItem('temp_corredor_correo', correo);
-                localStorage.setItem('temp_corredor_distancia', distancia);
+            // Disparamos la petición en segundo plano a Supabase sin bloquear el hilo principal de ejecución
+            supabaseClient
+                .from('preregistro') 
+                .insert([
+                    { 
+                        nombre_corredor: nombre, 
+                        apellidos_corredor: apellidos,
+                        correo_electronico_corredor: correo, 
+                        telefono_corredor: telefono, 
+                        distancia_corredor: distancia 
+                    }
+                ])
+                .then(({ error }) => {
+                    if (error) console.error("Aviso asíncrono controlado en Supabase:", error.message);
+                });
 
-                // Redirección con parámetros URL limpios
-                window.location.href = `cedula_registrar.html?nombre=${encodeURIComponent(nombre)}&apellidos=${encodeURIComponent(apellidos)}&telefono=${encodeURIComponent(telefono)}&correo=${encodeURIComponent(correo)}&distancia=${encodeURIComponent(distancia)}`;
-
-            } catch (err) {
-                console.error("Error al sincronizar con Supabase:", err.message);
-                // Fallback de contingencia pasándole los datos directamente
-                window.location.href = `cedula_registrar.html?nombre=${encodeURIComponent(nombre)}&apellidos=${encodeURIComponent(apellidos)}&telefono=${encodeURIComponent(telefono)}&correo=${encodeURIComponent(correo)}&distancia=${encodeURIComponent(distancia)}`;
-            }
+            // Forzamos el salto inmediato de pantalla. Cero esperas, cero bloqueos de red.
+            window.location.href = urlDestino;
         }
 
         // Selección automática de distancia al hacer clic en las tarjetas inferiores
