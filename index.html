@@ -48,6 +48,12 @@
             z-index: 1000;
         }
 
+        .logo-wrapper {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+        }
+
         .logo-irc {
             color: var(--dorado);
             font-size: 1.6rem;
@@ -56,6 +62,13 @@
 
         .logo-irc span {
             color: var(--blanco);
+        }
+
+        .metax-badge-nav {
+            font-size: 0.65rem;
+            color: rgba(255, 85, 0, 0.4);
+            font-family: monospace;
+            letter-spacing: 1px;
         }
 
         .nav-links {
@@ -75,7 +88,7 @@
             color: var(--naranja);
         }
 
-        /* Hero Section con Slideshow Deportivo de 5 Fotos */
+        /* Hero Section */
         .hero {
             position: relative;
             height: 90vh;
@@ -85,6 +98,23 @@
             align-items: flex-start;
             padding: 0 8%;
             overflow: hidden;
+        }
+
+        /* Sutil marca de agua METAX en esquina superior */
+        .metax-watermark {
+            position: absolute;
+            top: 30px;
+            right: 40px;
+            z-index: 15;
+            font-family: 'Oswald', sans-serif;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.15);
+            letter-spacing: 3px;
+            pointer-events: none;
+        }
+
+        .metax-watermark span {
+            color: rgba(255, 85, 0, 0.3);
         }
 
         .hero-slideshow {
@@ -120,30 +150,31 @@
             z-index: 2;
         }
 
-        /* Fotos 100% Deportivas y de Maratón con Enfoques de Acción y vivos Naranja/Atardecer */
+        /* 4 Fotos Deportivas y la 5ta con Tapiz Dinámico */
         .slide:nth-child(1) {
-            background-image: url('https://images.unsplash.com/photo-1532444458855-a41a37b3b3a0?q=80&w=1920'); /* Corredores de maratón en asfalto con iluminación cálida */
+            background-image: url('https://images.unsplash.com/photo-1532444458855-a41a37b3b3a0?q=80&w=1920');
             animation-delay: 0s;
         }
         .slide:nth-child(2) {
-            background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=1920'); /* Atletas élite en ruta */
+            background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=1920');
             animation-delay: 5s;
         }
         .slide:nth-child(3) {
-            background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=1920'); /* Enfoque deportivo tenis y pista */
+            background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=1920');
             animation-delay: 10s;
         }
         .slide:nth-child(4) {
-            background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=1920'); /* Corredora en carrera urbana */
+            background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=1920');
             animation-delay: 15s;
         }
-        /* Quinta Imagen: Entorno de asfalto semicolonial deportivo y despejado */
+        /* Quinta Imagen con Tapiz Generado por CSS de fondo repetido */
         .slide:nth-child(5) {
-            background-image: url('https://images.unsplash.com/photo-1547483238-2cbf88bf2443?q=80&w=1920'); 
+            background: radial-gradient(circle, rgba(26,26,26,0.8) 0%, rgba(13,13,13,1) 100%),
+                        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='40' viewBox='0 0 220 40'%3E%3Ctext x='10' y='25' fill='rgba(255,85,0,0.12)' font-family='Oswald' font-size='10' font-weight='bold' letter-spacing='1'%3EMOROLEÓN EN MOVIMIENTO 2027%3C/text%3E%3C/svg%3E") repeat;
             animation-delay: 20s;
         }
 
-        /* Letrero Neón Subliminal Corregido */
+        /* Letrero Neón Subliminal Alineado sin desbordes */
         .subliminal-banner {
             text-align: center;
             z-index: 3;
@@ -163,7 +194,7 @@
 
         .subliminal-banner .neon-subtext {
             font-family: 'Montserrat', sans-serif;
-            font-size: 1.15rem; /* Ajustado para no rebasar el ancho de MOROLEÓN */
+            font-size: 1.15rem;
             color: #ffffff;
             text-shadow: 0 0 8px var(--naranja), 0 0 15px rgba(255, 85, 0, 0.6);
             font-weight: 600;
@@ -172,7 +203,7 @@
             margin-top: 5px;
             display: block;
             text-align: justify;
-            text-align-last: justify; /* Hace que se alinee perfectamente de extremo a extremo */
+            text-align-last: justify;
         }
 
         @keyframes sliderAnim {
@@ -263,7 +294,7 @@
             margin: 10px auto 0 auto;
         }
 
-        /* Cuenta Regresiva Modificada */
+        /* Cuenta Regresiva */
         .countdown-section {
             background: linear-gradient(180deg, #111 0%, var(--oscuro-puro) 100%);
             text-align: center;
@@ -302,7 +333,6 @@
             line-height: 1;
         }
 
-        /* Segundos explícitamente en color naranja */
         .seconds-box .countdown-time {
             color: var(--naranja);
             text-shadow: 0 0 12px rgba(255, 85, 0, 0.4);
@@ -321,51 +351,36 @@
             color: var(--dorado);
         }
 
-        /* Monitor de Hospital Ajustado (Naranja y Semitransparente) */
+        /* Monitor Clínico de Neón (Sin textos, semitransparente) */
         .hospital-monitor-wrapper {
             max-width: 600px;
             margin: 0 auto;
-            background-color: rgba(13, 13, 13, 0.5); /* Semitransparente */
-            border: 1px solid rgba(255, 85, 0, 0.2);
-            padding: 12px;
+            background-color: rgba(13, 13, 13, 0.4);
+            border: 1px solid rgba(255, 85, 0, 0.15);
+            padding: 10px;
             border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            position: relative;
-        }
-
-        .hospital-monitor-wrapper::before {
-            content: 'PULSE RHYTHM';
-            position: absolute;
-            top: -9px;
-            left: 20px;
-            background: var(--oscuro-puro);
-            padding: 0 6px;
-            font-size: 0.65rem;
-            color: var(--naranja);
-            font-family: monospace;
-            letter-spacing: 1px;
-            opacity: 0.8;
+            box-shadow: 0 4px 25px rgba(0,0,0,0.5);
         }
 
         .hospital-screen {
             width: 100%;
-            height: 40px;
-            background-color: rgba(255, 85, 0, 0.03); /* Fondo interno muy tenue */
+            height: 45px;
+            background-color: transparent;
             position: relative;
             overflow: hidden;
             border-radius: 4px;
         }
 
-        /* Línea ECG en color naranja y con opacidad controlada */
+        /* Línea ECG Naranja Neón Fluida */
         .ecg-line {
             position: absolute;
             top: 0;
             left: 0;
             width: 200%;
             height: 100%;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='40' viewBox='0 0 200 40'%3E%3Cpath d='M0,20 L60,20 L70,4 L80,36 L90,20 L130,20 L135,12 L140,28 L145,20 L200,20' fill='none' stroke='%23FF5500' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") repeat-x;
-            animation: ecgScroll 3s linear infinite;
-            opacity: 0.85;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='45' viewBox='0 0 200 45'%3E%3Cpath d='M0,22.5 L60,22.5 L70,4 L80,41 L90,22.5 L130,22.5 L135,12 L140,33 L145,22.5 L200,22.5' fill='none' stroke='%23FF5500' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") repeat-x;
+            animation: ecgScroll 2.8s linear infinite;
+            filter: drop-shadow(0 0 5px var(--naranja)) drop-shadow(0 0 10px rgba(255,85,0,0.6));
         }
 
         @keyframes ecgScroll {
@@ -373,7 +388,7 @@
             100% { transform: translateX(-50%); }
         }
 
-        /* Sección de Cédula de Pre-registro Restaurada */
+        /* Sección de Cédula de Pre-registro */
         .preregistro-section {
             background-color: var(--oscuro-tarjeta);
             border-top: 1px solid #222;
@@ -458,10 +473,10 @@
             color: #D1D1D1;
         }
 
-        /* Sección Beneficios */
+        /* Sección Beneficios (Ampliación a 6 elementos) */
         .benefits-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 30px;
         }
 
@@ -560,13 +575,13 @@
 
         .metax-footer {
             font-size: 0.8rem;
-            color: #333333;
+            color: #444444;
             letter-spacing: 1px;
             margin-top: 15px;
         }
 
         .metax-footer span {
-            color: var(--naranja);
+            color: rgba(255, 85, 0, 0.7);
             font-weight: bold;
         }
 
@@ -588,7 +603,10 @@
 
     <!-- Navbar -->
     <nav>
-        <div class="logo-irc">IRC <span>MÉXICO</span></div>
+        <div class="logo-wrapper">
+            <div class="logo-irc">IRC <span>MÉXICO</span></div>
+            <div class="metax-badge-nav">// Powered by MTX</div>
+        </div>
         <ul class="nav-links">
             <li><a href="#inicio">Inicio</a></li>
             <li><a href="#preregistro">Inscripción</a></li>
@@ -598,15 +616,16 @@
         </ul>
     </nav>
 
-    <!-- Hero Section con Slideshow Deportivo -->
+    <!-- Hero Section con Slideshow y Presencia Sutil METAX -->
     <section class="hero" id="inicio">
+        <div class="metax-watermark">ENGINE SYSTEM <span>METAX 2.0</span></div>
         <div class="hero-slideshow">
             <div class="slide"></div>
             <div class="slide"></div>
             <div class="slide"></div>
             <div class="slide"></div>
             <div class="slide">
-                <!-- Banner Neón Corregido e Integrado en la 5ta foto sin rebasar dimensiones -->
+                <!-- Banner Integrado en la 5ta sección sobre el tapiz dinámico -->
                 <div class="subliminal-banner">
                     <span class="neon-text">MOROLEÓN</span>
                     <span class="neon-subtext">en movimiento 2027</span>
@@ -622,7 +641,7 @@
         </div>
     </section>
 
-    <!-- Cuenta Regresiva de Alto Impacto + Monitor Médico Naranja -->
+    <!-- Cuenta Regresiva + Monitor Clínico Neón Transparente -->
     <section class="countdown-section">
         <h2 class="section-title">El tiempo corre</h2>
         <div class="countdown-container">
@@ -644,7 +663,7 @@
             </div>
         </div>
         
-        <!-- Monitor Clínico Semitransparente con ondas Naranjas -->
+        <!-- Monitor Clínico Limpio de Neón Naranja -->
         <div class="hospital-monitor-wrapper">
             <div class="hospital-screen">
                 <div class="ecg-line"></div>
@@ -675,7 +694,6 @@
                         <option value="42k">42K - Maratón Completo</option>
                     </select>
                 </div>
-                <!-- Botón que redirige de inmediato a la Cédula de Registro oficial -->
                 <a href="cedula_registro.html" class="btn-submit">Continuar a Cédula de Registro</a>
             </form>
         </div>
@@ -690,7 +708,7 @@
         </div>
     </section>
 
-    <!-- Sección Beneficios -->
+    <!-- Sección Beneficios Actualizada -->
     <section id="benefits" style="background-color: #121212;">
         <h2 class="section-title" id="beneficios">Beneficios del Corredor</h2>
         <div class="benefits-grid">
@@ -713,6 +731,18 @@
                 <div class="benefit-icon">💧</div>
                 <h3>Hidratación y Recuperación</h3>
                 <p>Zonas de abastecimiento cada 2.5 km con agua, isotónicos, asistencia médica y área de masajes en meta.</p>
+            </div>
+            <!-- Nueva Sección 5 -->
+            <div class="benefit-card">
+                <div class="benefit-icon">🏨</div>
+                <h3>Descuentos Exclusivos</h3>
+                <p>Tarifas y promociones especiales en los principales hoteles y restaurantes locales de la ciudad.</p>
+            </div>
+            <!-- Nueva Sección 6 -->
+            <div class="benefit-card">
+                <div class="benefit-icon">🎉</div>
+                <h3>Rifas Atractivas</h3>
+                <p>Participa en sorteos exclusivos de equipo deportivo premium al completar tu inscripción temprana.</p>
             </div>
         </div>
     </section>
@@ -748,7 +778,7 @@
     <footer>
         <p>© 2027 Maratón Internacional de Moroleón. Evento oficial del International Running Circuit.</p>
         <p>Guanajuato, México.</p>
-        <div class="metax-footer">Estructura base de interfaz protegida por <span>METAX</span> v2.0</div>
+        <div class="metax-footer">Desarrollo tecnológico e interfaz bajo la arquitectura de <span>METAX Layouts</span> v2.0</div>
     </footer>
 
     <!-- Lógica del Cronómetro Dinámico -->
