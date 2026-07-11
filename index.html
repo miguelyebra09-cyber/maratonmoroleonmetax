@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Maratón Internacional Moroleón 2027 | Sitio Oficial</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <!-- CDN de Supabase para la base de datos temporal -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
             --naranja: #FF5500;
@@ -28,6 +32,7 @@
             color: var(--blanco);
             line-height: 1.6;
             overflow-x: hidden;
+            scroll-behavior: smooth;
         }
 
         h1, h2, h3, .btn-primary, .nav-links a, .form-group label, .neon-text-modal {
@@ -161,7 +166,6 @@
             opacity: 1;
         }
 
-        /* Estilo Slide 1 del Modal (Centrado, Sin tapiz) */
         .modal-slide-design {
             background: radial-gradient(circle, #1a1a1a 0%, #0d0d0d 100%);
         }
@@ -184,7 +188,6 @@
             margin-top: 10px;
         }
 
-        /* Estilo Slide 2 del Modal (Espacio reservado para tu imagen adjunta) */
         .modal-slide-adjunta {
             background-color: #111;
             border: 1px dashed rgba(255, 85, 0, 0.3);
@@ -559,7 +562,7 @@
             color: #D1D1D1;
         }
 
-        /* Contenedor Carrusel Tira de 8 Fotos Deportivas Específicas */
+        /* Contenedor Carrusel Tira de 8 Fotos */
         .history-carousel-wrapper {
             max-width: 1100px;
             margin: 0 auto;
@@ -581,7 +584,7 @@
             animation-play-state: paused;
         }
 
-        .history-img-card {
+        .history-track .history-img-card {
             width: 260px;
             height: 170px;
             background-size: cover;
@@ -594,7 +597,7 @@
             position: relative;
         }
 
-        .history-img-card:hover {
+        .history-track .history-img-card:hover {
             border-color: var(--naranja);
         }
 
@@ -625,7 +628,7 @@
             100% { transform: translateX(calc(-260px * 8 - 120px)); }
         }
 
-        /* Sección Beneficios (Actualizada con Enlaces Activos) */
+        /* Sección Beneficios */
         .benefits-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -678,6 +681,12 @@
             gap: 25px;
         }
 
+        .distancia-card-link {
+            text-decoration: none;
+            display: block;
+            color: inherit;
+        }
+
         .distancia-card {
             background-color: var(--oscuro-claro);
             position: relative;
@@ -688,6 +697,7 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             border-bottom: 4px solid var(--oscuro-tarjeta);
             transition: all 0.3s;
+            cursor: pointer;
         }
 
         .distancia-card:hover {
@@ -730,7 +740,7 @@
             background-color: var(--whatsapp-color);
             color: white;
             text-decoration: none;
-            padding: 12px 18px;
+            padding: 12px 20px;
             border-radius: 50px;
             font-weight: 600;
             font-size: 0.85rem;
@@ -743,13 +753,14 @@
             background-color: #20ba5a;
         }
 
-        .whatsapp-icon {
-            font-size: 1.4rem;
+        .whatsapp-svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
             margin-right: 10px;
-            line-height: 1;
         }
 
-        /* Bloque Redes Sociales (Pre-footer) */
+        /* Bloque Redes Sociales */
         .social-networks-section {
             background-color: #090909;
             padding: 30px 8%;
@@ -813,7 +824,6 @@
             font-weight: bold;
         }
 
-        /* Responsivo */
         @media (max-width: 768px) {
             .hero h1 { font-size: 2.8rem; }
             .subliminal-banner .neon-text { font-size: 3.5rem; }
@@ -826,25 +836,22 @@
             .countdown-time { font-size: 2.3rem; }
             .whatsapp-floating span { display: none; }
             .whatsapp-floating { padding: 15px; border-radius: 50%; }
-            .whatsapp-icon { margin-right: 0; }
+            .whatsapp-svg { margin-right: 0; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Ventana Emergente Automática (Pop-up Inicial) -->
+    <!-- Ventana Emergente Automática -->
     <div class="modal-overlay" id="welcomeModal">
         <div class="modal-container">
             <button class="modal-close" onclick="closeModal()">×</button>
             <div class="modal-carousel">
-                <!-- Foto 1: Tipografía Limpia Diseñada (Sin tapiz) -->
                 <div class="modal-slide modal-slide-design active">
                     <h2 class="neon-text-modal">MOROLEÓN</h2>
                     <p class="neon-subtext-modal">en movimiento 2027</p>
                 </div>
-                <!-- Foto 2: Espacio reservado para tu imagen adjunta -->
                 <div class="modal-slide modal-slide-adjunta" id="slideAdjunto" style="background-image: url('https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=650');">
-                    <!-- Aquí se renderizará de fondo la imagen que nos compartas en tus archivos locales -->
                     <div style="background: rgba(0,0,0,0.6); padding: 15px; width: 100%; position: absolute; bottom: 0; left: 0;">
                         <p style="font-family:'Oswald'; font-size: 1.2rem; color: var(--naranja);">¡PRE-REGISTROS ABIERTOS!</p>
                     </div>
@@ -892,7 +899,7 @@
         </div>
     </section>
 
-    <!-- Cuenta Regresiva + Monitor Clínico Neón -->
+    <!-- Cuenta Regresiva -->
     <section class="countdown-section">
         <h2 class="section-title">El tiempo corre</h2>
         <div class="countdown-container">
@@ -925,10 +932,18 @@
     <section id="preregistro" class="preregistro-section">
         <h2 class="section-title">Cédula de Pre-Registro</h2>
         <div class="form-container">
-            <form action="#" onsubmit="event.preventDefault();">
+            <form id="preRegistroForm" onsubmit="guardarPreRegistro(event)">
                 <div class="form-group">
-                    <label for="nombre">Nombre Completo</label>
-                    <input type="text" id="nombre" placeholder="Tu nombre y apellidos" required>
+                    <label for="nombre">Nombre(s)</label>
+                    <input type="text" id="nombre" placeholder="Tu(s) nombre(s)" required>
+                </div>
+                <div class="form-group">
+                    <label for="apellidos">Apellidos</label>
+                    <input type="text" id="apellidos" placeholder="Tus apellidos" required>
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono Celular</label>
+                    <input type="tel" id="telefono" placeholder="Ej: 4661234567" required>
                 </div>
                 <div class="form-group">
                     <label for="correo">Correo Electrónico</label>
@@ -938,13 +953,13 @@
                     <label for="distancia">Distancia a Competir</label>
                     <select id="distancia" required>
                         <option value="" disabled selected>Selecciona tu distancia</option>
-                        <option value="5k">5K - Recreativa</option>
-                        <option value="10k">10K - Competitiva</option>
-                        <option value="21k">21K - Medio Maratón</option>
-                        <option value="42k">42K - Maratón Completo</option>
+                        <option value="5K">5K - Recreativa</option>
+                        <option value="10K">10K - Competitiva</option>
+                        <option value="21K">21K - Medio Maratón</option>
+                        <option value="42K">42K - Maratón Completo</option>
                     </select>
                 </div>
-                <a href="cedula_registrar.html" class="btn-submit">Continuar a Cédula de Registro</a>
+                <button type="submit" class="btn-submit">Continuar a Cédula de Registro</button>
             </form>
         </div>
     </section>
@@ -957,32 +972,23 @@
             <p>Para este 2027, la <strong>Segunda Edición</strong> promete duplicar el número de atletas élite, optimizar las transiciones de tiempo y ofrecer una fiesta deportiva inolvidable en el corazón del bajío, teniendo como marco la emblemática Parroquia del centro histórico al amanecer.</p>
         </div>
 
-        <!-- Tira de 8 Fotos Renovada Bajo Nuevos Conceptos Deportivos Exigidos -->
         <div class="history-carousel-wrapper">
             <div class="history-track">
-                <!-- Foto 1: Maratonistas de color africanos liderando carrera -->
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=400');"></div>
-                <!-- Foto 2: Atletas haciendo calistenia y estiramientos previos -->
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=400');"></div>
-                <!-- Foto 3: Modulo de Inscripciones con branding específico -->
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=400');">
                     <div class="overlay-module-brand">
                         <p>Módulo de Registro <span>Maratón Moroleón</span></p>
                         <p style="font-size:0.55rem; opacity:0.7;">Sistemas // METAX</p>
                     </div>
                 </div>
-                <!-- Foto 4: Corredores cruzando puntos de hidratación -->
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?q=80&w=400');"></div>
-                <!-- Foto 5: Gente en las calles apoyando y alentando con banderas -->
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1530541930197-ff16ac917b0e?q=80&w=400');"></div>
-                <!-- Foto 6: Corredores profesionales en plena calle -->
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1502224562085-639556652f33?q=80&w=400');"></div>
-                <!-- Foto 7: Grupo compacto de atletas en ruta de asfalto -->
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1532444458855-a41a37b3b3a0?q=80&w=400');"></div>
-                <!-- Foto 8: Gente aplaudiendo a corredores cerca de la meta -->
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1461896836934-ffe607ba8211?q=80&w=400');"></div>
                 
-                <!-- Espejo duplicado exacto para transición infinita sin saltos -->
+                <!-- Espejo duplicado -->
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1486218119243-13883505764c?q=80&w=400');"></div>
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=400');"></div>
                 <div class="history-img-card" style="background-image: url('https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?q=80&w=400');">
@@ -1000,52 +1006,16 @@
         </div>
     </section>
 
-    <!-- Sección Beneficios hipervinculados de manera individual -->
+    <!-- Sección Beneficios -->
     <section id="benefits" style="background-color: #121212;">
         <h2 class="section-title" id="beneficios">Beneficios del Corredor</h2>
         <div class="benefits-grid">
-            <a href="beneficio_medalla.html" class="benefit-link">
-                <div class="benefit-card">
-                    <div class="benefit-icon">🏅</div>
-                    <h3>Medalla Conmemorativa</h3>
-                    <p>Una pieza de colección de alta calidad con diseño tridimensional exclusivo de la Segunda Edición.</p>
-                </div>
-            </a>
-            <a href="beneficio_playera.html" class="benefit-link">
-                <div class="benefit-card">
-                    <div class="benefit-icon">👕</div>
-                    <h3>Playera Premium</h3>
-                    <p>Tecnología dry-fit de última generación, ligera y transpirable, diseñada con los colores del circuito.</p>
-                </div>
-            </a>
-            <a href="beneficio_cronometraje.html" class="benefit-link">
-                <div class="benefit-card">
-                    <div class="benefit-icon">⏱️</div>
-                    <h3>Cronometraje Avanzado</h3>
-                    <p>Monitoreo de tiempos parciales y finales con chip electrónico de alta precisión en tiempo real.</p>
-                </div>
-            </a>
-            <a href="beneficio_hidratacion.html" class="benefit-link">
-                <div class="benefit-card">
-                    <div class="benefit-icon">💧</div>
-                    <h3>Hidratación y Recuperación</h3>
-                    <p>Zonas de abastecimiento cada 2.5 km con agua, isotónicos, asistencia médica y área de masajes en meta.</p>
-                </div>
-            </a>
-            <a href="beneficio_descuentos.html" class="benefit-link">
-                <div class="benefit-card">
-                    <div class="benefit-icon">🏨</div>
-                    <h3>Descuentos Exclusivos</h3>
-                    <p>Tarifas y promociones especiales en los principales hoteles y restaurantes locales de la ciudad.</p>
-                </div>
-            </a>
-            <a href="beneficio_rifas.html" class="benefit-link">
-                <div class="benefit-card">
-                    <div class="benefit-icon">🎉</div>
-                    <h3>Rifas Atractivas</h3>
-                    <p>Participa en sorteos exclusivos de equipo deportivo premium al completar tu inscripción temprana.</p>
-                </div>
-            </a>
+            <a href="beneficio_medalla.html" class="benefit-link"><div class="benefit-card"><div class="benefit-icon">🏅</div><h3>Medalla Conmemorativa</h3><p>Pieza de colección tridimensional.</p></div></a>
+            <a href="beneficio_playera.html" class="benefit-link"><div class="benefit-card"><div class="benefit-icon">👕</div><h3>Playera Premium</h3><p>Tecnología dry-fit de última generación.</p></div></a>
+            <a href="beneficio_cronometraje.html" class="benefit-link"><div class="benefit-card"><div class="benefit-icon">⏱️</div><h3>Cronometraje Avanzado</h3><p>Monitoreo con chip electrónico.</p></div></a>
+            <a href="beneficio_hidratacion.html" class="benefit-link"><div class="benefit-card"><div class="benefit-icon">💧</div><h3>Hidratación y Recuperación</h3><p>Zonas cada 2.5 km con asistencia médica.</p></div></a>
+            <a href="beneficio_descuentos.html" class="benefit-link"><div class="benefit-card"><div class="benefit-icon">🏨</div><h3>Descuentos Exclusivos</h3><p>Tarifas especiales en comercios locales.</p></div></a>
+            <a href="beneficio_rifas.html" class="benefit-link"><div class="benefit-card"><div class="benefit-icon">🎉</div><h3>Rifas Atractivas</h3><p>Sorteos de equipo deportivo premium.</p></div></a>
         </div>
     </section>
 
@@ -1053,36 +1023,46 @@
     <section id="categories" style="background-color: var(--oscuro-puro);">
         <h2 class="section-title" id="categorias">Distancias Oficiales</h2>
         <div class="distancias-grid">
-            <div class="distancia-card">
-                <div class="distancia-number">42K</div>
-                <div class="distancia-tag">Maratón Completo</div>
-                <div class="distancia-details">Categorías: Libre, Máster, Veteranos. Rama Varonil y Femenil.</div>
-            </div>
-            <div class="distancia-card">
-                <div class="distancia-number">21K</div>
-                <div class="distancia-tag">Medio Maratón</div>
-                <div class="distancia-details">Ideal para corredores experimentados que buscan romper su récord personal.</div>
-            </div>
-            <div class="distancia-card">
-                <div class="distancia-number">10K</div>
-                <div class="distancia-tag">Carrera Competitiva</div>
-                <div class="distancia-details">Ruta rápida y dinámica a través de las principales avenidas comerciales.</div>
-            </div>
-            <div class="distancia-card">
-                <div class="distancia-number">5K</div>
-                <div class="distancia-tag">Carrera Recreativa</div>
-                <div class="distancia-details">Familiar y juvenil. Perfecta para disfrutar del ambiente deportivo sin presión.</div>
-            </div>
+            <a href="#preregistro" class="distancia-card-link" onclick="autoSeleccionarDistancia('42K')">
+                <div class="distancia-card">
+                    <div class="distancia-number">42K</div>
+                    <div class="distancia-tag">Maratón Completo</div>
+                    <div class="distancia-details">Haz clic aquí para pre-registrarte en esta distancia.</div>
+                </div>
+            </a>
+            <a href="#preregistro" class="distancia-card-link" onclick="autoSeleccionarDistancia('21K')">
+                <div class="distancia-card">
+                    <div class="distancia-number">21K</div>
+                    <div class="distancia-tag">Medio Maratón</div>
+                    <div class="distancia-details">Haz clic aquí para pre-registrarte en esta distancia.</div>
+                </div>
+            </a>
+            <a href="#preregistro" class="distancia-card-link" onclick="autoSeleccionarDistancia('10K')">
+                <div class="distancia-card">
+                    <div class="distancia-number">10K</div>
+                    <div class="distancia-tag">Carrera Competitiva</div>
+                    <div class="distancia-details">Haz clic aquí para pre-registrarte en esta distancia.</div>
+                </div>
+            </a>
+            <a href="#preregistro" class="distancia-card-link" onclick="autoSeleccionarDistancia('5K')">
+                <div class="distancia-card">
+                    <div class="distancia-number">5K</div>
+                    <div class="distancia-tag">Carrera Recreativa</div>
+                    <div class="distancia-details">Haz clic aquí para pre-registrarte en esta distancia.</div>
+                </div>
+            </a>
         </div>
     </section>
 
     <!-- Botón Flotante Emergente de WhatsApp -->
-    <a href="https://wa.me/521234567890?text=Hola,%20necesito%20ayuda%20con%20mi%20registro%20al%20Maratón%20Moroleón%202027" class="whatsapp-floating" target="_blank">
-        <span class="whatsapp-icon">💬</span>
+    <a href="https://wa.me/524661234567?text=Hola,%20necesito%20ayuda%20con%20mi%20registro%20al%20Maratón%20Moroleón%202027" class="whatsapp-floating" target="_blank">
+        <svg class="whatsapp-svg" viewBox="0 0 448 512" xmlns="http://www.w3.org/2000/svg">
+            <path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
+        </svg>
         <span>¿Necesitas ayuda con tu registro? Escríbenos</span>
     </a>
 
-    <!-- Bloque Redes Sociales (Pre-footer) -->
+    <!-- Bloque Redes Sociales -->
     <div class="social-networks-section">
         <div class="social-title">Sigue a la comunidad Moroleón 2027</div>
         <div class="social-icons-wrapper">
@@ -1101,47 +1081,90 @@
 
     <!-- Scripts de Interacción Dinámica -->
     <script>
-        // --- LÓGICA DE LA VENTANA EMERGENTE (POP-UP) ---
+        // CONFIGURACIÓN DE TU CLIENTE DE SUPABASE CON TUS CREDENCIALES REALES
+        const SUPABASE_URL = "https://xhiprzmvleolibzprqom.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_LVD_xghTp8MmfutMs3RoDA_v1c4r..."; 
+        
+        // Inicialización correcta usando la instancia de la librería global
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // Función para procesar y enviar el pre-registro
+        async function guardarPreRegistro(event) {
+            event.preventDefault(); 
+
+            // Capturamos las variables del formulario
+            const nombre = document.getElementById('nombre').value;
+            const apellidos = document.getElementById('apellidos').value;
+            const telefono = document.getElementById('telefono').value;
+            const correo = document.getElementById('correo').value;
+            const distancia = document.getElementById('distancia').value;
+
+            try {
+                // Inserción apuntando exactamente a los campos requeridos en tu tabla 'preregistro'
+                const { data, error } = await supabaseClient
+                    .from('preregistro') 
+                    .insert([
+                        { 
+                            nombre_corredor: nombre, 
+                            apellidos_corredor: apellidos,
+                            correo_electronico_corredor: correo, 
+                            telefono_corredor: telefono, 
+                            distancia_corredor: distancia 
+                        }
+                    ])
+                    .select();
+
+                if (error) throw error;
+
+                // Guardamos en el localStorage como respaldo local rápido
+                localStorage.setItem('temp_corredor_nombre', nombre);
+                localStorage.setItem('temp_corredor_apellidos', apellidos);
+                localStorage.setItem('temp_corredor_telefono', telefono);
+                localStorage.setItem('temp_corredor_correo', correo);
+                localStorage.setItem('temp_corredor_distancia', distancia);
+
+                // Redirección con parámetros URL limpios
+                window.location.href = `cedula_registrar.html?nombre=${encodeURIComponent(nombre)}&apellidos=${encodeURIComponent(apellidos)}&telefono=${encodeURIComponent(telefono)}&correo=${encodeURIComponent(correo)}&distancia=${encodeURIComponent(distancia)}`;
+
+            } catch (err) {
+                console.error("Error al sincronizar con Supabase:", err.message);
+                // Fallback de contingencia pasándole los datos directamente
+                window.location.href = `cedula_registrar.html?nombre=${encodeURIComponent(nombre)}&apellidos=${encodeURIComponent(apellidos)}&telefono=${encodeURIComponent(telefono)}&correo=${encodeURIComponent(correo)}&distancia=${encodeURIComponent(distancia)}`;
+            }
+        }
+
+        // Selección automática de distancia al hacer clic en las tarjetas inferiores
+        function autoSeleccionarDistancia(valorDistancia) {
+            const selectComponent = document.getElementById('distancia');
+            if(selectComponent) {
+                selectComponent.value = valorDistancia;
+            }
+        }
+
+        // --- LÓGICA DE LA VENTANA EMERGENTE ---
         function closeModal() {
             const modal = document.getElementById('welcomeModal');
             modal.style.opacity = '0';
-            setTimeout(() => {
-                modal.style.display = 'none';
-            }, 400);
+            setTimeout(() => { modal.style.display = 'none'; }, 400);
         }
 
-        // Cambio automático de las dos fotos del modal cada 5 segundos
         let modalSlideIndex = 0;
         const modalSlides = document.querySelectorAll('.modal-slide');
-        
         setInterval(() => {
             modalSlides[modalSlideIndex].classList.remove('active');
             modalSlideIndex = (modalSlideIndex + 1) % modalSlides.length;
             modalSlides[modalSlideIndex].classList.add('active');
         }, 5000);
 
-
-        // --- CRONÓMETRO DEL EVENTO ---
+        // --- CRONÓMETRO ---
         const eventDate = new Date("Dec 31, 2027 07:00:00").getTime();
-
-        const updateCountdown = setInterval(function() {
+        setInterval(function() {
             const now = new Date().getTime();
             const distance = eventDate - now;
-
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            document.getElementById("days").innerHTML = days;
-            document.getElementById("hours").innerHTML = hours < 10 ? "0" + hours : hours;
-            document.getElementById("minutes").innerHTML = minutes < 10 ? "0" + minutes : minutes;
-            document.getElementById("seconds").innerHTML = seconds < 10 ? "0" + seconds : seconds;
-
-            if (distance < 0) {
-                clearInterval(updateCountdown);
-                document.querySelector(".countdown-container").innerHTML = "<div class='countdown-time' style='font-size:2rem; color:var(--naranja);'>¡EL MARATÓN HA COMENZADO!</div>";
-            }
+            document.getElementById("days").innerHTML = Math.floor(distance / (1000 * 60 * 60 * 24));
+            document.getElementById("hours").innerHTML = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById("minutes").innerHTML = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById("seconds").innerHTML = Math.floor((distance % (1000 * 60)) / 1000);
         }, 1000);
     </script>
 </body>
