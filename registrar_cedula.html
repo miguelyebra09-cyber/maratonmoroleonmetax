@@ -607,7 +607,10 @@
             
             bloquearCamposBoleta(true);
             
-            // CONEXIÓN DIRECTA CORREGIDA A SUPABASE: Remueve bypass demo y fuerza el insert
+            // Construimos la URL que pide tu base de datos para la columna "codigo_qr"
+            const urlQrData = window.location.href + '?curp=' + encodeURIComponent(document.getElementById('b_curp').value);
+            
+            // CONEXIÓN DIRECTA A SUPABASE
             supabaseClient.from('cedula_registro').insert([{
                 fecha_registro: document.getElementById('b_fecha').value,
                 nombres: document.getElementById('b_nombre').value,
@@ -632,7 +635,8 @@
                 alergias: document.getElementById('b_alergias').value,
                 padecimientos_cronicos: document.getElementById('b_padecimientos').value,
                 situaciones_extraoficiales: document.getElementById('b_situaciones').value,
-                foto_base64: fotoBase64Global
+                foto_base64: fotoBase64Global,
+                codigo_qr: urlQrData // <--- Solución: Aquí ya se envía el dato obligatorio a Supabase
             }]).then(({error}) => {
                 if(error) {
                     alert("Error Base de Datos: " + error.message);
