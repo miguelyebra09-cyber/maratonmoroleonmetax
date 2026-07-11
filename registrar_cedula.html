@@ -12,6 +12,7 @@
     <style>
         :root {
             --naranja: #FF5500;
+            --naranja-neon: rgba(255, 85, 0, 0.4);
             --oscuro-puro: #0D0D0D;
             --oscuro-tarjeta: #1A1A1A;
             --oscuro-claro: #262626;
@@ -59,17 +60,24 @@
         .registration-form { background-color: var(--oscuro-tarjeta); padding: 40px; border-radius: 8px; border: 1px solid var(--oscuro-claro); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
         .form-section-title { font-size: 1.3rem; color: var(--dorado); border-bottom: 1px solid rgba(212, 175, 55, 0.2); padding-bottom: 8px; margin-bottom: 25px; margin-top: 25px; }
         .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; }
-        .form-group { margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; position: relative; }
         .form-group.full-width { grid-column: span 2; }
+        .form-group.flex-row { display: flex; gap: 10px; align-items: flex-end; }
+        
         label { display: block; margin-bottom: 8px; font-size: 0.9rem; color: #BBBBBB; }
-        input, select, textarea { width: 100%; padding: 12px 15px; background-color: var(--oscuro-puro); border: 1px solid var(--oscuro-claro); color: white; font-family: 'Montserrat', sans-serif; font-size: 1rem; border-radius: 4px; transition: border-color 0.3s; }
-        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--naranja); }
-        input[disabled] { background-color: #111; color: #888; cursor: not-allowed; }
+        
+        /* --- Efecto de Iluminación Neón Naranja --- */
+        input, select, textarea { width: 100%; padding: 12px 15px; background-color: var(--oscuro-puro); border: 1px solid var(--oscuro-claro); color: white; font-family: 'Montserrat', sans-serif; font-size: 1rem; border-radius: 4px; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: var(--naranja); box-shadow: 0 0 12px var(--naranja-neon); }
+        input[disabled], select[disabled] { background-color: #111; color: #888; cursor: not-allowed; box-shadow: none !--important; }
+
+        .btn-inline-mod { padding: 12px 15px; background-color: var(--oscuro-claro); border: 1px solid var(--naranja); color: var(--blanco); font-family: 'Oswald'; cursor: pointer; border-radius: 4px; text-transform: uppercase; transition: background 0.3s; height: 49px; }
+        .btn-inline-mod:hover { background-color: var(--naranja); }
 
         .btn-action { display: block; width: 100%; padding: 15px; background-color: var(--naranja); color: white; border: none; font-size: 1.2rem; font-weight: bold; border-radius: 4px; cursor: pointer; transition: background 0.3s; margin-top: 20px; }
-        .btn-action:hover { background-color: #ff6622; }
+        .btn-action:hover { background-color: #ff6622; box-shadow: 0 0 15px rgba(255,85,0,0.6); }
 
-        /* --- Ficha de Inscripción (Efecto Papel Físico Ampliado) --- */
+        /* --- Ficha de Inscripción (Efecto Papel Físico Avanzado) --- */
         .boleta-papel { background-color: var(--papel); color: var(--papel-texto); padding: 40px; border-radius: 4px; box-shadow: 10px 10px 25px rgba(0,0,0,0.8); border-left: 8px dashed #aaa; margin-top: 30px; display: none; }
         .boleta-papel h3 { text-align: center; border-bottom: 2px solid var(--papel-texto); padding-bottom: 10px; margin-bottom: 20px; font-size: 1.8rem; color: #111; }
         .boleta-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; font-size: 0.95rem; }
@@ -77,10 +85,11 @@
         .boleta-field.full-width { grid-column: span 2; }
         .boleta-label { font-weight: bold; text-transform: uppercase; font-size: 0.8rem; color: #444; display: flex; align-items: center; gap: 6px; }
         .boleta-icon { font-size: 1rem; }
-        .boleta-value { font-family: Courier, monospace; font-size: 1.1rem; font-weight: bold; color: #000; background: transparent; border: none; width: 100%; padding-top: 2px; }
-        .boleta-value:focus { background: #fff; outline: 1px solid var(--naranja); }
+        .boleta-value { font-family: Courier, monospace; font-size: 1.1rem; font-weight: bold; color: #000; background: transparent; border: none; width: 100%; padding-top: 2px; transition: background 0.2s; }
+        .boleta-value:focus { background: #fff; outline: 1px solid var(--naranja); box-shadow: 0 0 8px rgba(255,85,0,0.3); }
+        
         .boleta-botones { display: flex; gap: 20px; margin-top: 30px; }
-        .btn-boleta { flex: 1; padding: 12px; font-weight: bold; border: none; cursor: pointer; text-transform: uppercase; font-size: 1rem; }
+        .btn-boleta { flex: 1; padding: 12px; font-weight: bold; border: none; cursor: pointer; text-transform: uppercase; font-size: 1rem; font-family: 'Oswald'; }
         .btn-confirmar { background: #27ae60; color: white; }
         .btn-editar { background: #f39c12; color: white; }
 
@@ -99,7 +108,7 @@
         .whatsapp-float:hover { transform: scale(1.05); background-color: #20ba5a; }
         .whatsapp-icon { font-size: 1.3rem; }
 
-        @media (max-width: 768px) { .form-grid, .boleta-grid { grid-template-columns: 1fr; } .main-container { padding: 20px 4%; } .whatsapp-float { bottom: 20px; right: 20px; padding: 10px 15px; } }
+        @media (max-width: 768px) { .form-grid, .boleta-grid { grid-template-columns: 1fr; } .main-container { padding: 20px 4%; } .form-group.flex-row { flex-direction: column; align-items: stretch; } }
     </style>
 </head>
 <body>
@@ -122,7 +131,7 @@
                 <div class="sponsor-overlay-text">KINETIC NUTRITION</div>
             </div>
             <!-- Nueva Imagen 1: Botella, Gorra y Anúnciate Aquí -->
-            <div class="sponsor-card" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url('https://images.unsplash.com/photo-1571008887538-b36bb32f4571?q=80&w=400');">
+            <div class="sponsor-card" style="background-image: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)), url('https://images.unsplash.com/photo-1571008887538-b36bb32f4571?q=80&w=400');">
                 <div class="sponsor-overlay-text">ANÚNCIATE AQUÍ - PROMO</div>
             </div>
             <div class="sponsor-card card-metax">
@@ -152,10 +161,23 @@
             <div class="form-grid">
                 <div class="form-group"><label>Fecha de Registro (Auto)</label><input type="text" id="reg_fecha" disabled style="color: var(--dorado); font-weight: bold;"></div>
                 <div class="form-group"><label>Nombre(s)</label><input type="text" id="reg_nombre" disabled></div>
-                <div class="form-group"><label>Apellidos</label><input type="text" id="reg_apellidos" disabled></div>
+                <div class="form-group"><label>Primer Apellido (Auto)</label><input type="text" id="reg_apellido1" disabled></div>
+                <div class="form-group"><label>Segundo Apellido (Auto)</label><input type="text" id="reg_apellido2" disabled></div>
                 <div class="form-group"><label>Correo Electrónico</label><input type="email" id="reg_correo" disabled></div>
                 <div class="form-group"><label>Teléfono Celular</label><input type="tel" id="reg_telefono" disabled></div>
-                <div class="form-group"><label>Distancia Asignada</label><input type="text" id="reg_distancia" disabled style="color: var(--naranja); font-weight: bold;"></div>
+                <div class="form-group flex-row">
+                    <div style="flex: 1;">
+                        <label>Distancia Asignada</label>
+                        <input type="text" id="reg_distancia" disabled style="color: var(--naranja); font-weight: bold;">
+                        <select id="reg_distancia_select" style="display: none; color: var(--naranja); font-weight: bold;">
+                            <option value="5 KM">5 KM</option>
+                            <option value="10 KM">10 KM</option>
+                            <option value="21 KM">21 KM</option>
+                            <option value="42 KM">42 KM</option>
+                        </select>
+                    </div>
+                    <button type="button" class="btn-inline-mod" onclick="habilitarModificacionDistancia()">Modificar</button>
+                </div>
             </div>
 
             <div class="form-section-title">Información de Identidad y Residencia</div>
@@ -164,15 +186,20 @@
                     <label for="curp">CURP (18 caracteres)</label>
                     <input type="text" id="curp" placeholder="Ingresa tu CURP" maxlength="18" required style="text-transform: uppercase;" oninput="analizarCURP()">
                 </div>
+                <div class="form-group"><label>País de Residencia</label>
+                    <select id="pais_residencia" required>
+                        <option value="México" selected>México</option>
+                        <option value="Estados Unidos">Estados Unidos</option>
+                        <option value="Canadá">Canadá</option>
+                        <option value="Colombia">Colombia</option>
+                        <option value="España">España</option>
+                        <option value="Otro">Otro País</option>
+                    </select>
+                </div>
                 <div class="form-group"><label>Estado de Residencia</label>
                     <select id="estado_residencia" required>
                         <option value="" disabled selected>Selecciona tu estado</option>
-                        <option value="Guanajuato">Guanajuato</option>
-                        <option value="Querétaro">Querétaro</option>
-                        <option value="Michoacán">Michoacán</option>
-                        <option value="Jalisco">Jalisco</option>
-                        <option value="CDMX">Ciudad de México</option>
-                        <option value="Otro">Otro Estado / Extranjero</option>
+                        <option value="Aguascalientes">Aguascalientes</option><option value="Baja California">Baja California</option><option value="Baja California Sur">Baja California Sur</option><option value="Campeche">Campeche</option><option value="Chiapas">Chiapas</option><option value="Chihuahua">Chihuahua</option><option value="Ciudad de México">Ciudad de México</option><option value="Coahuila">Coahuila</option><option value="Colima">Colima</option><option value="Durango">Durango</option><option value="Estado de México">Estado de México</option><option value="Guanajuato">Guanajuato</option><option value="Guerrero">Guerrero</option><option value="Hidalgo">Hidalgo</option><option value="Jalisco">Jalisco</option><option value="Michoacán">Michoacán</option><option value="Morelos">Morelos</option><option value="Nayarit">Nayarit</option><option value="Nuevo León">Nuevo León</option><option value="Oaxaca">Oaxaca</option><option value="Puebla">Puebla</option><option value="Querétaro">Querétaro</option><option value="Quintana Roo">Quintana Roo</option><option value="San Luis Potosí">San Luis Potosí</option><option value="Sinaloa">Sinaloa</option><option value="Sonora">Sonora</option><option value="Tabasco">Tabasco</option><option value="Tamaulipas">Tamaulipas</option><option value="Tlaxcala">Tlaxcala</option><option value="Veracruz">Veracruz</option><option value="Yucatán">Yucatán</option><option value="Zacatecas">Zacatecas</option><option value="Extranjero">Extranjero / Otro</option>
                     </select>
                 </div>
                 <div class="form-group"><label>Edad (Auto)</label><input type="text" id="auto_edad" disabled></div>
@@ -200,7 +227,19 @@
                         <option value="XG">Extra Grande (XG)</option>
                     </select>
                 </div>
-                <div class="form-group full-width">
+                <div class="form-group">
+                    <label>Perfil del Corredor</label>
+                    <select id="perfil_corredor" required>
+                        <option value="" disabled selected>Selecciona tu perfil</option>
+                        <option value="Corredor por gusto o placer">Corredor por gusto o placer</option>
+                        <option value="Corredor novato">Corredor novato</option>
+                        <option value="Corredor intermedio">Corredor intermedio</option>
+                        <option value="Corredor avanzado">Corredor avanzado</option>
+                        <option value="Corredor semiprofesional">Corredor semiprofesional</option>
+                        <option value="Corredor profesional">Corredor profesional</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>Fotografía Oficial (Perfil para gafete)</label>
                     <input type="file" id="foto_corredor" accept="image/*" required onchange="convertirFotoBase64()">
                 </div>
@@ -222,37 +261,61 @@
                 </div>
                 <div class="form-group"><label>Contacto Emergencia (Nombre)</label><input type="text" id="contacto_emergencia" placeholder="Nombre completo del contacto" required></div>
                 <div class="form-group"><label>Teléfono Emergencia</label><input type="tel" id="tel_emergencia" placeholder="Ej: 4661112233" required></div>
-                <div class="form-group"><label>Alergias Conocidas</label><input type="text" id="alergias" placeholder="Ninguna / Descripción" required></div>
-                <div class="form-group full-width"><label>Padecimientos o Enfermedades Crónicas</label><input type="text" id="padecimientos" placeholder="Ninguno / Descripción" required></div>
+                <div class="form-group">
+                    <label>Alergias Conocidas</label>
+                    <select id="alergias" required>
+                        <option value="Ninguna" selected>Ninguna</option>
+                        <option value="Medicamentos (Penicilina/AINEs)">Medicamentos (Penicilina/AINEs)</option>
+                        <option value="Alimentos (Nueces/Mariscos/Lácteos)">Alimentos (Nueces/Mariscos/Lácteos)</option>
+                        <option value="Piquetes de Insectos (Abejas/Avispas)">Piquetes de Insectos (Abejas/Avispas)</option>
+                        <option value="Polen / Ácaros / Polvo">Polen / Ácaros / Polvo</option>
+                        <option value="Látex">Látex</option>
+                    </select>
+                </div>
+                <div class="form-group full-width">
+                    <label>Padecimientos o Enfermedades Crónicas</label>
+                    <select id="padecimientos" required>
+                        <option value="Ninguno" selected>Ninguno</option>
+                        <option value="Hipertensión Arterial">Hipertensión Arterial</option>
+                        <option value="Diabetes Mellitus">Diabetes Mellitus</option>
+                        <option value="Asma / Problemas Respiratorios">Asma / Problemas Respiratorios</option>
+                        <option value="Cardiopatías / Soplo">Cardiopatías / Soplo</option>
+                        <option value="Epilepsia">Epilepsia</option>
+                    </select>
+                </div>
                 <div class="form-group full-width"><label>Situaciones Extraoficiales / Notas</label><input type="text" id="situaciones_extraoficiales" placeholder="Notas adicionales relevantes"></div>
             </div>
 
             <button type="submit" class="btn-action">Registrar Datos</button>
         </form>
 
-        <!-- FICHA DE INSCRIPCIÓN VIRTUAL SINCRONIZADA (EFECTO PAPEL FÍSICO CON ICONOS) -->
+        <!-- FICHA DE INSCRIPCIÓN VIRTUAL (BOLETA DE PAPEL TOTALMENTE SIMÉTRICA) -->
         <div class="boleta-papel" id="boletaVirtual">
             <h3>Ficha de Inscripción Oficial</h3>
             <div class="boleta-grid">
                 <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">📅</span> Fecha Registro</div><input type="text" class="boleta-value" id="b_fecha" disabled></div>
-                <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">👤</span> Nombre del Corredor</div><input type="text" class="boleta-value" id="b_nombre"></div>
+                <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">👤</span> Nombre(s)</div><input type="text" class="boleta-value" id="b_nombre"></div>
+                <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">🏷️</span> Primer Apellido</div><input type="text" class="boleta-value" id="b_apellido1"></div>
+                <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">🏷️</span> Segundo Apellido</div><input type="text" class="boleta-value" id="b_apellido2"></div>
                 <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">💳</span> CURP</div><input type="text" class="boleta-value" id="b_curp" disabled></div>
                 <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">📧</span> Correo Electrónico</div><input type="text" class="boleta-value" id="b_correo" disabled></div>
                 <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">📱</span> Teléfono Celular</div><input type="text" class="boleta-value" id="b_telefono" disabled></div>
+                <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">🏁</span> Distancia Carrera</div><input type="text" class="boleta-value" id="b_distancia" disabled></div>
+                <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">🌍</span> País Residencia</div><input type="text" class="boleta-value" id="b_pais"></div>
+                <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">🏠</span> Estado Residencia</div><input type="text" class="boleta-value" id="b_residencia"></div>
                 <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">🔢</span> Edad</div><input type="text" class="boleta-value" id="b_edad"></div>
                 <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">⚥</span> Género</div><input type="text" class="boleta-value" id="b_genero"></div>
                 <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">🗺️</span> Entidad de Origen</div><input type="text" class="boleta-value" id="b_origen"></div>
-                <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">🏠</span> Estado Residencia</div><input type="text" class="boleta-value" id="b_residencia"></div>
                 <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">🏃‍♂️</span> Rama</div><input type="text" class="boleta-value" id="b_rama"></div>
                 <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">🏆</span> Categoría</div><input type="text" class="boleta-value" id="b_categoria"></div>
-                <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">🏁</span> Distancia</div><input type="text" class="boleta-value" id="b_distancia" disabled></div>
                 <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">👕</span> Talla Playera</div><input type="text" class="boleta-value" id="b_talla"></div>
+                <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">⚡</span> Perfil Corredor</div><input type="text" class="boleta-value" id="b_perfil"></div>
                 <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">🩸</span> Tipo Sangre</div><input type="text" class="boleta-value" id="b_sangre"></div>
                 <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">🚨</span> Contacto Emergencia</div><input type="text" class="boleta-value" id="b_contacto"></div>
                 <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">📞</span> Tel. Emergencia</div><input type="text" class="boleta-value" id="b_telemerg"></div>
-                <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">⚠️</span> Alergias Conocidas</div><input type="text" class="boleta-value" id="b_alergias"></div>
+                <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">⚠️</span> Alergias</div><input type="text" class="boleta-value" id="b_alergias"></div>
                 <div class="boleta-field"><div class="boleta-label"><span class="boleta-icon">🏥</span> Padecimientos</div><input type="text" class="boleta-value" id="b_padecimientos"></div>
-                <div class="boleta-field full-width"><div class="boleta-label"><span class="boleta-icon">📝</span> Situaciones Extraoficiales / Notas</div><input type="text" class="boleta-value" id="b_situaciones"></div>
+                <div class="boleta-field full-width"><div class="boleta-label"><span class="boleta-icon">📝</span> Situaciones Extraoficiales</div><input type="text" class="boleta-value" id="b_situaciones"></div>
             </div>
             <div class="boleta-botones">
                 <button class="btn-boleta btn-editar" onclick="activarEdicionBoleta()">Editar Datos</button>
@@ -289,6 +352,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let fotoBase64Global = "";
+        let usandoDistanciaModificada = false;
 
         const estadosMap = {
             'AS':'Aguascalientes','BC':'Baja California','BS':'Baja California Sur','CC':'Campeche','CL':'Coahuila','CM':'Colima','CS':'Chiapas','CH':'Chihuahua','DF':'Ciudad de México','DG':'Durango','GT':'Guanajuato','GR':'Guerrero','HG':'Hidalgo','JC':'Jalisco','MC':'México','MN':'Michoacán','MS':'Morelos','NT':'Nayarit','NL':'Nuevo León','OC':'Oaxaca','PL':'Puebla','QT':'Querétaro','QR':'Quintana Roo','SP':'San Luis Potosí','SL':'Sinaloa','SR':'Sonora','TC':'Tabasco','TS':'Tamaulipas','TL':'Tlaxcala','VZ':'Veracruz','YN':'Yucatán','ZS':'Zacatecas','NE':'Extranjero'
@@ -297,25 +361,39 @@
         window.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             document.getElementById('reg_nombre').value = params.get('nombre') || '';
-            document.getElementById('reg_apellidos').value = params.get('apellidos') || '';
+            
+            // Adecuación 1: Separación inteligente automatizada de apellidos
+            const apellidosFull = params.get('apellidos') || '';
+            if (apellidosFull.trim() !== "") {
+                const arrApellidos = apellidosFull.trim().split(" ");
+                document.getElementById('reg_apellido1').value = arrApellidos[0] || '';
+                document.getElementById('reg_apellido2').value = arrApellidos.slice(1).join(" ") || '';
+            }
+
             document.getElementById('reg_correo').value = params.get('correo') || '';
             document.getElementById('reg_telefono').value = params.get('telefono') || '';
-            document.getElementById('reg_distancia').value = params.get('distancia') || '';
+            
+            const dist = params.get('distancia') || '10 KM';
+            document.getElementById('reg_distancia').value = dist;
+            document.getElementById('reg_distancia_select').value = dist;
 
-            // Generación de la Fecha de Sistema Automática
             const hoy = new Date();
             const dia = String(hoy.getDate()).padStart(2, '0');
             const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-            const anio = hoy.getFullYear();
-            document.getElementById('reg_fecha').value = `${dia}/${mes}/${anio}`;
+            document.getElementById('reg_fecha').value = `${dia}/${mes}/${hoy.getFullYear()}`;
         });
+
+        function habilitarModificacionDistancia() {
+            usandoDistanciaModificada = true;
+            document.getElementById('reg_distancia').style.display = 'none';
+            document.getElementById('reg_distancia_select').style.display = 'block';
+        }
 
         function analizarCURP() {
             let curp = document.getElementById('curp').value.toUpperCase();
             if (curp.length >= 10) {
                 let sexo = curp.charAt(10);
-                let genero = (sexo === 'H') ? 'Hombre' : (sexo === 'M') ? 'Mujer' : '';
-                document.getElementById('auto_genero').value = genero;
+                document.getElementById('auto_genero').value = (sexo === 'H') ? 'Hombre' : (sexo === 'M') ? 'Mujer' : '';
                 document.getElementById('auto_rama').value = (sexo === 'H') ? 'Varonil' : (sexo === 'M') ? 'Femenil' : '';
 
                 let anioStr = curp.substring(4,6);
@@ -345,28 +423,34 @@
         function convertirFotoBase64() {
             const file = document.getElementById('foto_corredor').files[0];
             const reader = new FileReader();
-            reader.onloadend = function() {
-                fotoBase64Global = reader.result;
-            }
+            reader.onloadend = function() { fotoBase64Global = reader.result; }
             if (file) { reader.readAsDataURL(file); }
         }
 
         function procesarFormulario(event) {
             event.preventDefault();
-            // Mapeo simétrico total a los campos con efectos de papel de la boleta
+            
+            // Mapeo 100% simétrico e íntegro hacia la boleta de papel
             document.getElementById('b_fecha').value = document.getElementById('reg_fecha').value;
-            document.getElementById('b_nombre').value = document.getElementById('reg_nombre').value + ' ' + document.getElementById('reg_apellidos').value;
+            document.getElementById('b_nombre').value = document.getElementById('reg_nombre').value;
+            document.getElementById('b_apellido1').value = document.getElementById('reg_apellido1').value;
+            document.getElementById('b_apellido2').value = document.getElementById('reg_apellido2').value;
             document.getElementById('b_curp').value = document.getElementById('curp').value;
             document.getElementById('b_correo').value = document.getElementById('reg_correo').value;
             document.getElementById('b_telefono').value = document.getElementById('reg_telefono').value;
+            
+            // Distancia condicional
+            document.getElementById('b_distancia').value = usandoDistanciaModificada ? document.getElementById('reg_distancia_select').value : document.getElementById('reg_distancia').value;
+            
+            document.getElementById('b_pais').value = document.getElementById('pais_residencia').value;
+            document.getElementById('b_residencia').value = document.getElementById('estado_residencia').value;
             document.getElementById('b_edad').value = document.getElementById('auto_edad').value;
             document.getElementById('b_genero').value = document.getElementById('auto_genero').value;
             document.getElementById('b_origen').value = document.getElementById('auto_origen').value;
-            document.getElementById('b_residencia').value = document.getElementById('estado_residencia').value;
             document.getElementById('b_rama').value = document.getElementById('auto_rama').value;
             document.getElementById('b_categoria').value = document.getElementById('categoria').value;
-            document.getElementById('b_distancia').value = document.getElementById('reg_distancia').value;
             document.getElementById('b_talla').value = document.getElementById('talla_playera').value;
+            document.getElementById('b_perfil').value = document.getElementById('perfil_corredor').value;
             document.getElementById('b_sangre').value = document.getElementById('tipo_sangre').value;
             document.getElementById('b_contacto').value = document.getElementById('contacto_emergencia').value;
             document.getElementById('b_telemerg').value = document.getElementById('tel_emergencia').value;
@@ -383,8 +467,8 @@
         function bloquearCamposBoleta(estado) {
             const inputs = document.querySelectorAll('.boleta-value');
             inputs.forEach(input => {
-                // Campos estrictamente fijos que nunca cambian en edición de boleta
-                if(input.id !== 'b_curp' && input.id !== 'b_distancia' && input.id !== 'b_fecha' && input.id !== 'b_correo' && input.id !== 'b_telefono') {
+                const inmutables = ['b_curp', 'b_distancia', 'b_fecha', 'b_correo', 'b_telefono'];
+                if(!inmutables.includes(input.id)) {
                     input.disabled = estado;
                 }
             });
@@ -400,21 +484,25 @@
             if (respuesta) {
                 bloquearCamposBoleta(true);
                 
-                // Inserción en base de datos con simetría total
+                // Envío íntegro de datos estructurados a Supabase
                 supabaseClient.from('cedula_registro').insert([{
                     fecha_registro: document.getElementById('b_fecha').value,
-                    nombre_completo: document.getElementById('b_nombre').value,
+                    nombres: document.getElementById('b_nombre').value,
+                    primer_apellido: document.getElementById('b_apellido1').value,
+                    segundo_apellido: document.getElementById('b_apellido2').value,
                     curp: document.getElementById('b_curp').value,
                     correo: document.getElementById('b_correo').value,
                     telefono_celular: document.getElementById('b_telefono').value,
+                    distancia: document.getElementById('b_distancia').value,
+                    pais_residencia: document.getElementById('b_pais').value,
+                    entidad_residencia: document.getElementById('b_residencia').value,
                     edad: parseInt(document.getElementById('b_edad').value),
                     genero: document.getElementById('b_genero').value,
                     entidad_origen: document.getElementById('b_origen').value,
-                    entidad_residencia: document.getElementById('b_residencia').value,
                     rama: document.getElementById('b_rama').value,
                     categoria: document.getElementById('b_categoria').value,
-                    distancia: document.getElementById('b_distancia').value,
                     talla_playera: document.getElementById('b_talla').value,
+                    perfil_corredor: document.getElementById('b_perfil').value,
                     tipo_sangre: document.getElementById('b_sangre').value,
                     contacto_emergencia: document.getElementById('b_contacto').value,
                     telefono_emergencia: document.getElementById('b_telemerg').value,
@@ -427,7 +515,7 @@
                         alert("Error al sincronizar con el servidor: " + error.message);
                     } else {
                         document.getElementById('c_foto').style.backgroundImage = `url('${fotoBase64Global}')`;
-                        document.getElementById('c_nombre').innerText = document.getElementById('b_nombre').value;
+                        document.getElementById('c_nombre').innerText = `${document.getElementById('b_nombre').value} ${document.getElementById('b_apellido1').value}`;
                         document.getElementById('c_distancia').innerText = document.getElementById('b_distancia').value;
                         document.getElementById('c_rama').innerText = document.getElementById('b_rama').value;
                         document.getElementById('c_talla').innerText = document.getElementById('b_talla').value;
