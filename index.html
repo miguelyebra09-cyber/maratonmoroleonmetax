@@ -1080,15 +1080,16 @@
     </footer>
 
     <!-- Scripts de Interacción Dinámica -->
+    <!-- Scripts de Interacción Dinámica -->
     <script>
-        // CONFIGURACIÓN DE TU CLIENTE DE SUPABASE CON TUS CREDENCIALES REALES
+        // CONFIGURACIÓN DE TU CLIENTE DE SUPABASE
         const SUPABASE_URL = "https://xhiprzmvleolibzprqom.supabase.co";
         const SUPABASE_KEY = "sb_publishable_LVD_xghTp8MmfutMs3RoDA_v1c4r..."; 
         
-        // Inicialización correcta usando la instancia de la librería global
+        // Inicialización de la librería global
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Función blindada y corregida para enviar datos y redireccionar sin fallas
+        // FUNCIÓN CORREGIDA: Espera la respuesta de red antes de cambiar de página
         function guardarPreRegistro(event) {
             event.preventDefault(); 
 
@@ -1099,7 +1100,7 @@
             const correo = document.getElementById('correo').value;
             const distancia = document.getElementById('distancia').value;
 
-            // URL Destino exacta vinculada a tu nueva página del formulario extendido
+            // URL Destino para el formulario extendido
             const urlDestino = `registrar_cedula.html?nombre=${encodeURIComponent(nombre)}&apellidos=${encodeURIComponent(apellidos)}&telefono=${encodeURIComponent(telefono)}&correo=${encodeURIComponent(correo)}&distancia=${encodeURIComponent(distancia)}`;
 
             // Guardamos localmente en LocalStorage inmediatamente como respaldo instantáneo
@@ -1109,24 +1110,40 @@
             localStorage.setItem('temp_corredor_correo', correo);
             localStorage.setItem('temp_corredor_distancia', distancia);
 
-            // Disparamos la petición en segundo plano a Supabase sin bloquear el hilo principal de ejecución
+            // Cambiamos el texto del botón temporalmente para dar feedback visual
+            const botonSubmit = event.target.querySelector('.btn-submit');
+            const textoOriginal = botonSubmit.innerHTML;
+            botonSubmit.innerHTML = "Guardando...";
+            botonSubmit.disabled = true;
+
+            // Enviamos los datos obligando al flujo a esperar la resolución de la promesa
             supabaseClient
                 .from('preregistro') 
                 .insert([
                     { 
                         nombre_corredor: nombre, 
                         apellidos_corredor: apellidos,
-                        correo_electronico_corredor: correo, 
                         telefono_corredor: telefono, 
+                        correo_electronico_corredor: correo, 
                         distancia_corredor: distancia 
                     }
                 ])
                 .then(({ error }) => {
-                    if (error) console.error("Aviso asíncrono controlado en Supabase:", error.message);
+                    if (error) {
+                        // Si hay un error de RLS, columnas o conexión, lo registra en consola
+                        console.error("Error crítico al insertar en Supabase:", error.message);
+                    } else {
+                        console.log("¡Inserción completada con éxito en la tabla preregistro!");
+                    }
+                    
+                    // AHORA SÍ: Una vez finalizada la petición, redirigimos sin riesgo de corte
+                    window.location.href = urlDestino;
+                })
+                .catch((err) => {
+                    console.error("Error inesperado en la solicitud de red:", err);
+                    // Incluso ante una caída de red, enviamos al usuario a la cédula para no arruinar su experiencia
+                    window.location.href = urlDestino;
                 });
-
-            // Forzamos el salto inmediato de pantalla. Cero esperas, cero bloqueos de red.
-            window.location.href = urlDestino;
         }
 
         // Selección automática de distancia al hacer clic en las tarjetas inferiores
@@ -1147,9 +1164,11 @@
         let modalSlideIndex = 0;
         const modalSlides = document.querySelectorAll('.modal-slide');
         setInterval(() => {
-            modalSlides[modalSlideIndex].classList.remove('active');
-            modalSlideIndex = (modalSlideIndex + 1) % modalSlides.length;
-            modalSlides[modalSlideIndex].classList.add('active');
+            if(modalSlides.length > 0) {
+                modalSlides[modalSlideIndex].classList.remove('active');
+                modalSlideIndex = (modalSlideIndex + 1) % modalSlides.length;
+                modalSlides[modalSlideIndex].classList.add('active');
+            }
         }, 5000);
 
         // --- CRONÓMETRO ---
@@ -1157,10 +1176,18 @@
         setInterval(function() {
             const now = new Date().getTime();
             const distance = eventDate - now;
-            document.getElementById("days").innerHTML = Math.floor(distance / (1000 * 60 * 60 * 24));
-            document.getElementById("hours").innerHTML = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            document.getElementById("minutes").innerHTML = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            document.getElementById("seconds").innerHTML = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            const d = document.getElementById("days");
+            const h = document.getElementById("hours");
+            const m = document.getElementById("minutes");
+            const s = document.getElementById("seconds");
+
+            if(d && h && m && s) {
+                d.innerHTML = Math.floor(distance / (1000 * 60 * 60 * 24));
+                h.innerHTML = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                m.innerHTML = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                s.innerHTML = Math.floor((distance % (1000 * 60)) / 1000);
+            }
         }, 1000);
     </script>
 </body>
