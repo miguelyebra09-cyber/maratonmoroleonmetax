@@ -30,15 +30,19 @@
         .logo-stack .l2 { color: var(--naranja); font-size: 1.3rem; }
         .logo-irc { color: #FFF; font-size: 1.5rem; font-weight: 700; }
         .logo-irc span { color: var(--naranja); }
-        .brand-footer { font-size: 0.75rem; color: #444; font-family: 'Oswald'; letter-spacing: 2px; text-transform: uppercase; }
+        
+        /* Logo Sutil Solicitado en Barra Superior */
+        .brand-header-logo { font-size: 0.85rem; color: #777; font-family: 'Oswald'; letter-spacing: 2px; text-transform: uppercase; font-weight: 600; }
+        .brand-header-logo span { color: var(--naranja); }
 
-        /* --- Estructura Layout de 3 Columnas Exacta --- */
+        /* --- Estructura Layout Corregida a 3 Columnas Exactas --- */
         .main-container { padding: 40px 3%; max-width: 1350px; margin: 0 auto; }
         .header-box { text-align: center; margin-bottom: 35px; }
         .header-box h2 { font-size: 2.8rem; font-weight: 700; }
         .header-box h2 span { color: var(--naranja); }
         .header-box p { color: #888; font-size: 0.95rem; margin-top: 5px; }
 
+        /* Estricto orden visual solicitado mediante CSS Grid */
         .pago-layout-grid { 
             display: grid; 
             grid-template-columns: 1.1fr 1fr 0.9fr; 
@@ -51,7 +55,7 @@
         .section-title { font-size: 1.3rem; color: #FFF; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
         .section-title::before { content: '|'; color: var(--naranja); font-weight: bold; font-size: 1.5rem; }
 
-        /* --- Columna 1: Métodos de Pago --- */
+        /* --- Columna: Métodos de Pago --- */
         .metodo-opcion { background: #0A0A0A; border: 1px solid var(--oscuro-claro); padding: 16px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; transition: all 0.2s ease; }
         .metodo-opcion:hover { border-color: rgba(255,85,0,0.4); }
         .metodo-opcion.active { border-color: var(--naranja); box-shadow: 0 0 12px var(--naranja-neon); background: rgba(255,85,0,0.01); }
@@ -70,7 +74,7 @@
         .panel-metodo.active { display: block; animation: fadeIn 0.3s ease; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- Columna 2: Credencial del Atleta (Centro) --- */
+        /* --- Columna: Credencial del Atleta --- */
         .credencial-wrapper { background: var(--oscuro-tarjeta); padding: 25px; border-radius: 6px; border: 1px solid var(--oscuro-claro); display: flex; flex-direction: column; align-items: center; }
         .credencial-box { width: 100%; border: 1px solid var(--dorado); border-radius: 8px; background: #050505; overflow: hidden; padding: 25px 15px; text-align: center; }
         .credencial-title { font-family: 'Oswald'; font-size: 1.15rem; color: var(--naranja); font-weight: 700; margin-bottom: 2px; }
@@ -83,7 +87,7 @@
         .atleta-km { font-family: 'Oswald'; font-size: 1.1rem; color: var(--dorado); font-weight: bold; margin-bottom: 10px; }
         .atleta-curp { font-size: 0.75rem; color: #555; letter-spacing: 0.5px; font-family: monospace; }
 
-        /* --- Columna 3: Resumen de Compra --- */
+        /* --- Columna: Resumen de Compra --- */
         .resumen-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.88rem; padding-bottom: 6px; border-bottom: 1px dashed #1A1A1A; color: #999; }
         .resumen-row span:last-child { color: #FFF; font-weight: 500; }
         .total-row { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--oscuro-claro); font-family: 'Oswald'; font-size: 1.5rem; }
@@ -113,7 +117,8 @@
             <div class="logo-stack"><span class="l1">MARATÓN</span><span class="l2">MOROLEÓN</span></div>
             <div class="logo-irc">IRC <span>MÉXICO</span></div>
         </div>
-        <div class="brand-footer">METAX PRO TIMING</div>
+        <!-- Logo Corporativo Sutil Solicitado -->
+        <div class="brand-header-logo">Powered by <span>METAX PRO TIMING</span></div>
     </nav>
 
     <main class="main-container">
@@ -124,7 +129,7 @@
 
         <div class="pago-layout-grid">
             
-            <!-- COLUMNA 1: SELECCIÓN MÉTODO DE PAGO -->
+            <!-- COLUMNA 1: SELECCIÓN MÉTODO DE PAGO (Izquierda) -->
             <div class="card-pago">
                 <h3 class="section-title">1. Método de Pago</h3>
                 
@@ -169,7 +174,7 @@
                 <p style="color: #444; font-size: 0.75rem; margin-top: 20px; font-weight: 600;">Módulo de transacciones operado por METAX PRO TIMING.</p>
             </div>
 
-            <!-- COLUMNA 2: ATLETA A INSCRIBIR (Centro exacto como el Mockup) -->
+            <!-- COLUMNA 2: ATLETA A INSCRIBIR (Centro exacto corregido) -->
             <div class="credencial-wrapper">
                 <h3 class="section-title" style="align-self: flex-start;">Atleta a Inscribir</h3>
                 <div class="credencial-box">
