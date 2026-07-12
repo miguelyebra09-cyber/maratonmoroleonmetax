@@ -3,20 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pasarela de Pago Avanzada | Maratón Moroleón</title>
+    <title>Finalizar Pago de Inscripción | Maratón Moroleón</title>
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght=400;600;700&family=Montserrat:wght=300;400;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Librería de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
         :root {
             --naranja: #FF5500;
-            --naranja-neon: rgba(255, 85, 0, 0.3);
+            --naranja-neon: rgba(255, 85, 0, 0.25);
             --oscuro-puro: #0D0D0D;
-            --oscuro-tarjeta: #1A1A1A;
-            --oscuro-claro: #262626;
-            --blanco: #EAEAEA;
+            --oscuro-tarjeta: #151515;
+            --oscuro-claro: #222222;
+            --blanco: #FFFFFF;
             --dorado: #D4AF37;
         }
 
@@ -24,7 +22,7 @@
         body { font-family: 'Montserrat', sans-serif; background-color: var(--oscuro-puro); color: var(--blanco); overflow-x: hidden; }
         h1, h2, h3, .section-title, .btn-pago, .logo-irc { font-family: 'Oswald', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* --- Header --- */
+        /* --- Navbar --- */
         nav { background-color: #000; padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--naranja); }
         .logo-container { display: flex; align-items: center; gap: 15px; }
         .logo-stack { display: flex; flex-direction: column; line-height: 0.9; font-family: 'Oswald'; font-weight: 700; text-align: right; border-right: 2px solid var(--oscuro-claro); padding-right: 12px; }
@@ -32,80 +30,82 @@
         .logo-stack .l2 { color: var(--naranja); font-size: 1.3rem; }
         .logo-irc { color: #FFF; font-size: 1.5rem; font-weight: 700; }
         .logo-irc span { color: var(--naranja); }
+        .brand-footer { font-size: 0.75rem; color: #444; font-family: 'Oswald'; letter-spacing: 2px; text-transform: uppercase; }
 
-        /* --- Layout de 3 Columnas Estructural --- */
-        .main-container { padding: 40px 4%; max-width: 1400px; margin: 0 auto; }
+        /* --- Estructura Layout de 3 Columnas Exacta --- */
+        .main-container { padding: 40px 3%; max-width: 1350px; margin: 0 auto; }
         .header-box { text-align: center; margin-bottom: 35px; }
-        .header-box h2 { font-size: 2.6rem; color: #FFF; }
+        .header-box h2 { font-size: 2.8rem; font-weight: 700; }
         .header-box h2 span { color: var(--naranja); }
+        .header-box p { color: #888; font-size: 0.95rem; margin-top: 5px; }
 
-        .pago-3columns-grid { 
+        .pago-layout-grid { 
             display: grid; 
-            grid-template-columns: 1.1fr 0.9fr 1fr; 
+            grid-template-columns: 1.1fr 1fr 0.9fr; 
             gap: 25px; 
             align-items: start;
         }
 
-        /* --- Componentes UI --- */
-        .card-pago { background-color: var(--oscuro-tarjeta); padding: 25px; border-radius: 8px; border: 1px solid var(--oscuro-claro); position: relative; }
-        .section-title { font-size: 1.2rem; color: #FFF; border-left: 3px solid var(--naranja); padding-left: 10px; margin-bottom: 20px; }
+        /* --- Tarjetas Genéricas --- */
+        .card-pago { background-color: var(--oscuro-tarjeta); padding: 30px; border-radius: 6px; border: 1px solid var(--oscuro-claro); }
+        .section-title { font-size: 1.3rem; color: #FFF; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .section-title::before { content: '|'; color: var(--naranja); font-weight: bold; font-size: 1.5rem; }
 
-        /* Métodos Interactivos */
-        .metodo-opcion { background: var(--oscuro-puro); border: 2px solid var(--oscuro-claro); padding: 18px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; transition: all 0.25s ease-in-out; }
-        .metodo-opcion:hover { border-color: rgba(255,85,0,0.5); transform: scale(1.01); }
-        .metodo-opcion.active { border-color: var(--naranja); box-shadow: 0 0 15px var(--naranja-neon); background: rgba(255,85,0,0.02); }
+        /* --- Columna 1: Métodos de Pago --- */
+        .metodo-opcion { background: #0A0A0A; border: 1px solid var(--oscuro-claro); padding: 16px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; transition: all 0.2s ease; }
+        .metodo-opcion:hover { border-color: rgba(255,85,0,0.4); }
+        .metodo-opcion.active { border-color: var(--naranja); box-shadow: 0 0 12px var(--naranja-neon); background: rgba(255,85,0,0.01); }
         
-        .metodo-info { display: flex; align-items: center; gap: 12px; }
-        .metodo-icon { font-size: 1.6rem; }
+        .metodo-info { display: flex; align-items: center; gap: 15px; }
+        .metodo-icon { font-size: 1.5rem; }
         .metodo-text h4 { font-family: 'Oswald'; font-size: 1.1rem; color: #FFF; }
-        .metodo-text p { font-size: 0.8rem; color: #888; }
+        .metodo-text p { font-size: 0.78rem; color: #777; }
         
         .radio-custom { width: 18px; height: 18px; border: 2px solid var(--oscuro-claro); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
         .metodo-opcion.active .radio-custom { border-color: var(--naranja); }
         .metodo-opcion.active .radio-custom::after { content: ''; width: 8px; height: 8px; background-color: var(--naranja); border-radius: 50%; }
 
-        /* Paneles Intercambiables */
-        .panel-metodo { display: none; margin-top: 15px; animation: slideDown 0.3s ease forwards; }
-        .panel-metodo.active { display: block; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+        /* Paneles de Configuración Interna */
+        .panel-metodo { display: none; margin-top: 15px; background: #000; padding: 15px; border-radius: 4px; border-left: 2px solid var(--naranja); font-size: 0.85rem; }
+        .panel-metodo.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Form Estilos */
-        .form-group { margin-bottom: 15px; }
-        label { display: block; margin-bottom: 6px; font-size: 0.8rem; color: #AAA; text-transform: uppercase; }
-        input { width: 100%; padding: 11px 14px; background-color: var(--oscuro-puro); border: 1px solid var(--oscuro-claro); color: white; font-size: 0.95rem; border-radius: 4px; }
-        input:focus { outline: none; border-color: var(--naranja); box-shadow: 0 0 8px var(--naranja-neon); }
-
-        /* --- Columna Credencial (Visual Lateral) --- */
-        .credencial-preview-container { display: flex; flex-direction: column; align-items: center; }
-        .credencial-card { background: #111; width: 100%; max-width: 340px; border: 2px solid var(--dorado); border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px rgba(0,0,0,0.7); }
-        .credencial-header { background: linear-gradient(135deg, #000, #222); padding: 15px; text-align: center; border-bottom: 2px solid var(--naranja); }
-        .credencial-body { padding: 20px; text-align: center; position: relative; }
-        .credencial-foto { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--naranja); object-fit: cover; margin: 0 auto 15px; background: #222; display: block; }
-        .credencial-nombre { font-family: 'Oswald'; font-size: 1.3rem; color: #FFF; margin-bottom: 5px; }
-        .credencial-meta { font-size: 0.85rem; color: var(--dorado); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-
-        /* --- Resumen y Botón de Pago --- */
-        .resumen-line { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; padding-bottom: 5px; border-bottom: 1px dashed #222; }
-        .total-box { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 15px; border-top: 2px solid var(--oscuro-claro); font-family: 'Oswald'; font-size: 1.4rem; }
+        /* --- Columna 2: Credencial del Atleta (Centro) --- */
+        .credencial-wrapper { background: var(--oscuro-tarjeta); padding: 25px; border-radius: 6px; border: 1px solid var(--oscuro-claro); display: flex; flex-direction: column; align-items: center; }
+        .credencial-box { width: 100%; border: 1px solid var(--dorado); border-radius: 8px; background: #050505; overflow: hidden; padding: 25px 15px; text-align: center; }
+        .credencial-title { font-family: 'Oswald'; font-size: 1.15rem; color: var(--naranja); font-weight: 700; margin-bottom: 2px; }
+        .credencial-sub { font-size: 0.72rem; color: #888; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid #222; padding-bottom: 10px; }
         
-        .btn-pago { width: 100%; padding: 15px; background-color: var(--naranja); color: white; border: none; font-size: 1.2rem; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; }
-        .btn-pago:hover { background-color: #ff6622; box-shadow: 0 0 15px rgba(255,85,0,0.5); }
+        .credencial-avatar-circulo { width: 110px; height: 110px; border-radius: 50%; border: 2px solid var(--naranja); margin: 0 auto 20px; background: #111; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .credencial-avatar-circulo img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .atleta-nombre { font-family: 'Montserrat'; font-weight: 600; font-size: 1.25rem; color: #FFF; margin-bottom: 4px; }
+        .atleta-km { font-family: 'Oswald'; font-size: 1.1rem; color: var(--dorado); font-weight: bold; margin-bottom: 10px; }
+        .atleta-curp { font-size: 0.75rem; color: #555; letter-spacing: 0.5px; font-family: monospace; }
 
-        /* --- Efecto de Carga (Overlay) --- */
-        .loading-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 10000; flex-direction: column; align-items: center; justify-content: center; }
-        .spinner { width: 50px; height: 50px; border: 5px solid var(--oscuro-claro); border-top-color: var(--naranja); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        /* --- Columna 3: Resumen de Compra --- */
+        .resumen-row { display: flex; justify-content: space-between; margin-bottom: 12px; font-size: 0.88rem; padding-bottom: 6px; border-bottom: 1px dashed #1A1A1A; color: #999; }
+        .resumen-row span:last-child { color: #FFF; font-weight: 500; }
+        .total-row { display: flex; justify-content: space-between; margin-top: 25px; padding-top: 15px; border-top: 1px solid var(--oscuro-claro); font-family: 'Oswald'; font-size: 1.5rem; }
+        
+        .btn-pago { width: 100%; padding: 15px; background-color: var(--naranja); color: white; border: none; font-size: 1.15rem; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; }
+        .btn-pago:hover { background-color: #ff6622; }
+
+        /* Overlay de Transacción */
+        .loader-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 99999; flex-direction: column; align-items: center; justify-content: center; }
+        .spinner { width: 45px; height: 45px; border: 4px solid #222; border-top-color: var(--naranja); border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 15px; }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        @media (max-width: 1100px) { .pago-3columns-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 1000px) { .pago-layout-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <!-- Pantalla de carga interactiva -->
-    <div class="loading-overlay" id="pago-loader">
+    <!-- Animación de Procesamiento de Pago -->
+    <div class="loader-overlay" id="global-loader">
         <div class="spinner"></div>
-        <h3 style="font-family:'Oswald'; color:#FFF; letter-spacing:2px;">Procesando Pago Seguro...</h3>
-        <p style="color:#666; font-size:0.9rem;">Registrando datos en servidores transaccionales de MTX</p>
+        <h3 style="color:#FFF; font-family:'Oswald'; letter-spacing:1px;">METAX PRO TIMING SECURE</h3>
+        <p style="color:#555; font-size:0.85rem; margin-top:4px;">Procesando e indexando token en base de datos...</p>
     </div>
 
     <nav>
@@ -113,162 +113,179 @@
             <div class="logo-stack"><span class="l1">MARATÓN</span><span class="l2">MOROLEÓN</span></div>
             <div class="logo-irc">IRC <span>MÉXICO</span></div>
         </div>
+        <div class="brand-footer">METAX PRO TIMING</div>
     </nav>
 
     <main class="main-container">
         <div class="header-box">
-            <h2>Finalizar <span>Pago de Inscripción</span></h2>
+            <h2>FINALIZAR <span>PAGO DE INSCRIPCIÓN</span></h2>
+            <p>Tu cédula ha sido verificada. Selecciona tu método para asegurar tu lugar en el bloque de salida.</p>
         </div>
 
-        <div class="pago-3columns-grid">
+        <div class="pago-layout-grid">
             
             <!-- COLUMNA 1: SELECCIÓN MÉTODO DE PAGO -->
             <div class="card-pago">
                 <h3 class="section-title">1. Método de Pago</h3>
-                <div class="metodo-opcion active" onclick="cambiarMetodo('tarjeta', this)">
+                
+                <!-- Tarjeta -->
+                <div class="metodo-opcion active" onclick="alternarBloques('tarjeta', this)">
                     <div class="metodo-info">
                         <span class="metodo-icon">💳</span>
                         <div class="metodo-text"><h4>Tarjeta Débito / Crédito</h4><p>Procesamiento inmediato</p></div>
                     </div>
                     <div class="radio-custom"></div>
                 </div>
-                <div class="metodo-opcion" onclick="cambiarMetodo('oxxo', this)">
+                <div id="panel-tarjeta" class="panel-metodo active">
+                    <p style="color:#aaa; line-height:1.4;">Se abrirá el formulario seguro integrado para transacciones con cifrado SSL bancario.</p>
+                </div>
+
+                <!-- OXXO -->
+                <div class="metodo-opcion" onclick="alternarBloques('oxxo', this)">
                     <div class="metodo-info">
                         <span class="metodo-icon">🏪</span>
                         <div class="metodo-text"><h4>Efectivo OXXO</h4><p>Ficha de depósito digital</p></div>
                     </div>
                     <div class="radio-custom"></div>
                 </div>
-                
-                <!-- Campos dinámicos del método debajo de la sección 1 -->
-                <div class="card-pago" style="background: transparent; border:none; padding:10px 0 0 0;">
-                    <div id="panel-tarjeta" class="panel-metodo active">
-                        <div class="form-group"><label>Titular</label><input type="text" placeholder="Nombre completo"></div>
-                        <div class="form-group"><label>Número de Tarjeta</label><input type="text" placeholder="4152 .... .... ...."></div>
+                <div id="panel-oxxo" class="panel-metodo">
+                    <p style="color:var(--dorado);">Se generará un código de referencia vinculando tu CURP de atleta automáticamente.</p>
+                </div>
+
+                <!-- RESTITUCIÓN DE TRANSFERENCIA SPEI -->
+                <div class="metodo-opcion" onclick="alternarBloques('spei', this)">
+                    <div class="metodo-info">
+                        <span class="metodo-icon">🏦</span>
+                        <div class="metodo-text"><h4>Transferencia SPEI</h4><p>Desde cualquier banca móvil</p></div>
                     </div>
-                    <div id="panel-oxxo" class="panel-metodo">
-                        <p style="font-size:0.85rem; color:var(--dorado);">Se generará un código de referencia vinculando tu CURP de atleta automáticamente.</p>
+                    <div class="radio-custom"></div>
+                </div>
+                <div id="panel-spei" class="panel-metodo">
+                    <p style="margin-bottom:4px;"><span style="color:#FFF; font-weight:600;">Banco:</span> STP</p>
+                    <p style="margin-bottom:4px;"><span style="color:#FFF; font-weight:600;">CLABE:</span> 6461 8011 2233 4455 66</p>
+                    <p><span style="color:var(--naranja); font-weight:600;">Concepto:</span> <span id="concepto-spei-auto">MTX-PROV</span></p>
+                </div>
+
+                <p style="color: #444; font-size: 0.75rem; margin-top: 20px; font-weight: 600;">Módulo de transacciones operado por METAX PRO TIMING.</p>
+            </div>
+
+            <!-- COLUMNA 2: ATLETA A INSCRIBIR (Centro exacto como el Mockup) -->
+            <div class="credencial-wrapper">
+                <h3 class="section-title" style="align-self: flex-start;">Atleta a Inscribir</h3>
+                <div class="credencial-box">
+                    <div class="credencial-title">MARATÓN MOROLEÓN 2027</div>
+                    <div class="credencial-sub">CÉDULA OFICIAL DE CORREDOR</div>
+                    
+                    <div class="credencial-avatar-circulo">
+                        <img src="" id="img-atleta" alt="Foto Atleta" onerror="this.src='https://via.placeholder.com/110/111/FF5500?text=Atleta'">
                     </div>
+                    
+                    <div class="atleta-nombre" id="lbl-nombre">Cargando...</div>
+                    <div class="atleta-km" id="lbl-distancia">-</div>
+                    <div class="atleta-curp" id="lbl-curp">CURP: -</div>
                 </div>
             </div>
 
-            <!-- COLUMNA 2: PREVISUALIZACIÓN DE LA CREDENCIAL (A un costado de la Sección 1) -->
-            <div class="credencial-preview-container">
-                <h3 class="section-title" style="align-self: flex-start; width:100%;">Atleta a Inscribir</h3>
-                <div class="credencial-card">
-                    <div class="credencial-header">
-                        <div style="font-family:'Oswald'; color:var(--naranja); font-weight:bold; font-size:1.1rem;">MARATÓN MOROLEÓN 2027</div>
-                        <div style="font-size:0.7rem; color:#aaa; letter-spacing:1px;">CÉDULA OFICIAL DE CORREDOR</div>
-                    </div>
-                    <div class="credencial-body">
-                        <!-- Img recibe automáticamente el Base64 o foto por defecto -->
-                        <img src="" id="avatar-credencial" class="credencial-foto" alt="Foto Corredor" onerror="this.src='https://via.placeholder.com/120/222222/FF5500?text=Atleta'">
-                        <div class="credencial-nombre" id="card-nombre-atleta">Cargando...</div>
-                        <div class="credencial-meta" id="card-distancia-atleta">-</div>
-                        <div style="font-size:0.75rem; color:#666; margin-top:10px;" id="card-curp-atleta">CURP: -</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- COLUMNA 3: RESUMEN Y ACCIÓN DE CONFIRMACIÓN -->
+            <!-- COLUMNA 3: RESUMEN DE COMPRA (Derecha) -->
             <div class="card-pago">
                 <h3 class="section-title">Resumen de Compra</h3>
-                <div class="resumen-line"><span style="color:#777;">Concepto:</span><span style="font-weight:600;">Inscripción Maratón</span></div>
-                <div class="resumen-line"><span style="color:#777;">Categoría:</span><span id="resumen-cat">-</span></div>
-                <div class="resumen-line"><span style="color:#777;">Playera:</span><span id="resumen-talla">-</span></div>
                 
-                <div class="total-box">
+                <div class="resumen-row"><span>Concepto:</span><span style="color:var(--naranja) !important;">Inscripción Maratón</span></div>
+                <div class="resumen-row"><span>Categoría:</span><span id="resumen-categoria">-</span></div>
+                <div class="resumen-row"><span>Playera:</span><span id="resumen-talla">-</span></div>
+                
+                <div class="total-row">
                     <span>Total:</span>
-                    <span style="color:var(--naranja);" id="resumen-monto">$450.00 MXN</span>
+                    <span style="color:var(--naranja); font-weight: 700;" id="resumen-monto">$450.00 MXN</span>
                 </div>
 
-                <button class="btn-pago" onclick="ejecutarPagoSupabase()">Confirmar Pago Seguro ➔</button>
+                <button class="btn-pago" onclick="procesarPasarelaPago()">CONFIRMAR PAGO SEGURO ➔</button>
             </div>
 
         </div>
     </main>
 
     <script>
-        // CONFIGURACIÓN DE SUPABASE (Ingresa tus claves validadas previamente)
+        // CONEXIÓN INTEGRAL SUPABASE
         const SUPABASE_URL = "https://xhiprzmvleolibzprqom.supabase.co";
-        const SUPABASE_KEY = "DEJA_AQUI_TU_KEY_ANON_PUBLIC_DE_SUPABASE"; 
+        const SUPABASE_KEY = "PEGA_AQUI_TU_LLAVE_ANON_PUBLIC_VÁLIDA";
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let datosAtleta = { curp: '', total: 450, metodo: 'Tarjeta' };
-        let ipUsuario = "0.0.0.0";
+        let transaccionData = { curp: '', total: 450, metodo: 'Tarjeta' };
+        let ipCliente = "0.0.0.0";
 
         window.addEventListener('DOMContentLoaded', async () => {
-            // 1. Obtener la IP pública del corredor en tiempo real
+            // Obtener IP del cliente para auditoría de METAX PRO TIMING
             try {
-                const res = await fetch('https://api.ipify.org?format=json');
-                const data = await res.json();
-                ipUsuario = data.ip;
-            } catch (e) { console.log("No se pudo mapear la IP local."); }
+                const response = await fetch('https://api.ipify.org?format=json');
+                const json = await response.json();
+                ipCliente = json.ip;
+            } catch (e) { console.log("Mapeo IP omitido por seguridad local."); }
 
-            // 2. Extraer parámetros de la URL para rellenar la UI y la credencial
+            // Parsear parámetros de la URL enviados desde la cédula
             const params = new URLSearchParams(window.location.search);
-            datosAtleta.curp = params.get('curp') || 'XAXX010101XXX';
+            transaccionData.curp = params.get('curp') || 'XAXX010101XXX';
             
             const nombre = params.get('nombre') || 'Juan Miguel';
             const apellidos = params.get('apellidos') || 'Yebra Prieto';
             const distancia = params.get('distancia') || '10 KM';
-            
-            // Renderizado en la tarjeta intermedia de la credencial
-            document.getElementById('card-nombre-atleta').innerText = `${nombre} ${apellidos}`;
-            document.getElementById('card-distancia-atleta').innerText = distancia;
-            document.getElementById('card-curp-atleta').innerText = `CURP: ${datosAtleta.curp}`;
-            document.getElementById('resumen-talla').innerText = params.get('talla') || 'G';
-            document.getElementById('resumen-cat').innerText = params.get('categoria') || 'Máster A';
 
-            // Cálculo dinámico del precio
+            // Rellenar Credencial Central
+            document.getElementById('lbl-nombre').innerText = `${nombre} ${apellidos}`;
+            document.getElementById('lbl-distancia').innerText = distancia;
+            document.getElementById('lbl-curp').innerText = `CURP: ${transaccionData.curp}`;
+            
+            // Rellenar Resumen Lateral
+            document.getElementById('resumen-talla').innerText = params.get('talla') || 'G';
+            document.getElementById('resumen-categoria').innerText = params.get('categoria') || 'Máster A';
+
+            // Configurar identificador único SPEI
+            document.getElementById('concepto-spei-auto').innerText = `MTX-${transaccionData.curp.substring(0,6)}`;
+
+            // Costos según el kilometraje
             let costo = 450;
             if(distancia.includes("21")) costo = 550;
             if(distancia.includes("42")) costo = 650;
-            datosAtleta.total = costo;
+            transaccionData.total = costo;
             document.getElementById('resumen-monto').innerText = `$${costo}.00 MXN`;
 
-            // Cargar imagen de credencial si existe en localStorage
-            const fotoGuardada = localStorage.getItem('foto_atleta_provisional');
-            if(fotoGuardada) {
-                document.getElementById('avatar-credencial').src = fotoGuardada;
-            }
+            // Recuperar foto provisional en base64 de memoria caché
+            const cachedFoto = localStorage.getItem('foto_atleta_provisional');
+            if(cachedFoto) document.getElementById('img-atleta').src = cachedFoto;
         });
 
-        function cambiarMetodo(metodo, elemento) {
-            document.querySelectorAll('.metodo-opcion').forEach(opt => opt.classList.remove('active'));
-            elemento.classList.add('active');
+        function alternarBloques(metodo, trigger) {
+            document.querySelectorAll('.metodo-opcion').forEach(o => o.classList.remove('active'));
+            trigger.classList.add('active');
             document.querySelectorAll('.panel-metodo').forEach(p => p.classList.remove('active'));
             document.getElementById(`panel-${metodo}`).classList.add('active');
-            datosAtleta.metodo = metodo === 'tarjeta' ? 'Tarjeta' : 'OXXO Efectivo';
+            
+            if(metodo === 'tarjeta') transaccionData.metodo = 'Tarjeta';
+            if(metodo === 'oxxo') transaccionData.metodo = 'OXXO';
+            if(metodo === 'spei') transaccionData.metodo = 'SPEI Transferencia';
         }
 
-        // 3. Inserción Transaccional del Pago en Supabase vinculando fecha, hora e IP
-        async function ejecutarPagoSupabase() {
-            // Mostrar efecto visual de carga activo
-            document.getElementById('pago-loader').style.display = 'flex';
+        async function procesarPasarelaPago() {
+            document.getElementById('global-loader').style.display = 'flex';
 
-            const { data, error } = await supabaseClient
+            const { error } = await supabaseClient
                 .from('pagos_registro')
                 .insert([{
-                    curp_atleta: datosAtleta.curp,
-                    metodo_pago: datosAtleta.metodo,
-                    monto_pagado: datosAtleta.total,
-                    concepto_pago: `Inscripción Oficial - ${document.getElementById('card-distancia-atleta').innerText}`,
-                    ip_registro: ipUsuario
-                    // Nota: fecha_registro y hora_registro se insertan con el CURRENT_DATE/TIME del servidor SQL
+                    curp_atleta: transaccionData.curp,
+                    metodo_pago: transaccionData.metodo,
+                    monto_pagado: transaccionData.total,
+                    concepto_pago: `Inscripción Maratón - ${document.getElementById('lbl-distancia').innerText}`,
+                    ip_registro: ipCliente
                 }]);
 
-            // Retraso estético de 1.5 segundos para simular validación bancaria segura
             setTimeout(() => {
-                document.getElementById('pago-loader').style.display = 'none';
-
-                if (error) {
-                    alert("Error al procesar el pago: " + error.message);
+                document.getElementById('global-loader').style.display = 'none';
+                if(error) {
+                    alert("Error crítico en pasarela: " + error.message);
                 } else {
-                    alert("¡Pago Registrado Exitosamente!\nTu inscripción ha quedado enlazada con tu cédula de corredor.");
-                    // Aquí puedes redirigir al corredor a descargar su PDF definitivo si lo deseas
+                    alert("¡PAGO CONFIRMADO CON ÉXITO!\n\nControl asignado y respaldado bajo el ecosistema METAX PRO TIMING.");
                 }
-            }, 1500);
+            }, 1200);
         }
     </script>
 </body>
