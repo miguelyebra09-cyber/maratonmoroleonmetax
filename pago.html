@@ -199,7 +199,7 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN 2: ATLETA A INSCRIBIR (DINÁMICA FIJA) -->
+            <!-- SECCIÓN 2: ATLETA A INSCRIBIR -->
             <div class="checkout-card atleta-card-neon">
                 <div class="section-title"><span>|</span> 2. Atleta a Inscribir</div>
                 <div class="badge-container">
@@ -210,7 +210,7 @@
                     <div class="badge-photo" id="atletaFotoDisplay" style="background-image: url('');"></div>
                     
                     <!-- Textos Sincronizados -->
-                    <div class="badge-name" id="atletaNombreDisplay">Buscando corredor...</div>
+                    <div class="badge-name" id="atletaNombreDisplay">Cargando datos...</div>
                     <div class="badge-dist" id="atletaDistanciaDisplay">- KM</div>
                     <div class="badge-curp">CURP: <span id="atletaCurpDisplay">Buscando...</span></div>
                 </div>
@@ -290,14 +290,7 @@
     <script>
         const SUPABASE_URL = "https://xhiprzmvleolibzprqom.supabase.co";
         const SUPABASE_KEY = "sb_publishable_LVD_xghTp8MmfutMs3RoDA_v1c4rxrg";
-        let supabaseClient = null;
-
-        try {
-            supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        } catch(e) {
-            console.error("Error crítico inicializando Supabase:", e);
-        }
-
+        
         let metodoSeleccionado = 'tarjeta';
 
         function seleccionarMetodo(metodo) {
@@ -309,67 +302,87 @@
             document.getElementById(`details-${metodo}`).classList.add('active');
         }
 
-        // --- SISTEMA CORREGIDO DE LOCALIZACIÓN DE DATOS DEL ATLETA ---
+        // --- INICIALIZACIÓN Y CONSULTA SUPABASE REESCRITA DESDE CERO ---
         window.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             
-            // Estrategia de Búsqueda de Identificador en Cascada
+            // Forzar detección en todas las capas del navegador
             let curpUsuario = params.get('curp') || 
                               localStorage.getItem('ultimo_curp_registrado') || 
                               sessionStorage.getItem('ultimo_curp_registrado') ||
-                              localStorage.getItem('curp'); // Clave alternativa común
+                              localStorage.getItem('curp');
 
-            console.log("Identificador CURP recuperado para consulta:", curpUsuario);
+            // INTENTO EXTRA: Recuperar la imagen directamente si se guardó localmente en el paso anterior
+            let fotoLocalGuardada = localStorage.getItem('atleta_foto_temporal') || sessionStorage.getItem('atleta_foto_temporal');
 
-            if (curpUsuario && curpUsuario !== "XAXX010101XXX" && supabaseClient) {
-                // Forzamos actualización por si se limpió en la redirección
+            // Si el CURP fue encontrado, forzamos su escritura visual inmediata en la credencial
+            if (curpUsuario && curpUsuario.trim() !== "") {
+                curpUsuario = curpUsuario.trim();
+                document.getElementById('atletaCurpDisplay').innerText = curpUsuario;
                 localStorage.setItem('ultimo_curp_registrado', curpUsuario);
+            }
 
+            if (fotoLocalGuardada) {
+                document.getElementById('atletaFotoDisplay').style.backgroundImage = `url('${fotoLocalGuardada}')`;
+            }
+
+            // Inicializamos el cliente Supabase de manera asíncrona segura dentro del ciclo de vida de la ventana
+            let supabaseClient = null;
+            try {
+                if (typeof supabase !== 'undefined') {
+                    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                } else {
+                    console.error("La librería global de Supabase no está definida en la ventana.");
+                }
+            } catch(e) {
+                console.error("Fallo crítico en inicialización de cliente Supabase:", e);
+            }
+
+            if (curpUsuario && supabaseClient) {
                 supabaseClient
                     .from('cedula_registro')
-                    .select('*') // Extraemos todas las columnas para evitar desajustes de nombres
-                    .eq('curp', curpUsuario.trim())
+                    .select('*')
+                    .eq('curp', curpUsuario)
                     .maybeSingle()
                     .then(({ data, error }) => {
                         if (error) {
-                            console.error("Error en consulta Supabase:", error);
-                            cargarFallbackParametros(params);
+                            console.error("Error al conectar a la tabla de Supabase:", error);
+                            cargarFallbackParametros(params, curpUsuario);
                         } else if (data) {
-                            console.log("Atleta encontrado exitosamente:", data);
+                            console.log("Registro encontrado con éxito:", data);
                             
-                            // Mapeo dinámico tolerante a mayúsculas/minúsculas o nulos
+                            // Pintar campos dinámicos reales recuperados
                             const nombreCompleto = `${data.nombres || ''} ${data.primer_apellido || ''} ${data.segundo_apellido || ''}`.trim();
-                            document.getElementById('atletaNombreDisplay').innerText = nombreCompleto || "Atleta Registrado";
+                            document.getElementById('atletaNombreDisplay').innerText = nombreCompleto.toUpperCase();
                             document.getElementById('atletaDistanciaDisplay').innerText = data.distancia || "10 KM";
                             document.getElementById('atletaCurpDisplay').innerText = data.curp;
                             
-                            // Procesamiento exacto de imagen binaria / base64
+                            // Renderizado prioritario de imágenes subidas
                             if (data.foto_base64) {
                                 document.getElementById('atletaFotoDisplay').style.backgroundImage = `url('${data.foto_base64}')`;
                             } else if (data.foto_url) {
                                 document.getElementById('atletaFotoDisplay').style.backgroundImage = `url('${data.foto_url}')`;
                             }
                             
-                            document.getElementById('resumenCategoria').innerText = data.categoria || 'Libre';
-                            document.getElementById('resumenTalla').innerText = data.talla_playera || data.talla || 'M';
+                            document.getElementById('resumenCategoria').innerText = (data.categoria || 'LIBRE').toUpperCase();
+                            document.getElementById('resumenTalla').innerText = (data.talla_playera || data.talla || 'M').toUpperCase();
                         } else {
-                            console.warn("Supabase devolvió vacío para el CURP indicado. Usando fallback seguro.");
-                            cargarFallbackParametros(params);
+                            console.warn("No se halló fila asociada a ese CURP. Cargando parámetros visuales alternos.");
+                            cargarFallbackParametros(params, curpUsuario);
                         }
                     });
             } else {
-                console.log("No se detectó un CURP activo válido. Mostrando vista previa.");
-                cargarFallbackParametros(params);
+                cargarFallbackParametros(params, curpUsuario);
             }
 
             iniciarRelojRegresivo();
         });
 
-        function cargarFallbackParametros(params) {
-            // Valores de previsualización por defecto si no hay conexión activa
-            document.getElementById('atletaNombreDisplay').innerText = params.get('nombre') || 'JUAN MIGUEL YEBRA PRIETO';
+        function cargarFallbackParametros(params, curpDetectado) {
+            // Si el CURP existía pero Supabase falló, respetamos el CURP real y completamos los textos
+            document.getElementById('atletaNombreDisplay').innerText = params.get('nombre') || 'ATLETA REGISTRADO';
             document.getElementById('atletaDistanciaDisplay').innerText = params.get('distancia') || '10 KM';
-            document.getElementById('atletaCurpDisplay').innerText = params.get('curp') || 'XAXX010101XXX';
+            document.getElementById('atletaCurpDisplay').innerText = curpDetectado || params.get('curp') || 'XAXX010101XXX';
             document.getElementById('resumenCategoria').innerText = 'MÁSTER A';
             document.getElementById('resumenTalla').innerText = 'G';
         }
@@ -379,7 +392,7 @@
 
             function actualizarContador() {
                 const ahora = new Date().getTime();
-                const diferencia = fechaObjetivo - ahora;
+                const diferencia = fechaObjetivo - now = ahora;
 
                 if (diferencia <= 0) {
                     document.getElementById('timer-dias').innerText = "00";
