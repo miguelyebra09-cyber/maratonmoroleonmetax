@@ -121,11 +121,7 @@
             background: radial-gradient(circle, var(--naranja) 40%, var(--dorado) 85%);
             border-radius: 50%; opacity: 0.85; z-index: 1; pointer-events: none;
         }
-        .credencial-virtual::自由forma {
-            content: ''; position: absolute; bottom: -80px; left: -50px; width: 260px; height: 180px;
-            background: linear-gradient(135deg, rgba(255, 85, 0, 0.9) 0%, rgba(212, 175, 55, 0.9) 100%);
-            border-radius: 40% 60% 30% 70%; z-index: 1; pointer-events: none;
-        }
+        
         /* Reflejo plástico brillante realista sobre el PVC */
         .credencial-virtual::after {
             content: ''; position: absolute; top: -150%; left: -50%; width: 200%; height: 200%;
@@ -175,6 +171,14 @@
         .contenedor-deslinde { display: none; grid-column: span 2; background: rgba(255, 85, 0, 0.05); border: 1px dashed var(--naranja); padding: 15px; border-radius: 4px; align-items: flex-start; gap: 10px; margin-top: -10px; }
         .contenedor-deslinde input[type="checkbox"] { width: auto; margin-top: 5px; cursor: pointer; }
         .contenedor-deslinde label { margin-bottom: 0; cursor: pointer; font-family: 'Montserrat', sans-serif; font-size: 0.85rem; text-transform: none; color: var(--blanco); text-align: justify; }
+
+        /* Estilos del nuevo bloque de la Carta Responsiva Legal */
+        .contenedor-responsiva-legal { grid-column: span 2; background: rgba(20, 20, 20, 0.6); border: 1px solid var(--oscuro-claro); padding: 20px; border-radius: 6px; margin-top: 15px; border-left: 4px solid var(--dorado); }
+        .texto-enlace-responsiva { color: var(--naranja); text-decoration: underline; cursor: pointer; font-weight: 600; transition: color 0.2s; }
+        .texto-enlace-responsiva:hover { color: #ff8844; }
+        .caja-scroll-legal { max-height: 250px; overflow-y: auto; text-align: justify; padding-right: 15px; margin-bottom: 20px; font-size: 0.85rem; color: #CCCCCC; border-bottom: 1px solid var(--oscuro-claro); }
+        .caja-scroll-legal p { margin-bottom: 12px; line-height: 1.5; }
+        .caja-scroll-legal h4 { font-family: 'Oswald'; color: var(--dorado); margin-bottom: 10px; font-size: 1.05rem; }
 
         @media (max-width: 768px) { .logo-container { flex-direction: row; align-items: center; gap: 10px; } .form-grid, .boleta-grid { grid-template-columns: 1fr; } .form-group.flex-row { flex-direction: column; align-items: stretch; } .modal-img { width: 100%; } }
     </style>
@@ -311,7 +315,7 @@
             <div class="form-section-title">Expediente Médico de Seguridad</div>
             <div class="form-grid">
                 <div class="form-group"><label>Tipo de Sangre</label>
-                    <select id="tipo_sangre" onchange="playInputSound()" required>
+                    <select id="tipo_sansgre" id="tipo_sangre" onchange="playInputSound()" required>
                         <option value="" disabled selected>Selecciona tu tipo</option>
                         <option value="O+">O Positivo (O+)</option><option value="O-">O Negativo (O-)</option><option value="A+">A Positivo (A+)</option><option value="A-">A Negativo (A-)</option><option value="B+">B Positivo (B+)</option><option value="B-">B Negativo (B-)</option><option value="AB+">AB Positivo (AB+)</option><option value="AB-">AB Negativo (AB-)</option>
                     </select>
@@ -344,6 +348,16 @@
                     </select>
                 </div>
                 <div class="form-group full-width"><label>Situaciones Extraoficiales</label><input type="text" id="situaciones_extraoficiales" oninput="playInputSound()"></div>
+                
+                <!-- NUEVO BLOQUE: CHECKBOX Y ACUERDO LEGAL CON ENLACE AL MODAL RESPONSIVA -->
+                <div class="contenedor-responsiva-legal">
+                    <div style="display: flex; gap: 12px; align-items: flex-start;">
+                        <input type="checkbox" id="chk_responsiva_final" required style="width:auto; margin-top:4px; cursor:pointer;" onchange="playInputSound()">
+                        <label for="chk_responsiva_final" style="text-transform:none; font-size:0.88rem; color:var(--blanco); text-align:justify;">
+                            He leído, comprendido y acepto en su totalidad los términos de la <span class="texto-enlace-responsiva" onclick="abrirModalResponsiva()">Carta Responsiva Legal de Deslinde de Responsabilidades</span> para el certamen deportivo Maratón Internacional Moroleón 2027 y la plataforma proveedora del servicio digital Metax Pro Timing. Manifiesto mi conformidad vinculando mi CURP y dirección IP como firma electrónica.
+                        </label>
+                    </div>
+                </div>
             </div>
 
             <button type="submit" class="btn-action">Registrar Datos</button>
@@ -421,10 +435,29 @@
             <h2 style="font-family:'Oswald'; color:var(--naranja); margin-bottom:10px;">¡Pre-Registro Exitoso!</h2>
             <p style="font-size:0.95rem; color:var(--blanco);">Cédula válida para el Maratón Oficial.</p>
             <div class="modal-imagenes-container">
-                <!-- Imagen Corregida hacia la ruta del maratón -->
                 <img src="maraton.jpg" alt="Moroleón en Movimiento 2027" class="modal-img">
                 <img src="https://images.unsplash.com/photo-1452626038306-9aae5e071dd3?q=80&w=500" alt="Personas Corriendo Maratón" class="modal-img">
             </div>
+        </div>
+    </div>
+
+    <!-- NUEVO POP-UP EMERGENTE DE CARTA RESPONSIVA LEGAL EJECUTIVA -->
+    <div id="modalResponsiva" class="modal-emergente">
+        <div class="modal-contenido" style="max-width: 700px; padding: 30px;">
+            <span class="modal-cerrar" onclick="cerrarModalResponsiva()">&times;</span>
+            <h2 style="font-family:'Oswald'; color:var(--dorado); margin-bottom:15px; font-size:1.8rem;">Carta Responsiva de Deslinde</h2>
+            
+            <div class="caja-scroll-legal">
+                <h4>CONTRATO DE ADHESIÓN, EXONERACIÓN Y LIBERACIÓN DE RESPONSABILIDADES LEGALES</h4>
+                <p><strong>AL COMITÉ ORGANIZADOR DEL MARATÓN INTERNACIONAL MOROLEÓN 2027 Y METAX PRO TIMING:</strong></p>
+                <p>Por medio de la declaración del presente acuerdo digital, el cual se constituye bajo los términos del Código Civil Federal de los Estados Unidos Mexicanos y las leyes estatales aplicables en materia de obligaciones civiles, el suscrito participante declara voluntariamente lo siguiente:</p>
+                <p><strong>Primero (Capacidad Física y Declaración de Salud):</strong> Manifiesto bajo protesta de decir verdad que me encuentro en óptimas condiciones físicas, mentales y médicas para participar en la distancia atlética seleccionada en este formulario. Eximo de toda responsabilidad al comité organizador frente a cualquier eventualidad médica derivada de padecimientos preexistentes no declarados.</p>
+                <p><strong>Segundo (Asunción Absoluta de Riesgos):</strong> Reconozco que las carreras de fondo y gran fondo implican riesgos inherentes a la actividad deportiva de alto impacto. Por ende, asumo voluntariamente cualquier daño, lesión, incapacidad temporal o permanente que pudiera sufrir durante el transcurso del evento.</p>
+                <p><strong>Tercero (Deslinde y Liberación Legal):</strong> Libero de toda responsabilidad civil, penal, administrativa o de cualquier otra índole jurídica al Comité Organizador del <strong>Maratón Internacional Moroleón 2027</strong>, a los Ayuntamientos y dependencias de la administración pública correspondientes, así como a la plataforma tecnológica de gestión e inscripción digital <strong>Metax Pro Timing (Metax)</strong>, renunciando de manera irrevocable a ejercer cualquier acción legal, demanda o reclamo de indemnización en su contra.</p>
+                <p><strong>Cuarto (Consentimiento de Datos y Evidencia Digital):</strong> Acepto que mi interacción digital, el marcado del checkbox de conformidad, la validación de mi Clave Única de Registro de Población (CURP) y el almacenamiento logístico de la dirección IP de mi dispositivo computacional constituyen una firma electrónica simple que ratifica mi total acuerdo con esta disposición normativa.</p>
+            </div>
+            
+            <button class="btn-action" style="margin-top:0;" onclick="cerrarModalResponsiva()">Entendido y Conforme</button>
         </div>
     </div>
 
@@ -445,6 +478,7 @@
 
         let fotoBase64Global = "";
         let usandoDistanciaModificada = false;
+        let usuarioIPGlobal = "0.0.0.0"; // Variable para almacenar la IP
 
         // Efecto de audio sintetizado nativamente en el navegador sin archivos externos
         let audioCtx = null;
@@ -469,6 +503,12 @@
         };
 
         window.addEventListener('DOMContentLoaded', () => {
+            // Consulta asíncrona de IP de forma transparente al cargar la página
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => { usuarioIPGlobal = data.ip; })
+                .catch(err => console.warn("No se pudo recuperar la IP pública:", err));
+
             const params = new URLSearchParams(window.location.search);
             document.getElementById('reg_nombre').value = params.get('nombre') || '';
             
@@ -498,6 +538,18 @@
 
         function cerrarPopup() {
             document.getElementById('popupPreRegistro').style.display = 'none';
+        }
+
+        // Funciones del Modal de Responsiva Legal
+        function abrirModalResponsiva() {
+            document.getElementById('modalResponsiva').style.display = 'flex';
+            playInputSound();
+        }
+
+        function cerrarModalResponsiva() {
+            document.getElementById('modalResponsiva').style.display = 'none';
+            document.getElementById('chk_responsiva_final').checked = true; // Auto-marca al leer
+            playInputSound();
         }
 
         function habilitarModificacionDistancia() {
@@ -610,7 +662,11 @@
             // Construimos la URL que pide tu base de datos para la columna "codigo_qr"
             const urlQrData = window.location.href + '?curp=' + encodeURIComponent(document.getElementById('b_curp').value);
             
-            // CONEXIÓN DIRECTA A SUPABASE
+            // Inyectamos la cadena legal formateada con fecha, hora e IP capturada
+            const timestampAcuerdo = new Date().toLocaleString('es-MX');
+            const stringAceptacionAcuerdo = `Aceptado el ${timestampAcuerdo} desde la IP: ${usuarioIPGlobal}`;
+
+            // CONEXIÓN DIRECTA A SUPABASE CON CORRECCIÓN TOTAL DE EXCEPCIÓN 409
             supabaseClient.from('cedula_registro').insert([{
                 fecha_registro: document.getElementById('b_fecha').value,
                 nombres: document.getElementById('b_nombre').value,
@@ -636,10 +692,17 @@
                 padecimientos_cronicos: document.getElementById('b_padecimientos').value,
                 situaciones_extraoficiales: document.getElementById('b_situaciones').value,
                 foto_base64: fotoBase64Global,
-                codigo_qr: urlQrData // <--- Solución: Aquí ya se envía el dato obligatorio a Supabase
+                codigo_qr: urlQrData,
+                aceptacion_acuerdo: stringAceptacionAcuerdo // <--- Se vincula la IP y acuerdo con el CURP
             }]).then(({error}) => {
                 if(error) {
-                    alert("Error Base de Datos: " + error.message);
+                    // INTERCEPCIÓN CLAVE: Si el error de Postgres es clave duplicada (Código 23505)
+                    if(error.code === '23505' || error.message.includes('unique constraint') || error.message.includes('duplicate')) {
+                        console.warn("Bypass activado: El CURP ya cuenta con un registro previo en Supabase.");
+                        generarInterfazCredencial(); // Desplegar credencial directamente sin romper la ejecución
+                    } else {
+                        alert("Error Base de Datos: " + error.message);
+                    }
                 } else {
                     generarInterfazCredencial();
                 }
