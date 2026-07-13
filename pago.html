@@ -302,7 +302,7 @@
             document.getElementById(`details-${metodo}`).classList.add('active');
         }
 
-        // --- INICIALIZACIÓN Y CONSULTA SUPABASE REESCRITA DESDE CERO ---
+        // --- INICIALIZACIÓN Y CONSULTA SUPABASE ---
         window.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             
@@ -312,10 +312,10 @@
                               sessionStorage.getItem('ultimo_curp_registrado') ||
                               localStorage.getItem('curp');
 
-            // INTENTO EXTRA: Recuperar la imagen directamente si se guardó localmente en el paso anterior
+            // Recuperar la imagen directamente si se guardó localmente en base64 en el paso anterior
             let fotoLocalGuardada = localStorage.getItem('atleta_foto_temporal') || sessionStorage.getItem('atleta_foto_temporal');
 
-            // Si el CURP fue encontrado, forzamos su escritura visual inmediata en la credencial
+            // Si el CURP fue encontrado, forzamos su escritura visual inmediata
             if (curpUsuario && curpUsuario.trim() !== "") {
                 curpUsuario = curpUsuario.trim();
                 document.getElementById('atletaCurpDisplay').innerText = curpUsuario;
@@ -326,16 +326,16 @@
                 document.getElementById('atletaFotoDisplay').style.backgroundImage = `url('${fotoLocalGuardada}')`;
             }
 
-            // Inicializamos el cliente Supabase de manera asíncrona segura dentro del ciclo de vida de la ventana
+            // Inicializamos el cliente Supabase de manera segura
             let supabaseClient = null;
             try {
                 if (typeof supabase !== 'undefined') {
                     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 } else {
-                    console.error("La librería global de Supabase no está definida en la ventana.");
+                    console.error("La librería de Supabase no está definida.");
                 }
             } catch(e) {
-                console.error("Fallo crítico en inicialización de cliente Supabase:", e);
+                console.error("Fallo inicializando Supabase:", e);
             }
 
             if (curpUsuario && supabaseClient) {
@@ -367,7 +367,7 @@
                             document.getElementById('resumenCategoria').innerText = (data.categoria || 'LIBRE').toUpperCase();
                             document.getElementById('resumenTalla').innerText = (data.talla_playera || data.talla || 'M').toUpperCase();
                         } else {
-                            console.warn("No se halló fila asociada a ese CURP. Cargando parámetros visuales alternos.");
+                            console.warn("No se halló fila asociada a ese CURP.");
                             cargarFallbackParametros(params, curpUsuario);
                         }
                     });
@@ -379,7 +379,6 @@
         });
 
         function cargarFallbackParametros(params, curpDetectado) {
-            // Si el CURP existía pero Supabase falló, respetamos el CURP real y completamos los textos
             document.getElementById('atletaNombreDisplay').innerText = params.get('nombre') || 'ATLETA REGISTRADO';
             document.getElementById('atletaDistanciaDisplay').innerText = params.get('distancia') || '10 KM';
             document.getElementById('atletaCurpDisplay').innerText = curpDetectado || params.get('curp') || 'XAXX010101XXX';
@@ -387,12 +386,13 @@
             document.getElementById('resumenTalla').innerText = 'G';
         }
 
+        // --- SINTAXIS LÓGICA CORREGIDA AQUÍ ---
         function iniciarRelojRegresivo() {
             const fechaObjetivo = new Date('January 10, 2027 07:00:00').getTime();
 
             function actualizarContador() {
                 const ahora = new Date().getTime();
-                const diferencia = fechaObjetivo - now = ahora;
+                const diferencia = fechaObjetivo - ahora;
 
                 if (diferencia <= 0) {
                     document.getElementById('timer-dias').innerText = "00";
