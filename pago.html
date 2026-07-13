@@ -64,7 +64,7 @@
         .payment-details-box { background: rgba(0,0,0,0.3); border: 1px dashed var(--oscuro-claro); padding: 15px; border-radius: 6px; margin-top: 10px; font-size: 0.85rem; color: #aaa; display: none; }
         .payment-details-box.active { display: block; }
 
-        /* --- EFECTO DE LUZ NEÓN PROGRESIVA EN LA CREDENCIAL --- */
+        /* --- Efecto de Luz Neón Progresiva --- */
         @keyframes neonPulse {
             0% { border-color: var(--oscuro-claro); box-shadow: 0 0 5px rgba(255, 85, 0, 0.1); }
             50% { border-color: var(--naranja); box-shadow: 0 0 20px var(--naranja-neon); }
@@ -95,84 +95,20 @@
         .btn-pago { display: block; width: 100%; padding: 15px; background-color: var(--naranja); color: white; border: none; font-size: 1.15rem; font-weight: bold; border-radius: 4px; cursor: pointer; transition: all 0.3s; margin-top: 25px; text-align: center; text-decoration: none; }
         .btn-pago:hover { background-color: #ff6622; box-shadow: 0 0 15px rgba(255,85,0,0.5); }
 
-        /* --- CRONÓMETRO DIGITAL MEJORADO CON LUZ NEÓN FIJA Y COMPACTA --- */
-        .timer-section-container {
-            margin: 50px auto 0 auto;
-            max-width: 650px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .digital-countdown-box {
-            width: 100%;
-            background: #090909;
-            border: 2px solid var(--naranja);
-            border-radius: 12px 12px 0 0;
-            padding: 25px 30px;
-            box-shadow: 0 0 20px var(--naranja-neon-fuerte), inset 0 0 15px rgba(255, 85, 0, 0.2);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            text-align: center;
-        }
+        /* --- Cronómetro Digital --- */
+        .timer-section-container { margin: 50px auto 0 auto; max-width: 650px; display: flex; flex-direction: column; align-items: center; }
+        .digital-countdown-box { width: 100%; background: #090909; border: 2px solid var(--naranja); border-radius: 12px 12px 0 0; padding: 25px 30px; box-shadow: 0 0 20px var(--naranja-neon-fuerte), inset 0 0 15px rgba(255, 85, 0, 0.2); display: flex; justify-content: space-around; align-items: center; text-align: center; }
         .timer-segment { display: flex; flex-direction: column; align-items: center; }
-        .timer-unit {
-            font-size: 3.5rem;
-            font-weight: 700;
-            color: #FFFFFF;
-            text-shadow: 0 0 12px var(--naranja-neon-fuerte);
-            line-height: 1;
-        }
-        .timer-label {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            color: #aaaaaa;
-            letter-spacing: 2px;
-            margin-top: 8px;
-            font-weight: 600;
-        }
-        .timer-separator {
-            font-size: 2.8rem;
-            color: var(--naranja);
-            text-shadow: 0 0 10px var(--naranja-neon);
-            padding-bottom: 12px;
-            font-family: 'Oswald';
-        }
+        .timer-unit { font-size: 3.5rem; font-weight: 700; color: #FFFFFF; text-shadow: 0 0 12px var(--naranja-neon-fuerte); line-height: 1; }
+        .timer-label { font-size: 0.75rem; text-transform: uppercase; color: #aaaaaa; letter-spacing: 2px; margin-top: 8px; font-weight: 600; }
+        .timer-separator { font-size: 2.8rem; color: var(--naranja); text-shadow: 0 0 10px var(--naranja-neon); padding-bottom: 12px; font-family: 'Oswald'; }
 
-        /* --- BANNER INFERIOR EN LÍNEA INFINITA MARQUEE --- */
-        .continuous-banner {
-            width: 100%;
-            height: 45px;
-            background-color: #111111;
-            border: 2px solid var(--naranja);
-            border-top: none;
-            border-radius: 0 0 12px 12px;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.6), 0 4px 10px var(--naranja-neon);
-        }
-        .marquee-wrapper {
-            display: flex;
-            white-space: nowrap;
-        }
-        .marquee-content {
-            display: flex;
-            animation: marqueeInfinite 20s linear infinite;
-        }
-        .banner-text {
-            font-size: 1.15rem;
-            font-weight: 700;
-            color: var(--naranja);
-            letter-spacing: 3px;
-            padding-right: 50px;
-            text-shadow: 0 0 8px var(--naranja-neon);
-            display: inline-block;
-        }
-        @keyframes marqueeInfinite {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(-50%, 0, 0); }
-        }
+        /* --- Banner Inferior Rotativo Marquee --- */
+        .continuous-banner { width: 100%; height: 45px; background-color: #111111; border: 2px solid var(--naranja); border-top: none; border-radius: 0 0 12px 12px; overflow: hidden; display: flex; align-items: center; box-shadow: 0 8px 20px rgba(0,0,0,0.6), 0 4px 10px var(--naranja-neon); }
+        .marquee-wrapper { display: flex; white-space: nowrap; }
+        .marquee-content { display: flex; animation: marqueeInfinite 20s linear infinite; }
+        .banner-text { font-size: 1.15rem; font-weight: 700; color: var(--naranja); letter-spacing: 3px; padding-right: 50px; text-shadow: 0 0 8px var(--naranja-neon); display: inline-block; }
+        @keyframes marqueeInfinite { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(-50%, 0, 0); } }
 
         @media (max-width: 992px) { .checkout-grid { grid-template-columns: 1fr; } .timer-section-container { max-width: 100%; } }
     </style>
@@ -263,20 +199,20 @@
                 </div>
             </div>
 
-            <!-- SECCIÓN 2: ATLETA A INSCRIBIR -->
+            <!-- SECCIÓN 2: ATLETA A INSCRIBIR (DINÁMICA FIJA) -->
             <div class="checkout-card atleta-card-neon">
                 <div class="section-title"><span>|</span> 2. Atleta a Inscribir</div>
                 <div class="badge-container">
                     <div class="badge-header">MARATÓN MOROLEÓN 2027</div>
                     <div class="badge-subheader">Cédula Oficial de Corredor</div>
                     
-                    <!-- Contenedor de foto con ID único -->
+                    <!-- Imagen Dinámica -->
                     <div class="badge-photo" id="atletaFotoDisplay" style="background-image: url('');"></div>
                     
-                    <!-- Campos Dinámicos Sincronizados -->
-                    <div class="badge-name" id="atletaNombreDisplay">Cargando atleta...</div>
+                    <!-- Textos Sincronizados -->
+                    <div class="badge-name" id="atletaNombreDisplay">Buscando corredor...</div>
                     <div class="badge-dist" id="atletaDistanciaDisplay">- KM</div>
-                    <div class="badge-curp">CURP: <span id="atletaCurpDisplay">Cargando...</span></div>
+                    <div class="badge-curp">CURP: <span id="atletaCurpDisplay">Buscando...</span></div>
                 </div>
             </div>
 
@@ -307,7 +243,7 @@
 
         </div>
 
-        <!-- SECCIÓN: CRONÓMETRO DIGITAL Y BANNER DE LÍNEA CONTINUA INFINITA -->
+        <!-- SECCIÓN: CRONÓMETRO -->
         <div class="timer-section-container">
             <div class="digital-countdown-box">
                 <div class="timer-segment">
@@ -331,7 +267,6 @@
                 </div>
             </div>
             
-            <!-- Banner Infinito acoplado abajo -->
             <div class="continuous-banner">
                 <div class="marquee-wrapper">
                     <div class="marquee-content">
@@ -360,7 +295,7 @@
         try {
             supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         } catch(e) {
-            console.error("Error al inicializar cliente Supabase:", e);
+            console.error("Error crítico inicializando Supabase:", e);
         }
 
         let metodoSeleccionado = 'tarjeta';
@@ -374,45 +309,56 @@
             document.getElementById(`details-${metodo}`).classList.add('active');
         }
 
-        // --- SISTEMA AUTOMÁTICO DE CARGA DE DATOS (URL + LOCALSTORAGE FALLBACK) ---
+        // --- SISTEMA CORREGIDO DE LOCALIZACIÓN DE DATOS DEL ATLETA ---
         window.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             
-            // Intenta leer de URL, si no existe toma el último CURP guardado en el navegador
-            let curpUsuario = params.get('curp');
-            if(!curpUsuario) {
-                curpUsuario = localStorage.getItem('ultimo_curp_registrado');
-            } else {
-                // Si venía en la URL, lo guardamos para futuras recargas de página
-                localStorage.setItem('ultimo_curp_registrado', curpUsuario);
-            }
+            // Estrategia de Búsqueda de Identificador en Cascada
+            let curpUsuario = params.get('curp') || 
+                              localStorage.getItem('ultimo_curp_registrado') || 
+                              sessionStorage.getItem('ultimo_curp_registrado') ||
+                              localStorage.getItem('curp'); // Clave alternativa común
 
-            if (curpUsuario && supabaseClient) {
+            console.log("Identificador CURP recuperado para consulta:", curpUsuario);
+
+            if (curpUsuario && curpUsuario !== "XAXX010101XXX" && supabaseClient) {
+                // Forzamos actualización por si se limpió en la redirección
+                localStorage.setItem('ultimo_curp_registrado', curpUsuario);
+
                 supabaseClient
                     .from('cedula_registro')
-                    .select('nombres, primer_apellido, segundo_apellido, distancia, curp, foto_base64, categoria, talla_playera')
-                    .eq('curp', curpUsuario)
+                    .select('*') // Extraemos todas las columnas para evitar desajustes de nombres
+                    .eq('curp', curpUsuario.trim())
                     .maybeSingle()
                     .then(({ data, error }) => {
                         if (error) {
-                            console.error("Error cargando datos de Supabase:", error);
+                            console.error("Error en consulta Supabase:", error);
                             cargarFallbackParametros(params);
                         } else if (data) {
-                            document.getElementById('atletaNombreDisplay').innerText = `${data.nombres} ${data.primer_apellido} ${data.segundo_apellido || ''}`;
-                            document.getElementById('atletaDistanciaDisplay').innerText = data.distancia;
+                            console.log("Atleta encontrado exitosamente:", data);
+                            
+                            // Mapeo dinámico tolerante a mayúsculas/minúsculas o nulos
+                            const nombreCompleto = `${data.nombres || ''} ${data.primer_apellido || ''} ${data.segundo_apellido || ''}`.trim();
+                            document.getElementById('atletaNombreDisplay').innerText = nombreCompleto || "Atleta Registrado";
+                            document.getElementById('atletaDistanciaDisplay').innerText = data.distancia || "10 KM";
                             document.getElementById('atletaCurpDisplay').innerText = data.curp;
                             
+                            // Procesamiento exacto de imagen binaria / base64
                             if (data.foto_base64) {
                                 document.getElementById('atletaFotoDisplay').style.backgroundImage = `url('${data.foto_base64}')`;
+                            } else if (data.foto_url) {
+                                document.getElementById('atletaFotoDisplay').style.backgroundImage = `url('${data.foto_url}')`;
                             }
                             
                             document.getElementById('resumenCategoria').innerText = data.categoria || 'Libre';
-                            document.getElementById('resumenTalla').innerText = data.talla_playera || 'M';
+                            document.getElementById('resumenTalla').innerText = data.talla_playera || data.talla || 'M';
                         } else {
+                            console.warn("Supabase devolvió vacío para el CURP indicado. Usando fallback seguro.");
                             cargarFallbackParametros(params);
                         }
                     });
             } else {
+                console.log("No se detectó un CURP activo válido. Mostrando vista previa.");
                 cargarFallbackParametros(params);
             }
 
@@ -420,18 +366,14 @@
         });
 
         function cargarFallbackParametros(params) {
-            const nombreUrl = params.get('nombre') || 'Juan Miguel Yebra Prieto';
-            const distUrl = params.get('distancia') || '10 KM';
-            const curpUrl = params.get('curp') || 'XAXX010101XXX';
-            
-            document.getElementById('atletaNombreDisplay').innerText = nombreUrl;
-            document.getElementById('atletaDistanciaDisplay').innerText = distUrl;
-            document.getElementById('atletaCurpDisplay').innerText = curpUrl;
-            document.getElementById('resumenCategoria').innerText = 'Máster A';
+            // Valores de previsualización por defecto si no hay conexión activa
+            document.getElementById('atletaNombreDisplay').innerText = params.get('nombre') || 'JUAN MIGUEL YEBRA PRIETO';
+            document.getElementById('atletaDistanciaDisplay').innerText = params.get('distancia') || '10 KM';
+            document.getElementById('atletaCurpDisplay').innerText = params.get('curp') || 'XAXX010101XXX';
+            document.getElementById('resumenCategoria').innerText = 'MÁSTER A';
             document.getElementById('resumenTalla').innerText = 'G';
         }
 
-        // --- CRONÓMETRO DE CUENTA REGRESIVA AL 10 DE ENERO DE 2027 A LAS 7:00 AM ---
         function iniciarRelojRegresivo() {
             const fechaObjetivo = new Date('January 10, 2027 07:00:00').getTime();
 
