@@ -315,11 +315,18 @@
             <div class="form-section-title">Expediente Médico de Seguridad</div>
             <div class="form-grid">
                 <div class="form-group"><label>Tipo de Sangre</label>
-                    <select id="tipo_sansgre" id="tipo_sangre" onchange="playInputSound()" required>
-                        <option value="" disabled selected>Selecciona tu tipo</option>
-                        <option value="O+">O Positivo (O+)</option><option value="O-">O Negativo (O-)</option><option value="A+">A Positivo (A+)</option><option value="A-">A Negativo (A-)</option><option value="B+">B Positivo (B+)</option><option value="B-">B Negativo (B-)</option><option value="AB+">AB Positivo (AB+)</option><option value="AB-">AB Negativo (AB-)</option>
-                    </select>
-                </div>
+    <select id="tipo_sangre" onchange="playInputSound()" required>
+        <option value="" disabled selected>Selecciona tu tipo</option>
+        <option value="O+">O Positivo (O+)</option>
+        <option value="O-">O Negativo (O-)</option>
+        <option value="A+">A Positivo (A+)</option>
+        <option value="A-">A Negativo (A-)</option>
+        <option value="B+">B Positivo (B+)</option>
+        <option value="B-">B Negativo (B-)</option>
+        <option value="AB+">AB Positivo (AB+)</option>
+        <option value="AB-">AB Negativo (AB-)</option>
+    </select>
+</div>
                 <div class="form-group"><label>Contacto Emergencia (Nombre)</label><input type="text" id="contacto_emergencia" oninput="playInputSound()" required></div>
                 <div class="form-group"><label>Teléfono Emergencia</label><input type="tel" id="tel_emergencia" oninput="playInputSound()" required></div>
                 
