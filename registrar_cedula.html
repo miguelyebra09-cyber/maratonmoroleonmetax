@@ -101,7 +101,7 @@
         .btn-editar { background: #f39c12; color: white; box-shadow: 0 4px 15px rgba(243,156,18,0.3); }
         .btn-editar:hover { background: #f1c40f; box-shadow: 0 0 20px rgba(241,196,15,0.6); }
 
-        /* --- NUEVA Credencial Virtual Realista Efecto Premium PVC --- */
+        /* --- Credencial Virtual Realista Efecto Premium PVC --- */
         .credencial-virtual { 
             background: linear-gradient(145deg, #EBEBEB 0%, #D6D6D6 100%); 
             width: 380px; 
@@ -115,20 +115,17 @@
             position: relative;
             overflow: hidden;
         }
-        /* Vivos Asimétricos Curvos Naranja y Dorado estilo PVC Premium */
         .credencial-virtual::before {
             content: ''; position: absolute; top: -40px; right: -60px; width: 220px; height: 160px;
             background: radial-gradient(circle, var(--naranja) 40%, var(--dorado) 85%);
             border-radius: 50%; opacity: 0.85; z-index: 1; pointer-events: none;
         }
         
-        /* Reflejo plástico brillante realista sobre el PVC */
         .credencial-virtual::after {
             content: ''; position: absolute; top: -150%; left: -50%; width: 200%; height: 200%;
             background: linear-gradient(60deg, rgba(255,255,255,0) 25%, rgba(255,255,255,0.25) 30%, rgba(255,255,255,0) 35%);
             transform: rotate(30deg); pointer-events: none; z-index: 5;
         }
-        /* Bloque Logotipo Oficial en Credencial */
         .credencial-logo-box {
             display: flex; justify-content: flex-start; align-items: center; gap: 10px;
             border-bottom: 2px solid var(--naranja); padding-bottom: 12px; margin-bottom: 20px;
@@ -587,7 +584,7 @@
                 document.getElementById('auto_edad').value = isNaN(edad) ? '' : edad;
 
                 if (!isNaN(edad) && edad < 18 && edad > 0) {
-                    alert("Se identifica que el corredor a registrar es menor de edad, por lo cual se sugiere que para completar su registro es necesario presentar acta de nacimiento, una carta responsiva firmada por los padres o el tutor legal del corredor o del menor y credencial para votar del tutor o de los padres que firman la carta.");
+                    alert("Se identifica que el corredor a registrar es menor de edad, por lo cual se sugerirá presentar acta de nacimiento, carta responsiva firmada por los padres/tutor y credencial de elector de los firmantes para finalizar de forma segura.");
                 }
 
                 let catSelect = document.getElementById('categoria');
@@ -666,20 +663,23 @@
             
             bloquearCamposBoleta(true);
             
-            // Construimos la URL que pide tu base de datos para la columna "codigo_qr"
-            const urlQrData = window.location.href + '?curp=' + encodeURIComponent(document.getElementById('b_curp').value);
+            const curpValor = document.getElementById('b_curp').value.toUpperCase().trim();
             
-            // Inyectamos la cadena legal formateada con fecha, hora e IP capturada
+            // --- PERSISTENCIA LOCAL DE SEGURIDAD PARA PAGO.HTML ---
+            localStorage.setItem('curp_atleta', curpValor);
+            sessionStorage.setItem('curp_atleta', curpValor);
+
+            const urlQrData = window.location.href + '?curp=' + encodeURIComponent(curpValor);
             const timestampAcuerdo = new Date().toLocaleString('es-MX');
             const stringAceptacionAcuerdo = `Aceptado el ${timestampAcuerdo} desde la IP: ${usuarioIPGlobal}`;
 
-            // CONEXIÓN DIRECTA A SUPABASE CON CORRECCIÓN TOTAL DE EXCEPCIÓN 409
+            // CONEXIÓN DIRECTA A SUPABASE
             supabaseClient.from('cedula_registro').insert([{
                 fecha_registro: document.getElementById('b_fecha').value,
                 nombres: document.getElementById('b_nombre').value,
                 primer_apellido: document.getElementById('b_apellido1').value,
                 segundo_apellido: document.getElementById('b_apellido2').value,
-                curp: document.getElementById('b_curp').value,
+                curp: curpValor,
                 correo: document.getElementById('b_correo').value,
                 telefono_celular: document.getElementById('b_telefono').value,
                 distancia: document.getElementById('b_distancia').value,
@@ -700,13 +700,12 @@
                 situaciones_extraoficiales: document.getElementById('b_situaciones').value,
                 foto_base64: fotoBase64Global,
                 codigo_qr: urlQrData,
-                aceptacion_acuerdo: stringAceptacionAcuerdo // <--- Se vincula la IP y acuerdo con el CURP
+                aceptacion_acuerdo: stringAceptacionAcuerdo
             }]).then(({error}) => {
                 if(error) {
-                    // INTERCEPCIÓN CLAVE: Si el error de Postgres es clave duplicada (Código 23505)
                     if(error.code === '23505' || error.message.includes('unique constraint') || error.message.includes('duplicate')) {
                         console.warn("Bypass activado: El CURP ya cuenta con un registro previo en Supabase.");
-                        generarInterfazCredencial(); // Desplegar credencial directamente sin romper la ejecución
+                        generarInterfazCredencial();
                     } else {
                         alert("Error Base de Datos: " + error.message);
                     }
@@ -729,7 +728,6 @@
             const urlInfo = encodeURIComponent(window.location.href + '?curp=' + document.getElementById('b_curp').value);
             document.getElementById('c_qr').innerHTML = `<img src="https://chart.googleapis.com/chart?chs=90x90&cht=qr&chl=${urlInfo}" alt="QR">`;
 
-            // Mostrar Credencial Realista y Botón de Conclusión de Pago
             document.getElementById('credencialVirtual').style.display = 'block';
             document.getElementById('btnConcluirRegistro').style.display = 'block';
             
@@ -737,7 +735,9 @@
         }
 
         function concluirYRedireccionar() {
-            window.location.href = "pago.html";
+            const curpValor = document.getElementById('b_curp').value.toUpperCase().trim();
+            // Redirigir inyectando la CURP limpia en la URL para asegurar una captura inmediata
+            window.location.href = `pago.html?curp=${encodeURIComponent(curpValor)}`;
         }
     </script>
 </body>
