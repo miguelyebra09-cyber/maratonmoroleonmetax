@@ -82,7 +82,7 @@
         
         .badge-photo { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--naranja); margin: 0 auto 15px auto; background-color: #222; background-size: cover; background-position: center; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
         .badge-name { font-family: 'Oswald'; font-size: 1.35rem; color: white; line-height: 1.2; margin-bottom: 5px; text-transform: uppercase; }
-        .badge-dist font-family: 'Oswald'; font-size: 1.1rem; color: var(--dorado); font-weight: bold; }
+        .badge-dist { font-family: 'Oswald'; font-size: 1.1rem; color: var(--dorado); font-weight: bold; }
         .badge-curp { font-size: 0.8rem; color: #a0a0a0; font-family: monospace; margin-top: 8px; letter-spacing: 1px; }
 
         /* --- Resumen de Compra --- */
@@ -238,7 +238,7 @@
                     <span class="val">$450.00 MXN</span>
                 </div>
 
-                <button class="btn-pago" onclick="ejecutarTransaccion()">CONFIRMAR PAGO SEGURO ➔</button>
+                <button class="btn-pago" id="btnConfirmarPago" onclick="ejecutarTransaccion()">CONFIRMAR PAGO SEGURO ➔</button>
             </div>
 
         </div>
@@ -292,6 +292,7 @@
         const SUPABASE_KEY = "sb_publishable_LVD_xghTp8MmfutMs3RoDA_v1c4rxrg";
         
         let metodoSeleccionado = 'tarjeta';
+        let curpGlobal = ''; 
 
         function seleccionarMetodo(metodo) {
             metodoSeleccionado = metodo;
@@ -306,7 +307,6 @@
         window.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
             
-            // Forzar obtención inmediata de las variables de almacenamiento locales u URL
             let curpUsuario = params.get('curp') || 
                               localStorage.getItem('ultimo_curp_registrado') || 
                               sessionStorage.getItem('ultimo_curp_registrado') ||
@@ -314,9 +314,9 @@
 
             let fotoLocalGuardada = localStorage.getItem('atleta_foto_temporal') || sessionStorage.getItem('atleta_foto_temporal');
 
-            // Inyección visual asíncrona preventiva
             if (curpUsuario && curpUsuario.trim() !== "") {
                 curpUsuario = curpUsuario.trim().toUpperCase();
+                curpGlobal = curpUsuario;
                 document.getElementById('atletaCurpDisplay').innerText = curpUsuario;
                 localStorage.setItem('ultimo_curp_registrado', curpUsuario);
             } else {
@@ -362,14 +362,12 @@
                             document.getElementById('resumenTalla').innerText = (data.talla_playera || data.talla || 'M').toUpperCase();
                             
                             iniciarRelojRegresivo();
-                            return; // Todo listo, terminamos ejecución exitosa
+                            return; 
                         }
                     }
                 } catch (err) {
                     console.error("Error consultando base de datos:", err);
-                } finally {
-                    // Si la base de datos falla, da error de red o no encuentra el registro, 
-                    // se activa obligatoriamente este bloque para que no se quede colgado en "Cargando..."
+                } finaly {
                     cargarFallbackParametros(params, curpUsuario);
                 }
             } else {
@@ -388,6 +386,7 @@
             
             if (curpDetectado) {
                 document.getElementById('atletaCurpDisplay').innerText = curpDetectado.toUpperCase();
+                curpGlobal = curpDetectado.toUpperCase();
             } else {
                 document.getElementById('atletaCurpDisplay').innerText = "SIN CURP";
             }
@@ -427,8 +426,77 @@
             const intervaloReloj = setInterval(actualizarContador, 1000);
         }
 
-        function ejecutarTransaccion() {
-            alert(`Redireccionando de forma segura a la pasarela de pago elegida: [${metodoSeleccionado.toUpperCase()}] para procesar tus $450.00 MXN...`);
+        // ================= FUNCIÓN DE INSERCIÓN CORREGIDA (TODOS LOS CAMPOS) =================
+        async function ejecutarTransaccion() {
+            if (!curpGlobal || curpGlobal === "SIN CURP" || curpGlobal === "NO DETECTADO") {
+                alert("⚠️ Error: No se pudo identificar la CURP del atleta. No se puede procesar el pago.");
+                return;
+            }
+
+            const boton = document.getElementById('btnConfirmarPago');
+            boton.disabled = true;
+            boton.innerText = "PROCESANDO PAGO...";
+
+            // 1. Obtener IP pública en tiempo real de forma segura
+            let ipPublica = "0.0.0.0";
+            try {
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                if (ipResponse.ok) {
+                    const ipData = await ipResponse.json();
+                    ipPublica = ipData.ip;
+                }
+            } catch (e) {
+                console.warn("No se pudo mapear la IP del cliente, se usará fallback:", e);
+            }
+
+            // 2. Calcular fecha y hora exacta en formato SQL (YYYY-MM-DD y HH:MM:SS)
+            const ahora = new Date();
+            const fechaSQL = ahora.toISOString().split('T')[0];
+            const horaSQL = ahora.toTimeString().split(' ')[0];
+
+            const distanciaActual = document.getElementById('atletaDistanciaDisplay').innerText;
+
+            // 3. Mapeo estricto e íntegro de columnas basado en tus capturas de Supabase
+            const objetoPago = {
+                curp_atleta: curpGlobal,
+                metodo_pago: metodoSeleccionado.toUpperCase(),
+                monto_pagado: 450.00,
+                concepto_pago: `Inscripción Maratón - ${distanciaActual}`,
+                estatus_pago: 'APROBADO',
+                fecha_registro: fechaSQL,
+                hora_registro: horaSQL,
+                ip_registro: ipPublica
+            };
+
+            try {
+                // Envío HTTP POST directo al REST Endpoint de la tabla pagos_registro
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/pagos_registro`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(objetoPago)
+                });
+
+                if (response.ok) {
+                    alert(`✅ ¡Pago procesado e insertado exitosamente!\n\nMétodo: ${objetoPago.metodo_pago}\nEstatus: ${objetoPago.estatus_pago}\nFecha: ${objetoPago.fecha_registro} a las ${objetoPago.hora_registro}\nIP del cliente: ${objetoPago.ip_registro}`);
+                    // Aquí puedes habilitar tu redirección final si cuentas con éxito.html
+                    // window.location.href = "exito.html";
+                } else {
+                    const errData = await response.json();
+                    console.error("Error detectado en Supabase:", errData);
+                    alert(`❌ Hubo un inconveniente con Supabase:\n${errData.message || 'Verifica la consola para detalles.'}`);
+                }
+            } catch (error) {
+                console.error("Error crítico de Red / Transacción:", error);
+                alert("❌ Error de red / CORS. Comprueba la conexión hacia el clúster de Supabase.");
+            } finally {
+                boton.disabled = false;
+                boton.innerText = "CONFIRMAR PAGO SEGURO ➔";
+            }
         }
     </script>
 </body>
