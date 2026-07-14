@@ -302,23 +302,22 @@
             document.getElementById(`details-${metodo}`).classList.add('active');
         }
 
-        // --- INICIALIZACIÓN BLINDADA CONTRA NULOS ---
-        window.addEventListener('DOMContentLoaded', () => {
+        // --- INICIALIZACIÓN CON ESCAPE DE BLOQUEO CORB ---
+        window.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
             
-            // Detección agresiva en cascada del CURP enviado
+            // Forzar obtención inmediata del CURP de cualquier lado
             let curpUsuario = params.get('curp') || 
                               localStorage.getItem('ultimo_curp_registrado') || 
                               sessionStorage.getItem('ultimo_curp_registrado') ||
                               localStorage.getItem('curp');
 
-            // Recuperar base64 local si existiera
             let fotoLocalGuardada = localStorage.getItem('atleta_foto_temporal') || sessionStorage.getItem('atleta_foto_temporal');
 
-            // FUERZA DE ESCRITURA INMEDIATA: Pintar CURP e imagen de inmediato si existen localmente
+            // INYECCIÓN VISUAL TOTAL E INMEDIATA (Para evitar saltos visuales vacíos)
             if (curpUsuario && curpUsuario.trim() !== "") {
-                curpUsuario = curpUsuario.trim();
-                document.getElementById('atletaCurpDisplay').innerText = curpUsuario.toUpperCase();
+                curpUsuario = curpUsuario.trim().toUpperCase();
+                document.getElementById('atletaCurpDisplay').innerText = curpUsuario;
                 localStorage.setItem('ultimo_curp_registrado', curpUsuario);
             }
 
@@ -326,31 +325,27 @@
                 document.getElementById('atletaFotoDisplay').style.backgroundImage = `url('${fotoLocalGuardada}')`;
             }
 
-            // Inicializar Supabase
-            let supabaseClient = null;
-            try {
-                if (typeof supabase !== 'undefined') {
-                    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                }
-            } catch(e) {
-                console.error("Error cargando Supabase Client:", e);
-            }
+            if (curpUsuario) {
+                // Alternativa Directa Anti-CORB usando Rest API nativa (Fetch) para saltar el bloqueo del navegador
+                const endpointURL = `${SUPABASE_URL}/rest/v1/cedula_registro?curp=ilike.${curpUsuario}&select=*`;
+                
+                try {
+                    const response = await fetch(endpointURL, {
+                        method: 'GET',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
 
-            if (curpUsuario && supabaseClient) {
-                // Buscamos con un ilike flexible por si hay problemas de mayúsculas/minúsculas
-                supabaseClient
-                    .from('cedula_registro')
-                    .select('*')
-                    .ilike('curp', curpUsuario)
-                    .maybeSingle()
-                    .then(({ data, error }) => {
-                        if (error || !data) {
-                            console.warn("Fallo o registro no devuelto. Usando datos alternos de URL.");
-                            cargarFallbackParametros(params, curpUsuario);
-                        } else {
-                            console.log("Datos obtenidos:", data);
+                    if (response.ok) {
+                        const registros = await response.json();
+                        if (registros && registros.length > 0) {
+                            const data = registros[0];
+                            console.log("Datos obtenidos con éxito via Rest API:", data);
                             
-                            // 1. Mapeo inteligente y flexible de nombres de columnas
+                            // Mapeo Dinámico de Atributos
                             let nombres = data.nombres || data.nombre || '';
                             let ap1 = data.primer_apellido || data.apellido_paterno || data.apellido || '';
                             let ap2 = data.segundo_apellido || data.apellido_materno || '';
@@ -358,34 +353,48 @@
                             
                             document.getElementById('atletaNombreDisplay').innerText = nombreCompleto ? nombreCompleto.toUpperCase() : "ATLETA REGISTRADO";
                             document.getElementById('atletaDistanciaDisplay').innerText = data.distancia || data.modalidad || "10 KM";
-                            document.getElementById('atletaCurpDisplay').innerText = (data.curp || curpUsuario).toUpperCase();
+                            document.getElementById('atletaCurpDisplay').innerText = curpUsuario;
                             
-                            // 2. Mapeo inteligente de la imagen/fotografía
+                            // Forzar la imagen real desde la DB
                             let URL_FOTO = data.foto_base64 || data.foto_url || data.foto || data.imagen || data.url_foto;
                             if (URL_FOTO) {
                                 document.getElementById('atletaFotoDisplay').style.backgroundImage = `url('${URL_FOTO}')`;
                             }
 
-                            // 3. Resumen operativo
                             document.getElementById('resumenCategoria').innerText = (data.categoria || data.rama || 'LIBRE').toUpperCase();
                             document.getElementById('resumenTalla').innerText = (data.talla_playera || data.talla || 'M').toUpperCase();
+                            
+                            // Salir de la función si todo fue exitoso
+                            iniciarRelojRegresivo();
+                            return;
                         }
-                    });
-            } else {
-                cargarFallbackParametros(params, curpUsuario);
+                    }
+                } catch (err) {
+                    console.error("Error en Fetch Anti-CORB, usando fallback de URL:", err);
+                }
             }
 
+            // Si falla el servidor o no hay internet/datos, mapea desde los parámetros directos del enlace navegador
+            cargarFallbackParametros(params, curpUsuario);
             iniciarRelojRegresivo();
         });
 
         function cargarFallbackParametros(params, curpDetectado) {
-            // Si la base de datos falla o no encuentra, lee los parámetros que traiga la barra de direcciones (?nombre=...)
             let nombreUrl = params.get('nombre') || params.get('atleta');
-            document.getElementById('atletaNombreDisplay').innerText = nombreUrl ? nombreUrl.toUpperCase() : 'ATLETA REGISTRADO';
-            document.getElementById('atletaDistanciaDisplay').innerText = params.get('distancia') || '10 KM';
-            document.getElementById('atletaCurpDisplay').innerText = (curpDetectado || params.get('curp') || 'XAXX010101XXX').toUpperCase();
-            document.getElementById('resumenCategoria').innerText = (params.get('categoria') || 'LIBRE').toUpperCase();
-            document.getElementById('resumenTalla').innerText = (params.get('talla') || 'M').toUpperCase();
+            if (nombreUrl) {
+                document.getElementById('atletaNombreDisplay').innerText = nombreUrl.toUpperCase();
+            }
+            let distUrl = params.get('distancia') || params.get('modalidad');
+            if (distUrl) {
+                document.getElementById('atletaDistanciaDisplay').innerText = distUrl.toUpperCase();
+            }
+            if (curpDetectado) {
+                document.getElementById('atletaCurpDisplay').innerText = curpDetectado.toUpperCase();
+            }
+            
+            // Conservar las selecciones por defecto tomadas de la URL si existen
+            if(params.get('categoria')) document.getElementById('resumenCategoria').innerText = params.get('categoria').toUpperCase();
+            if(params.get('talla')) document.getElementById('resumenTalla').innerText = params.get('talla').toUpperCase();
         }
 
         function iniciarRelojRegresivo() {
