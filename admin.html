@@ -37,7 +37,7 @@
         .page-title { margin-bottom: 25px; font-size: 2.2rem; font-weight: 700; }
         .page-title span { color: var(--naranja); }
 
-        /* --- Sección de Mini Gráficos (Grid Responsivo) --- */
+        /* --- Sección de Mini Gráficos --- */
         .analytics-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); 
@@ -57,7 +57,7 @@
         .chart-card h4 { font-family: 'Oswald'; font-size: 1rem; color: #FFF; margin-bottom: 15px; width: 100%; text-align: left; border-left: 3px solid var(--naranja); padding-left: 8px; }
         .chart-container { width: 100%; height: 160px; position: relative; }
 
-        /* Tarjetas de Métricas Directas (Kpi) */
+        /* Tarjetas de Métricas Directas */
         .kpi-row { display: flex; justify-content: space-between; width: 100%; gap: 10px; margin-top: auto; }
         .kpi-box { background: #0A0A0A; border: 1px solid #1A1A1A; padding: 10px; border-radius: 4px; text-align: center; flex: 1; }
         .kpi-box span { font-size: 0.75rem; color: var(--gris-texto); block-size: auto; display: block; }
@@ -198,7 +198,7 @@
         <!-- ================= SECCIÓN FILTROS Y BUSCADOR DE CURP ================= -->
         <section class="search-box-container">
             <div class="search-wrapper">
-                <input type="text" id="input-busqueda" class="search-input" placeholder="Buscar por CURP (Priorizado), Nombre, o Estatus de Pago...">
+                <input type="text" id="input-busqueda" class="search-input" placeholder="Buscar por CURP, Nombre o Concepto...">
             </div>
             <button class="btn-buscar" onclick="ejecutarFiltro()">Buscar Atleta</button>
         </section>
@@ -208,12 +208,12 @@
             <table id="tabla-atletas">
                 <thead>
                     <tr>
+                        <th>Nombre Atleta</th>
                         <th>CURP Atleta</th>
                         <th>Concepto / Distancia</th>
                         <th>Método Pago</th>
                         <th>Monto</th>
-                        <th>IP Registro</th>
-                        <th>Fecha Servidor</th>
+                        <th>Fecha Registro</th>
                         <th>Estatus</th>
                     </tr>
                 </thead>
@@ -229,40 +229,62 @@
     <script>
         // CONEXIÓN BACKEND SUPABASE
         const SUPABASE_URL = "https://xhiprzmvleolibzprqom.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_LVD_xghTp8MmfutMs3RoDA_v1c4rxrg"; // Reemplazar por llave real de desarrollo
+        const SUPABASE_KEY = "PEGA_AQUI_TU_LLAVE_ANON_PUBLIC_VÁLIDA"; // Reemplazar por llave real de desarrollo
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        let universoDatos = []; // Caché local para filtrado rápido en tiempo de ejecución
-        let chartsInstancias = {}; // <--- CORREGIDO: Se quitó el espacio en blanco intermedio
+        let universoDatos = []; // Almacenará la unión de cédulas + pagos
+        let chartsInstancias = {}; 
 
         window.addEventListener('DOMContentLoaded', async () => {
             await inicializarDashboard();
         });
 
-        // Carga e inicialización de datos concurrentes
+        // Descarga concurrente de ambas tablas y fusión de datos
         async function inicializarDashboard() {
             try {
-                // Descarga de la tabla pagos_registro
-                const { data, error } = await supabaseClient
-                    .from('pagos_registro')
-                    .select('*')
-                    .order('created_at', { ascending: false });
+                // Hacemos peticiones simultáneas para ahorrar tiempo de carga
+                const [cedulasRes, pagosRes] = await Promise.all([
+                    supabaseClient.from('cedula_registro').select('*').order('id', { ascending: false }),
+                    supabaseClient.from('pagos_registro').select('*')
+                ]);
 
-                if (error) throw error;
+                if (cedulasRes.error) throw cedulasRes.error;
+                if (pagosRes.error) throw pagosRes.error;
 
-                universoDatos = data || [];
+                const cedulas = cedulasRes.data || [];
+                const pagos = pagosRes.data || [];
+
+                // Combinamos ambas tablas usando el ID del registro como enlace relacional
+                universoDatos = cedulas.map(c => {
+                    // Busca el pago correspondiente al ID de la cédula
+                    const pagoCorrespondiente = pagos.find(p => p.id === c.id) || {};
+                    
+                    return {
+                        id: c.id,
+                        nombre_completo: `${c.nombres || ''} ${c.primer_apellido || ''}`.trim(),
+                        curp_atleta: c.curp_atleta || pagoCorrespondiente.curp_atleta || 'SIN CURP',
+                        concepto_pago: pagoCorrespondiente.concepto_pago || c.concepto_pago || 'Inscripción Carrera',
+                        metodo_pago: pagoCorrespondiente.metodo_pago || 'No especificado',
+                        monto_pagado: pagoCorrespondiente.monto_pagado || 0,
+                        fecha_registro: c.fecha_registro || 'N/A',
+                        // Datos demográficos nativos de cédula para gráficos
+                        categoria: c.categoria || 'General',
+                        talla_playera: c.tallas_playera || 'M', 
+                        procedencia: c.nacionalidad || 'N/A'
+                    };
+                });
                 
-                // Renderizar interfaces visuales
+                // Renderizar interfaces visuales optimizadas
                 renderizarTabla(universoDatos);
                 procesarMetricasYGraficos(universoDatos);
 
             } catch (err) {
                 console.error("Error cargando base de datos:", err);
-                document.getElementById('tabla-body').innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--naranja);">Error al sincronizar datos: ${err.message}</td></tr>`;
+                document.getElementById('tabla-body').innerHTML = `<tr><td colspan="7" style="text-align:center; color:var(--naranja);">Error al sincronizar datos estructurados: ${err.message}</td></tr>`;
             }
         }
 
-        // Lógica del motor de búsqueda priorizando CURP
+        // Lógica del motor de búsqueda en memoria combinada
         function ejecutarFiltro() {
             const query = document.getElementById('input-busqueda').value.trim().toUpperCase();
             if (!query) {
@@ -270,18 +292,17 @@
                 return;
             }
 
-            // Prioriza si coincide exactamente o parcialmente con CURP, de lo contrario evalúa otros campos
             const datosFiltrados = universoDatos.filter(item => {
+                const nombreMatch = item.nombre_completo && item.nombre_completo.toUpperCase().includes(query);
                 const curpMatch = item.curp_atleta && item.curp_atleta.toUpperCase().includes(query);
                 const conceptoMatch = item.concepto_pago && item.concepto_pago.toUpperCase().includes(query);
-                const metodoMatch = item.metodo_pago && item.metodo_pago.toUpperCase().includes(query);
-                return curpMatch || conceptoMatch || metodoMatch;
+                return nombreMatch || curpMatch || conceptoMatch;
             });
 
             renderizarTabla(datosFiltrados);
         }
 
-        // Inyección dinámica de filas en la tabla
+        // Inyección dinámica de filas en la tabla combinada
         function renderizarTabla(registros) {
             const tbody = document.getElementById('tabla-body');
             if (registros.length === 0) {
@@ -290,91 +311,81 @@
             }
 
             tbody.innerHTML = registros.map(r => {
-                // Validación para simular estatus (asumiendo montos en cero o banderas como pre-registro)
                 const esPagado = r.monto_pagado > 0; 
                 const statusBadge = esPagado 
                     ? `<span class="badge badge-pagado">Pagado</span>` 
                     : `<span class="badge badge-pendiente">Pendiente</span>`;
 
-                // Formateo de fecha limpia
-                const fecha = r.created_at ? new Date(r.created_at).toLocaleDateString('es-MX', {day: '2-digit', month: '2-digit', year: 'numeric'}) : 'N/A';
-
                 return `
                     <tr>
-                        <td style="font-family: monospace; font-weight:600; color:var(--dorado);">${r.curp_atleta || 'SIN CURP'}</td>
-                        <td>${r.concepto_pago || 'Inscripción General'}</td>
-                        <td>${r.metodo_pago || 'No especificado'}</td>
-                        <td style="font-weight:600;">$${parseFloat(r.monto_pagado || 0).toFixed(2)} MXN</td>
-                        <td style="color:#666;">${r.ip_registro || '0.0.0.0'}</td>
-                        <td>${fecha}</td>
+                        <td style="font-weight:600; color:#FFF;">${r.nombre_completo || 'Anónimo'}</td>
+                        <td style="font-family: monospace; font-weight:600; color:var(--dorado);">${r.curp_atleta}</td>
+                        <td>${r.concepto_pago}</td>
+                        <td>${r.metodo_pago}</td>
+                        <td style="font-weight:600;">$${parseFloat(r.monto_pagado).toFixed(2)} MXN</td>
+                        <td>${r.fecha_registro}</td>
                         <td>${statusBadge}</td>
                     </tr>
                 `;
             }).join('');
         }
 
-        // Procesamiento estadístico e inyección de datos a Chart.js
+        // Procesamiento estadístico real basado en la tabla de Cédulas
         function procesarMetricasYGraficos(datos) {
             let pagados = 0;
             let preRegistrados = 0;
 
-            // Contenedores estadísticos para desgloses dinámicos
             const categorias = {};
             const ramas = { 'Varonil': 0, 'Femenil': 0, 'No especificado': 0 };
             const edades = { '18-29': 0, '30-39': 0, '40-49': 0, '50+': 0 };
-            const tallas = { 'S': 0, 'M': 0, 'L': 0, 'XL': 0 };
+            const tallas = {};
             const estados = {};
 
             datos.forEach(r => {
-                // 1. Clasificación por Estatus Financiero
+                // 1. Estatus financiero (Proveniente de tabla pagos)
                 if (r.monto_pagado > 0) pagados++;
                 else preRegistrados++;
 
-                // 2. Extracción simulada o mapeada del string del concepto (Ej: "Inscripción Maratón - 10 KM")
-                const dist = r.concepto_pago && r.concepto_pago.includes('-') ? r.concepto_pago.split('-')[1].trim() : 'General';
-                categorias[dist] = (categorias[dist] || 0) + 1;
+                // 2. Mapeo de Categoría Real de la Cédula
+                const cat = r.categoria;
+                categorias[cat] = (categorias[cat] || 0) + 1;
 
-                // 3. Extracción de datos demográficos basados en el análisis nativo del CURP asignado
+                // 3. Mapeo estadístico de Tallas de la Cédula
+                const t = r.talla_playera;
+                tallas[t] = (tallas[t] || 0) + 1;
+
+                // 4. Procedencia Geográfica de la Cédula
+                const edo = r.procedencia;
+                estados[edo] = (estados[edo] || 0) + 1;
+
+                // 5. Análisis demográfico automatizado por el CURP real
                 if (r.curp_atleta && r.curp_atleta.length >= 18) {
                     const curp = r.curp_atleta.toUpperCase();
                     
-                    // Género en la posición 10 del CURP (H = Hombre, M = Mujer)
                     const genChar = curp.charAt(10);
                     if (genChar === 'H') ramas['Varonil']++;
                     else if (genChar === 'M') ramas['Femenil']++;
                     else ramas['No especificado']++;
 
-                    // Cálculo aproximado de rango de edad vía CURP (Posiciones 4 y 5 indican año)
                     const anioCurp = parseInt(curp.substring(4, 6));
                     const anioCompleto = anioCurp > 26 ? 1900 + anioCurp : 2000 + anioCurp;
-                    const edadEstimada = 2026 - anioCompleto; // Basado en el año corriente 2026
+                    const edadEstimada = 2026 - anioCompleto;
 
                     if (edadEstimada >= 18 && edadEstimada <= 29) edades['18-29']++;
                     else if (edadEstimada >= 30 && edadEstimada <= 39) edades['30-39']++;
                     else if (edadEstimada >= 40 && edadEstimada <= 49) edades['40-49']++;
                     else if (edadEstimada >= 50) edades['50+']++;
-
-                    // Entidad Federativa del CURP (Posición 11 y 12)
-                    const edoChar = curp.substring(11, 13);
-                    estados[edoChar] = (estados[edoChar] || 0) + 1;
                 } else {
                     ramas['No especificado']++;
                 }
-
-                // 4. Tallas simuladas basadas en la dispersión estadística real de la base de datos
-                const semillaTalla = (r.id || Math.random() * 10) % 4;
-                if (semillaTalla < 1) tallas['S']++;
-                else if (semillaTalla < 2) tallas['M']++;
-                else if (semillaTalla < 3) tallas['L']++;
-                else tallas['XL']++;
             });
 
-            // Actualizar Tarjetas de Información Numérica (KPIs)
+            // Actualizar KPIs
             document.getElementById('kpi-pagados').innerText = pagados;
             document.getElementById('kpi-pre').innerText = preRegistrados;
             document.getElementById('kpi-total').innerText = datos.length;
 
-            // --- CONFIGURACIÓN E INYECCIÓN DE MINIGRÁFICOS (CHART.JS) ---
+            // Opciones visuales comunes para los gráficos
             const configComunOptions = {
                 responsive: true,
                 maintainAspectRatio: false,
@@ -385,22 +396,18 @@
                 }
             };
 
-            // Gráfico de Categorías (Distancias)
+            // Renderizado Dinámico de Gráficos de Cédula
             construirOActualizarChart('chartCategoria', 'bar', Object.keys(categorias), Object.values(categorias), '#FF5500', configComunOptions);
             
-            // Gráfico de Ramas (Donut)
             construirOActualizarChart('chartRama', 'doughnut', Object.keys(ramas), Object.values(ramas), ['#FF5500', '#D4AF37', '#333'], {
                 ...configComunOptions,
                 plugins: { legend: { display: true, labels: { color: '#FFF', font: { size: 10 } } } }
             });
 
-            // Gráfico de Edades
             construirOActualizarChart('chartEdad', 'line', Object.keys(edades), Object.values(edades), '#D4AF37', configComunOptions);
 
-            // Gráfico de Tallas
             construirOActualizarChart('chartTallas', 'bar', Object.keys(tallas), Object.values(tallas), '#FF5500', configComunOptions);
 
-            // Gráfico de Procedencia Geográfica (Top Estados)
             construirOActualizarChart('chartProcedencia', 'polarArea', Object.keys(estados).slice(0, 5), Object.values(estados).slice(0, 5), ['rgba(255,85,0,0.6)', 'rgba(214,175,55,0.6)', '#222'], configComunOptions);
         }
 
