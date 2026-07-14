@@ -229,11 +229,11 @@
     <script>
         // CONEXIÓN BACKEND SUPABASE
         const SUPABASE_URL = "https://xhiprzmvleolibzprqom.supabase.co";
-        const SUPABASE_KEY = "PEGA_AQUI_TU_LLAVE_ANON_PUBLIC_VÁLIDA"; // Reemplazar por llave real de desarrollo
+        const SUPABASE_KEY = "sb_publishable_LVD_xghTp8MmfutMs3RoDA_v1c4rxrg"; // Reemplazar por llave real de desarrollo
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let universoDatos = []; // Caché local para filtrado rápido en tiempo de ejecución
-        let charts Instancias = {};
+        let chartsInstancias = {}; // <--- CORREGIDO: Se quitó el espacio en blanco intermedio
 
         window.addEventListener('DOMContentLoaded', async () => {
             await inicializarDashboard();
