@@ -82,7 +82,7 @@
         
         .badge-photo { width: 120px; height: 120px; border-radius: 50%; border: 3px solid var(--naranja); margin: 0 auto 15px auto; background-color: #222; background-size: cover; background-position: center; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
         .badge-name { font-family: 'Oswald'; font-size: 1.35rem; color: white; line-height: 1.2; margin-bottom: 5px; text-transform: uppercase; }
-        .badge-dist { font-family: 'Oswald'; font-size: 1.1rem; color: var(--dorado); font-weight: bold; }
+        .badge-dist font-family: 'Oswald'; font-size: 1.1rem; color: var(--dorado); font-weight: bold; }
         .badge-curp { font-size: 0.8rem; color: #a0a0a0; font-family: monospace; margin-top: 8px; letter-spacing: 1px; }
 
         /* --- Resumen de Compra --- */
@@ -302,11 +302,11 @@
             document.getElementById(`details-${metodo}`).classList.add('active');
         }
 
-        // --- INICIALIZACIÓN CON ESCAPE DE BLOQUEO CORB ---
+        // --- SOLUCIÓN DE FLUJO Y RENDERIZADO GARANTIZADO ---
         window.addEventListener('DOMContentLoaded', async () => {
             const params = new URLSearchParams(window.location.search);
             
-            // Forzar obtención inmediata del CURP de cualquier lado
+            // Forzar obtención inmediata de las variables de almacenamiento locales u URL
             let curpUsuario = params.get('curp') || 
                               localStorage.getItem('ultimo_curp_registrado') || 
                               sessionStorage.getItem('ultimo_curp_registrado') ||
@@ -314,11 +314,13 @@
 
             let fotoLocalGuardada = localStorage.getItem('atleta_foto_temporal') || sessionStorage.getItem('atleta_foto_temporal');
 
-            // INYECCIÓN VISUAL TOTAL E INMEDIATA (Para evitar saltos visuales vacíos)
+            // Inyección visual asíncrona preventiva
             if (curpUsuario && curpUsuario.trim() !== "") {
                 curpUsuario = curpUsuario.trim().toUpperCase();
                 document.getElementById('atletaCurpDisplay').innerText = curpUsuario;
                 localStorage.setItem('ultimo_curp_registrado', curpUsuario);
+            } else {
+                document.getElementById('atletaCurpDisplay').innerText = "NO DETECTADO";
             }
 
             if (fotoLocalGuardada) {
@@ -326,7 +328,6 @@
             }
 
             if (curpUsuario) {
-                // Alternativa Directa Anti-CORB usando Rest API nativa (Fetch) para saltar el bloqueo del navegador
                 const endpointURL = `${SUPABASE_URL}/rest/v1/cedula_registro?curp=ilike.${curpUsuario}&select=*`;
                 
                 try {
@@ -343,9 +344,7 @@
                         const registros = await response.json();
                         if (registros && registros.length > 0) {
                             const data = registros[0];
-                            console.log("Datos obtenidos con éxito via Rest API:", data);
                             
-                            // Mapeo Dinámico de Atributos
                             let nombres = data.nombres || data.nombre || '';
                             let ap1 = data.primer_apellido || data.apellido_paterno || data.apellido || '';
                             let ap2 = data.segundo_apellido || data.apellido_materno || '';
@@ -353,9 +352,7 @@
                             
                             document.getElementById('atletaNombreDisplay').innerText = nombreCompleto ? nombreCompleto.toUpperCase() : "ATLETA REGISTRADO";
                             document.getElementById('atletaDistanciaDisplay').innerText = data.distancia || data.modalidad || "10 KM";
-                            document.getElementById('atletaCurpDisplay').innerText = curpUsuario;
                             
-                            // Forzar la imagen real desde la DB
                             let URL_FOTO = data.foto_base64 || data.foto_url || data.foto || data.imagen || data.url_foto;
                             if (URL_FOTO) {
                                 document.getElementById('atletaFotoDisplay').style.backgroundImage = `url('${URL_FOTO}')`;
@@ -364,37 +361,39 @@
                             document.getElementById('resumenCategoria').innerText = (data.categoria || data.rama || 'LIBRE').toUpperCase();
                             document.getElementById('resumenTalla').innerText = (data.talla_playera || data.talla || 'M').toUpperCase();
                             
-                            // Salir de la función si todo fue exitoso
                             iniciarRelojRegresivo();
-                            return;
+                            return; // Todo listo, terminamos ejecución exitosa
                         }
                     }
                 } catch (err) {
-                    console.error("Error en Fetch Anti-CORB, usando fallback de URL:", err);
+                    console.error("Error consultando base de datos:", err);
+                } finally {
+                    // Si la base de datos falla, da error de red o no encuentra el registro, 
+                    // se activa obligatoriamente este bloque para que no se quede colgado en "Cargando..."
+                    cargarFallbackParametros(params, curpUsuario);
                 }
+            } else {
+                cargarFallbackParametros(params, curpUsuario);
             }
 
-            // Si falla el servidor o no hay internet/datos, mapea desde los parámetros directos del enlace navegador
-            cargarFallbackParametros(params, curpUsuario);
             iniciarRelojRegresivo();
         });
 
         function cargarFallbackParametros(params, curpDetectado) {
             let nombreUrl = params.get('nombre') || params.get('atleta');
-            if (nombreUrl) {
-                document.getElementById('atletaNombreDisplay').innerText = nombreUrl.toUpperCase();
-            }
+            document.getElementById('atletaNombreDisplay').innerText = nombreUrl ? nombreUrl.toUpperCase() : "ATLETA REGISTRADO";
+            
             let distUrl = params.get('distancia') || params.get('modalidad');
-            if (distUrl) {
-                document.getElementById('atletaDistanciaDisplay').innerText = distUrl.toUpperCase();
-            }
+            document.getElementById('atletaDistanciaDisplay').innerText = distUrl ? distUrl.toUpperCase() : "10 KM";
+            
             if (curpDetectado) {
                 document.getElementById('atletaCurpDisplay').innerText = curpDetectado.toUpperCase();
+            } else {
+                document.getElementById('atletaCurpDisplay').innerText = "SIN CURP";
             }
             
-            // Conservar las selecciones por defecto tomadas de la URL si existen
-            if(params.get('categoria')) document.getElementById('resumenCategoria').innerText = params.get('categoria').toUpperCase();
-            if(params.get('talla')) document.getElementById('resumenTalla').innerText = params.get('talla').toUpperCase();
+            document.getElementById('resumenCategoria').innerText = (params.get('categoria') || 'LIBRE').toUpperCase();
+            document.getElementById('resumenTalla').innerText = (params.get('talla') || 'M').toUpperCase();
         }
 
         function iniciarRelojRegresivo() {
