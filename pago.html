@@ -302,23 +302,23 @@
             document.getElementById(`details-${metodo}`).classList.add('active');
         }
 
-        // --- INICIALIZACIÓN Y CONSULTA SUPABASE ---
+        // --- INICIALIZACIÓN BLINDADA CONTRA NULOS ---
         window.addEventListener('DOMContentLoaded', () => {
             const params = new URLSearchParams(window.location.search);
             
-            // Forzar detección en todas las capas del navegador
+            // Detección agresiva en cascada del CURP enviado
             let curpUsuario = params.get('curp') || 
                               localStorage.getItem('ultimo_curp_registrado') || 
                               sessionStorage.getItem('ultimo_curp_registrado') ||
                               localStorage.getItem('curp');
 
-            // Recuperar la imagen directamente si se guardó localmente en base64 en el paso anterior
+            // Recuperar base64 local si existiera
             let fotoLocalGuardada = localStorage.getItem('atleta_foto_temporal') || sessionStorage.getItem('atleta_foto_temporal');
 
-            // Si el CURP fue encontrado, forzamos su escritura visual inmediata
+            // FUERZA DE ESCRITURA INMEDIATA: Pintar CURP e imagen de inmediato si existen localmente
             if (curpUsuario && curpUsuario.trim() !== "") {
                 curpUsuario = curpUsuario.trim();
-                document.getElementById('atletaCurpDisplay').innerText = curpUsuario;
+                document.getElementById('atletaCurpDisplay').innerText = curpUsuario.toUpperCase();
                 localStorage.setItem('ultimo_curp_registrado', curpUsuario);
             }
 
@@ -326,49 +326,49 @@
                 document.getElementById('atletaFotoDisplay').style.backgroundImage = `url('${fotoLocalGuardada}')`;
             }
 
-            // Inicializamos el cliente Supabase de manera segura
+            // Inicializar Supabase
             let supabaseClient = null;
             try {
                 if (typeof supabase !== 'undefined') {
                     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-                } else {
-                    console.error("La librería de Supabase no está definida.");
                 }
             } catch(e) {
-                console.error("Fallo inicializando Supabase:", e);
+                console.error("Error cargando Supabase Client:", e);
             }
 
             if (curpUsuario && supabaseClient) {
+                // Buscamos con un ilike flexible por si hay problemas de mayúsculas/minúsculas
                 supabaseClient
                     .from('cedula_registro')
                     .select('*')
-                    .eq('curp', curpUsuario)
+                    .ilike('curp', curpUsuario)
                     .maybeSingle()
                     .then(({ data, error }) => {
-                        if (error) {
-                            console.error("Error al conectar a la tabla de Supabase:", error);
+                        if (error || !data) {
+                            console.warn("Fallo o registro no devuelto. Usando datos alternos de URL.");
                             cargarFallbackParametros(params, curpUsuario);
-                        } else if (data) {
-                            console.log("Registro encontrado con éxito:", data);
-                            
-                            // Pintar campos dinámicos reales recuperados
-                            const nombreCompleto = `${data.nombres || ''} ${data.primer_apellido || ''} ${data.segundo_apellido || ''}`.trim();
-                            document.getElementById('atletaNombreDisplay').innerText = nombreCompleto.toUpperCase();
-                            document.getElementById('atletaDistanciaDisplay').innerText = data.distancia || "10 KM";
-                            document.getElementById('atletaCurpDisplay').innerText = data.curp;
-                            
-                            // Renderizado prioritario de imágenes subidas
-                            if (data.foto_base64) {
-                                document.getElementById('atletaFotoDisplay').style.backgroundImage = `url('${data.foto_base64}')`;
-                            } else if (data.foto_url) {
-                                document.getElementById('atletaFotoDisplay').style.backgroundImage = `url('${data.foto_url}')`;
-                            }
-                            
-                            document.getElementById('resumenCategoria').innerText = (data.categoria || 'LIBRE').toUpperCase();
-                            document.getElementById('resumenTalla').innerText = (data.talla_playera || data.talla || 'M').toUpperCase();
                         } else {
-                            console.warn("No se halló fila asociada a ese CURP.");
-                            cargarFallbackParametros(params, curpUsuario);
+                            console.log("Datos obtenidos:", data);
+                            
+                            // 1. Mapeo inteligente y flexible de nombres de columnas
+                            let nombres = data.nombres || data.nombre || '';
+                            let ap1 = data.primer_apellido || data.apellido_paterno || data.apellido || '';
+                            let ap2 = data.segundo_apellido || data.apellido_materno || '';
+                            let nombreCompleto = `${nombres} ${ap1} ${ap2}`.trim();
+                            
+                            document.getElementById('atletaNombreDisplay').innerText = nombreCompleto ? nombreCompleto.toUpperCase() : "ATLETA REGISTRADO";
+                            document.getElementById('atletaDistanciaDisplay').innerText = data.distancia || data.modalidad || "10 KM";
+                            document.getElementById('atletaCurpDisplay').innerText = (data.curp || curpUsuario).toUpperCase();
+                            
+                            // 2. Mapeo inteligente de la imagen/fotografía
+                            let URL_FOTO = data.foto_base64 || data.foto_url || data.foto || data.imagen || data.url_foto;
+                            if (URL_FOTO) {
+                                document.getElementById('atletaFotoDisplay').style.backgroundImage = `url('${URL_FOTO}')`;
+                            }
+
+                            // 3. Resumen operativo
+                            document.getElementById('resumenCategoria').innerText = (data.categoria || data.rama || 'LIBRE').toUpperCase();
+                            document.getElementById('resumenTalla').innerText = (data.talla_playera || data.talla || 'M').toUpperCase();
                         }
                     });
             } else {
@@ -379,14 +379,15 @@
         });
 
         function cargarFallbackParametros(params, curpDetectado) {
-            document.getElementById('atletaNombreDisplay').innerText = params.get('nombre') || 'ATLETA REGISTRADO';
+            // Si la base de datos falla o no encuentra, lee los parámetros que traiga la barra de direcciones (?nombre=...)
+            let nombreUrl = params.get('nombre') || params.get('atleta');
+            document.getElementById('atletaNombreDisplay').innerText = nombreUrl ? nombreUrl.toUpperCase() : 'ATLETA REGISTRADO';
             document.getElementById('atletaDistanciaDisplay').innerText = params.get('distancia') || '10 KM';
-            document.getElementById('atletaCurpDisplay').innerText = curpDetectado || params.get('curp') || 'XAXX010101XXX';
-            document.getElementById('resumenCategoria').innerText = 'MÁSTER A';
-            document.getElementById('resumenTalla').innerText = 'G';
+            document.getElementById('atletaCurpDisplay').innerText = (curpDetectado || params.get('curp') || 'XAXX010101XXX').toUpperCase();
+            document.getElementById('resumenCategoria').innerText = (params.get('categoria') || 'LIBRE').toUpperCase();
+            document.getElementById('resumenTalla').innerText = (params.get('talla') || 'M').toUpperCase();
         }
 
-        // --- SINTAXIS LÓGICA CORREGIDA AQUÍ ---
         function iniciarRelojRegresivo() {
             const fechaObjetivo = new Date('January 10, 2027 07:00:00').getTime();
 
