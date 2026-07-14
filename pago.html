@@ -367,7 +367,7 @@
                     }
                 } catch (err) {
                     console.error("Error consultando base de datos:", err);
-                } finaly {
+                } finally {
                     cargarFallbackParametros(params, curpUsuario);
                 }
             } else {
@@ -426,7 +426,7 @@
             const intervaloReloj = setInterval(actualizarContador, 1000);
         }
 
-        // ================= FUNCIÓN DE INSERCIÓN CORREGIDA (TODOS LOS CAMPOS) =================
+        // ================= FUNCIÓN DE INSERCION CORREGIDA (TODOS LOS CAMPOS) =================
         async function ejecutarTransaccion() {
             if (!curpGlobal || curpGlobal === "SIN CURP" || curpGlobal === "NO DETECTADO") {
                 alert("⚠️ Error: No se pudo identificar la CURP del atleta. No se puede procesar el pago.");
@@ -483,8 +483,6 @@
 
                 if (response.ok) {
                     alert(`✅ ¡Pago procesado e insertado exitosamente!\n\nMétodo: ${objetoPago.metodo_pago}\nEstatus: ${objetoPago.estatus_pago}\nFecha: ${objetoPago.fecha_registro} a las ${objetoPago.hora_registro}\nIP del cliente: ${objetoPago.ip_registro}`);
-                    // Aquí puedes habilitar tu redirección final si cuentas con éxito.html
-                    // window.location.href = "exito.html";
                 } else {
                     const errData = await response.json();
                     console.error("Error detectado en Supabase:", errData);
