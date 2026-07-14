@@ -8,9 +8,10 @@
     
     <!-- CDN de Supabase -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- CDN de Chart.js para renderizar los minigráficos dinámicamente -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* Estilos base del Dashboard (Manteniendo tu espectacular línea de diseño oscuro/naranja) */
         :root {
             --naranja: #FF5500;
             --oscuro-puro: #0D0D0D;
@@ -23,14 +24,24 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Montserrat', sans-serif; background-color: var(--oscuro-puro); color: var(--blanco); padding: 30px; }
-        h1, h2, th, .btn-buscar { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
+        h1, h2, h3, th, .btn-buscar { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
 
         .dashboard-header { margin-bottom: 30px; border-bottom: 2px solid var(--naranja); padding-bottom: 15px; }
         .dashboard-header h1 { font-size: 2.2rem; }
         .dashboard-header h1 span { color: var(--naranja); }
 
+        /* --- SECCIÓN DE METRICAS Y GRAFICOS --- */
+        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .metric-card { background: var(--oscuro-tarjeta); border: 1px solid var(--oscuro-claro); border-radius: 8px; padding: 20px; text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 160px; }
+        .metric-card h3 { font-size: 1rem; color: #888; margin-bottom: 10px; letter-spacing: 1px; }
+        .metric-number { font-size: 2.5rem; font-weight: bold; color: var(--naranja); font-family: 'Oswald'; }
+        
+        .chart-card { background: var(--oscuro-tarjeta); border: 1px solid var(--oscuro-claro); border-radius: 8px; padding: 15px; min-height: 180px; display: flex; flex-direction: column; }
+        .chart-card h3 { font-size: 0.9rem; color: #888; margin-bottom: 10px; border-left: 3px solid var(--naranja); padding-left: 8px; }
+        .chart-container { flex: 1; position: relative; width: 100%; height: 110px; }
+
         /* Buscador */
-        .search-container { display: flex; gap: 15px; margin-bottom: 30px; }
+        .search-container { display: flex; gap: 15px; margin-bottom: 20px; }
         .search-input { flex: 1; padding: 15px; background: var(--oscuro-tarjeta); border: 1px solid var(--oscuro-claro); border-radius: 6px; color: white; font-size: 1rem; }
         .search-input:focus { border-color: var(--naranja); outline: none; }
         .btn-buscar { padding: 0 30px; background: var(--naranja); color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; transition: 0.3s; }
@@ -54,7 +65,48 @@
 <body>
 
     <div class="dashboard-header">
-        <h1>PANEL DE CONTROL <span>| PAGOS MARATÓN 2027</span></h1>
+        <h1>PANEL DE CONTROL <span>| RENDIMIENTO Y PAGOS</span></h1>
+    </div>
+
+    <!-- SECCIÓN DE MINIGRÁFICOS Y MÉTRICAS -->
+    <div class="metrics-grid">
+        <!-- Total Atletas -->
+        <div class="metric-card">
+            <h3>Total Atletas Pagados</h3>
+            <div class="metric-number" id="txtTotalAtletas">0</div>
+        </div>
+
+        <!-- Mini Gráfico Categorías (Barras) -->
+        <div class="chart-card">
+            <h3>Categorías</h3>
+            <div class="chart-container">
+                <canvas id="chartCategorias"></canvas>
+            </div>
+        </div>
+
+        <!-- Mini Gráfico Género (Dona) -->
+        <div class="chart-card">
+            <h3>Género</h3>
+            <div class="chart-container">
+                <canvas id="chartGenero"></canvas>
+            </div>
+        </div>
+
+        <!-- Mini Gráfico Edades (Línea) -->
+        <div class="chart-card">
+            <h3>Rangos de Edad</h3>
+            <div class="chart-container">
+                <canvas id="chartEdades"></canvas>
+            </div>
+        </div>
+
+        <!-- Procedencia de Atletas (Pastel) -->
+        <div class="chart-card">
+            <h3>Procedencia de Atletas</h3>
+            <div class="chart-container">
+                <canvas id="chartProcedencia"></canvas>
+            </div>
+        </div>
     </div>
 
     <!-- Buscador -->
@@ -87,13 +139,12 @@
 
     <script>
         const SUPABASE_URL = "https://xhiprzmvleolibzprqom.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_LVD_xghTp8MmfutMs3RoDA_v1c4rxrg"; // Tu llave pública
+        const SUPABASE_KEY = "sb_publishable_LVD_xghTp8MmfutMs3RoDA_v1c4rxrg"; 
         
-        // Inicializar cliente Supabase
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let todosLosPagos = [];
+        let instanciasGraficos = {}; // Guardar instancias de Chart.js para poder destruirlas/actualizarlas
 
-        // Cargar datos al inicializar la vista
         window.addEventListener('DOMContentLoaded', () => {
             cargarTransacciones();
         });
@@ -108,54 +159,62 @@
 
                 if (errPagos) throw errPagos;
 
-                if (!pagos || pagos.length === 0) {
-                    document.getElementById('tablaPagosBody').innerHTML = `
-                        <tr>
-                            <td colspan="7" style="text-align: center; padding: 30px; color: #888;">
-                                ⚠️ No se han encontrado pagos registrados en la base de datos "pagos_registro" aún.
-                            </td>
-                        </tr>`;
-                    return;
-                }
-
-                // 2. Obtener la lista de atletas para cruzar y traer los nombres reales usando la CURP
+                // 2. Obtener la lista completa de atletas para cruzar datos demográficos y nombres
                 const { data: atletas, error: errAtletas } = await _supabase
                     .from('cedula_registro')
-                    .select('curp, nombres, primer_apellido, segundo_apellido');
+                    .select('curp, nombres, primer_apellido, segundo_apellido, categoria, sexo, edad, procedencia, estado');
 
-                // Crear un diccionario de CURP -> Nombre Completo para cruzar al instante en memoria
+                // Crear un diccionario mapeado para optimizar el cruce de datos
                 const mapaAtletas = {};
                 if (atletas) {
                     atletas.forEach(a => {
                         const nombreCompleto = `${a.nombres || ''} ${a.primer_apellido || ''} ${a.segundo_apellido || ''}`.trim();
-                        mapaAtletas[a.curp.toUpperCase()] = nombreCompleto.toUpperCase();
+                        mapaAtletas[a.curp.toUpperCase()] = {
+                            nombre: nombreCompleto.toUpperCase(),
+                            categoria: a.categoria || 'Libre',
+                            sexo: a.sexo || 'No especificado',
+                            edad: parseInt(a.edad) || 25,
+                            procedencia: a.procedencia || a.estado || 'N/A'
+                        };
                     });
+                }
+
+                if (!pagos || pagos.length === 0) {
+                    document.getElementById('tablaPagosBody').innerHTML = `
+                        <tr><td colspan="7" style="text-align: center; padding: 30px; color: #888;">⚠️ No se han encontrado pagos en "pagos_registro".</td></tr>`;
+                    // Inicializar gráficos vacíos/por defecto
+                    generarEstadisticasYGraficos([]);
+                    return;
                 }
 
                 // 3. Mapear y combinar la información limpia
                 todosLosPagos = pagos.map(pago => {
                     const curpKey = (pago.curp_atleta || '').toUpperCase();
+                    const infoAtleta = mapaAtletas[curpKey] || { nombre: "ATLETA NO ENCONTRADO", categoria: "Libre", sexo: "No especificado", edad: 25, procedencia: "N/A" };
+                    
                     return {
-                        nombre: mapaAtletas[curpKey] || "ATLETA NO ENCONTRADO EN CÉDULAS",
+                        nombre: infoAtleta.nombre,
                         curp: curpKey || "SIN CURP",
                         concepto: pago.concepto_pago || "Inscripción Carrera",
                         metodo: pago.metodo_pago || "No especificado",
                         monto: pago.monto_pagado ? `$${parseFloat(pago.monto_pagado).toFixed(2)} MXN` : "$0.00 MXN",
                         fecha: formatearFecha(pago.fecha_registro) + " " + (pago.hora_registro || ''),
-                        estatus: pago.estatus_pago || "PENDIENTE"
+                        estatus: pago.estatus_pago || "PENDIENTE",
+                        // Datos extras heredados para métricas y gráficos
+                        categoria: infoAtleta.categoria,
+                        sexo: infoAtleta.sexo,
+                        edad: infoAtleta.edad,
+                        procedencia: infoAtleta.procedencia
                     };
                 });
 
                 renderizarTabla(todosLosPagos);
+                generarEstadisticasYGraficos(todosLosPagos);
 
             } catch (error) {
                 console.error("Error cargando el panel administrativo:", error);
                 document.getElementById('tablaPagosBody').innerHTML = `
-                    <tr>
-                        <td colspan="7" style="text-align: center; color: #ff5500; padding: 20px;">
-                            Error de comunicación con Supabase. Revisa la consola del navegador.
-                        </td>
-                    </tr>`;
+                    <tr><td colspan="7" style="text-align: center; color: #ff5500; padding: 20px;">Error de comunicación con Supabase.</td></tr>`;
             }
         }
 
@@ -165,7 +224,6 @@
 
             datos.forEach(fila => {
                 const tr = document.createElement('tr');
-                
                 const claseEstatus = fila.estatus.toLowerCase() === 'aprobado' ? 'aprobado' : 'pendiente';
 
                 tr.innerHTML = `
@@ -181,29 +239,113 @@
             });
         }
 
+        // ================= FUNCIÓN EXCLUSIVA PARA LOS MINIGRÁFICOS DINÁMICOS =================
+        function generarEstadisticasYGraficos(datos) {
+            // Actualizar total numérico
+            document.getElementById('txtTotalAtletas').innerText = datos.length;
+
+            // 1. Contadores para Categorías
+            let categoriasCount = { 'Libre': 0, 'Máster A': 0 };
+            // 2. Contadores para Género
+            let generoCount = { 'Varonil': 0, 'Femenil': 0, 'No especificado': 0 };
+            // 3. Contadores para Rangos de edad
+            let edadCount = { '18-29': 0, '30-39': 0, '40-49': 0, '50+': 0 };
+            // 4. Contadores para Procedencia
+            let procedenciaCount = {};
+
+            // Procesar información acumulada de atletas activos
+            datos.forEach(d => {
+                // Categorías
+                const cat = d.categoria.trim();
+                categoriasCount[cat] = (categoriasCount[cat] || 0) + 1;
+
+                // Géneros
+                let sx = d.sexo.toLowerCase().includes('m') || d.sexo.toLowerCase().includes('v') ? 'Varonil' : 'Femenil';
+                if(d.sexo === 'No especificado') sx = 'No especificado';
+                generoCount[sx] = (generoCount[sx] || 0) + 1;
+
+                // Rangos de Edad
+                if (d.edad >= 18 && d.edad <= 29) edadCount['18-29']++;
+                else if (d.edad >= 30 && d.edad <= 39) edadCount['30-39']++;
+                else if (d.edad >= 40 && d.edad <= 49) edadCount['40-49']++;
+                else if (d.edad >= 50) edadCount['50+']++;
+
+                // Procedencia
+                procedenciaCount[d.procedencia] = (procedenciaCount[d.procedencia] || 0) + 1;
+            });
+
+            const optionsBase = {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { x: { grid: { display: false }, ticks: { color: '#888', font: { size: 9 } } }, y: { display: false } }
+            };
+
+            // Destruir gráficos anteriores si ya existían para evitar sobreposición
+            Object.keys(instanciasGraficos).forEach(key => instanciasGraficos[key].destroy());
+
+            // --- GRÁFICO 1: CATEGORÍAS (Barras) ---
+            instanciasGraficos.cat = new Chart(document.getElementById('chartCategorias'), {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(categoriasCount),
+                    datasets: [{ data: Object.values(categoriasCount), backgroundColor: '#FF5500', barThickness: 25 }]
+                },
+                options: optionsBase
+            });
+
+            // --- GRÁFICO 2: GÉNERO (Dona) ---
+            instanciasGraficos.gen = new Chart(document.getElementById('chartGenero'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(generoCount),
+                    datasets: [{ data: Object.values(generoCount), backgroundColor: ['#FF5500', '#262626', '#444'], borderWidth: 0 }]
+                },
+                options: { ...optionsBase, scales: undefined, plugins: { legend: { display: true, position: 'right', labels: { color: '#aaa', font: { size: 9 } } } } }
+            });
+
+            // --- GRÁFICO 3: RANGOS DE EDAD (Línea) ---
+            instanciasGraficos.edad = new Chart(document.getElementById('chartEdades'), {
+                type: 'line',
+                data: {
+                    labels: Object.keys(edadCount),
+                    datasets: [{ data: Object.values(edadCount), borderColor: '#FF5500', backgroundColor: 'transparent', tension: 0.4, borderWidth: 2, pointRadius: 3 }]
+                },
+                options: optionsBase
+            });
+
+            // --- GRÁFICO 4: PROCEDENCIA (Pastel / Tarta) ---
+            const labelsProc = Object.keys(procedenciaCount).length ? Object.keys(procedenciaCount) : ['N/A'];
+            const dataProc = Object.values(procedenciaCount).length ? Object.values(procedenciaCount) : [datos.length || 1];
+            
+            instanciasGraficos.proc = new Chart(document.getElementById('chartProcedencia'), {
+                type: 'pie',
+                data: {
+                    labels: labelsProc,
+                    datasets: [{ data: dataProc, backgroundColor: ['#FF5500', '#D4AF37', '#262626', '#555'], borderWidth: 1, borderColor: '#1A1A1A' }]
+                },
+                options: { ...optionsBase, scales: undefined, plugins: { legend: { display: true, position: 'right', labels: { color: '#aaa', font: { size: 9 } } } } }
+            });
+        }
+
         function filtrarPagos() {
             const busqueda = document.getElementById('inputBuscar').value.toLowerCase().trim();
             if (!busqueda) {
                 renderizarTabla(todosLosPagos);
                 return;
             }
-
             const filtrados = todosLosPagos.filter(item => {
                 return item.nombre.toLowerCase().includes(busqueda) || 
                        item.curp.toLowerCase().includes(busqueda) || 
                        item.metodo.toLowerCase().includes(busqueda);
             });
-
             renderizarTabla(filtrados);
         }
 
         function formatearFecha(fechaCadena) {
             if (!fechaCadena) return "-";
-            // Convierte YYYY-MM-DD a DD/MM/YYYY
             const partes = fechaCadena.split('-');
-            if (partes.length === 3) {
-                return `${partes[2]}/${partes[1]}/${partes[0]}`;
-            }
+            if (partes.length === 3) return `${partes[2]}/${partes[1]}/${partes[0]}`;
             return fechaCadena;
         }
     </script>
