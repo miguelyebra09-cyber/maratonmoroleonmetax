@@ -899,26 +899,6 @@
         </div>
     </section>
 
-    <!-- Cuenta Regresiva -->
-    <section class="countdown-section">
-        <h2 class="section-title">El tiempo corre</h2>
-        <div class="countdown-container">
-            <div class="countdown-box">
-                <div class="countdown-time" id="days">240</div>
-                <div class="countdown-label">Días</div>
-            </div>
-            <div class="countdown-box">
-                <div class="countdown-time" id="hours">14</div>
-                <div class="countdown-label">Horas</div>
-            </div>
-            <div class="countdown-box">
-                <div class="countdown-time" id="minutes">45</div>
-                <div class="countdown-label">Minutos</div>
-            </div>
-            <div class="countdown-box seconds-box">
-                <div class="countdown-time" id="seconds">00</div>
-                <div class="countdown-label">Segundos</div>
-            </div>
         </div>
         
         <div class="hospital-monitor-wrapper">
@@ -1189,6 +1169,40 @@
                 s.innerHTML = Math.floor((distance % (1000 * 60)) / 1000);
             }
         }, 1000);
+        // 1. Definimos la fecha objetivo (10 de enero de 2027 a las 00:00:00)
+const targetDate = new Date('January 10, 2027 00:00:00').getTime();
+
+// 2. Creamos un intervalo para que se ejecute cada 1 segundo (1000 milisegundos)
+const countdownInterval = setInterval(() => {
+    // Obtener la fecha y hora actual en milisegundos
+    const now = new Date().getTime();
+    
+    // Calcular la diferencia (tiempo restante)
+    const difference = targetDate - now;
+
+    // Si la fecha ya pasó, detenemos el contador
+    if (difference <= 0) {
+        clearInterval(countdownInterval);
+        document.getElementById('days').innerText = '00';
+        document.getElementById('hours').innerText = '00';
+        document.getElementById('minutes').innerText = '00';
+        document.getElementById('seconds').innerText = '00';
+        return;
+    }
+
+    // 3. Cálculos matemáticos para convertir milisegundos a días, horas, minutos y segundos
+    const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+    // 4. Pintamos los resultados en el HTML agregando un "0" a la izquierda si el número es menor a 10
+    document.getElementById('days').innerText = days < 10 ? '0' + days : days;
+    document.getElementById('hours').innerText = hours < 10 ? '0' + hours : hours;
+    document.getElementById('minutes').innerText = minutes < 10 ? '0' + minutes : minutes;
+    document.getElementById('seconds').innerText = seconds < 10 ? '0' + seconds : seconds;
+
+}, 1000);
     </script>
 </body>
 </html>
