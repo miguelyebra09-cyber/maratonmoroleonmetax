@@ -486,10 +486,7 @@
             <div class="form-grid">
                 <div class="form-group">
                     <label>País de residencia *</label>
-                    <select id="paisResidencia" required>
-                        <option value="México" selected>México</option>
-                        <option value="Otro">Otro país</option>
-                    </select>
+                    <input type="text" id="paisResidencia" required value="México" placeholder="País de residencia">
                 </div>
                 <div class="form-group">
                     <label>Estado de residencia *</label>
@@ -635,15 +632,9 @@
                     <input type="tel" id="contactoTelefono" required placeholder="10 dígitos">
                 </div>
                 <div class="form-group">
-                    <label>Alergias conocidas <span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:0.7rem;">SELECCIÓN MÚLTIPLE</span></label>
-                    <select id="alergias">
-                        <option value="Ninguna" selected>Ninguna</option>
-                        <option value="Medicamentos">Medicamentos (Penicilina, Aspirina, etc.)</option>
-                        <option value="Alimentos">Alimentos</option>
-                        <option value="Piquaduras / Insectos">Piquaduras de insectos</option>
-                        <option value="Otra">Otra alergia</option>
-                    </select>
-                    <span class="field-help">Selecciona una o más opciones. Si no aplica, deja "Ninguna".</span>
+                    <label>Alergias conocidas</label>
+                    <input type="text" id="alergias" value="Ninguna" placeholder="Ej. Medicamentos, alimentos...">
+                    <span class="field-help">Indica si tienes alguna alergia o escribe "Ninguna".</span>
                 </div>
             </div>
 
@@ -924,7 +915,7 @@
 </div>
 
 <script>
-    // 1. Inicialización segura del cliente Supabase (Evita redeclaración)
+    // 1. Inicialización segura del cliente Supabase sin redeclaración de identificadores globales
     const SUPABASE_URL = 'https://rpcevbxzpfgyobehgjth.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwY2V2Ynh6cGZneW9iZWhnanRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMDA3MDQsImV4cCI6MjEwMTg3NjcwNH0.hECuSvVKVehKZjZ9jMqwHM1xspD2l1kS3G9X1jfHIuk';
     
@@ -960,12 +951,13 @@
     }
 
     function openCsvModal() {
-        document.getElementById('csvModal').style.display = 'flex';
-        document.getElementById('csvStatus').innerText = '';
+        const modal = document.getElementById('csvModal');
+        if (modal) modal.style.display = 'flex';
+        const status = document.getElementById('csvStatus');
+        if (status) status.innerText = '';
     }
 
     function showSection(sectionId) {
-        // Simple placeholder to handle navbar clicks safely
         console.log("Sección activa:", sectionId);
     }
 
@@ -1012,7 +1004,7 @@
         'ZS': 'Zacatecas', 'NE': 'Nacido en el Extranjero'
     };
 
-    // 4. Lógica de lectura y cálculo con validación CURP
+    // 4. Lógica de lectura y cálculo con validación CURP corregida
     const curpInput = document.getElementById('curp');
     if (curpInput) {
         curpInput.addEventListener('input', function(e) {
@@ -1072,7 +1064,7 @@
         });
     }
 
-    // Auxiliares de formulario / Previsualización de imagen
+    // Previsualización de imagen corregida
     function previewImage(event) {
         try {
             const container = document.getElementById('photoPreview');
@@ -1264,7 +1256,8 @@
 
     // 7. VER Y BUSCAR REGISTROS EN MODAL
     async function openRegistrosModal() {
-        document.getElementById('registrosModal').style.display = 'flex';
+        const modal = document.getElementById('registrosModal');
+        if (modal) modal.style.display = 'flex';
         await fetchRegistros();
     }
 
@@ -1385,7 +1378,8 @@
 
     // 9. MÉTRICAS Y ANALÍTICA
     async function openMetricasModal() {
-        document.getElementById('metricasModal').style.display = 'flex';
+        const modal = document.getElementById('metricasModal');
+        if (modal) modal.style.display = 'flex';
         
         try {
             const { data, error } = await supabase.from('registros').select('*');
