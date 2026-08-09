@@ -561,7 +561,7 @@
             </div>
         </div>
 
-        <!-- SECCIÓN 3: PERFIL DEL CORREDOR, PLAYERA Y FOTOS -->
+        <!-- SECCIÓN 3: PERFIL DEL CORREDOR, PLAYERA Y FOTOS (ORDENADO SIMÉTRICAMENTE) -->
         <div class="card">
             <div class="card-header">
                 <div class="card-subtitle">Perfil del Corredor y Documentación</div>
@@ -590,6 +590,8 @@
                         <option value="Profesional">Profesional</option>
                     </select>
                 </div>
+
+                <!-- 1. Fotografía oficial y su vista previa -->
                 <div class="form-group">
                     <label>Fotografía oficial</label>
                     <input type="file" id="fotoFile" accept="image/*" onchange="previewImage(event)">
@@ -601,7 +603,7 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN: EVIDENCIA DE PAGO -->
+                <!-- 2. Evidencia de Pago y su vista previa -->
                 <div class="form-group">
                     <label>Evidencia de Pago (Comprobante)</label>
                     <input type="file" id="pagoFile" accept="image/*,application/pdf" onchange="previewPago(event)">
@@ -613,7 +615,7 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN: DOCUMENTO DE IDENTIDAD 1 -->
+                <!-- 3. Documento 1 y su vista previa -->
                 <div class="form-group">
                     <label>Identificación Oficial (INE / CURP / Otro - Doc 1)</label>
                     <input type="file" id="doc1File" accept="image/*,application/pdf" onchange="previewDoc(event, 'doc1Preview')">
@@ -625,7 +627,7 @@
                     </div>
                 </div>
 
-                <!-- SECCIÓN: DOCUMENTO DE IDENTIDAD 2 -->
+                <!-- 4. Documento 2 y su vista previa -->
                 <div class="form-group">
                     <label>Identificación Oficial Adicional (Doc 2 - Opcional)</label>
                     <input type="file" id="doc2File" accept="image/*,application/pdf" onchange="previewDoc(event, 'doc2Preview')">
