@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaX Admin - Registro de Corredores Offline (Pago en Efectivo)</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --primary-light: #2563eb;
+            --accent: #0284c7;
+            --success: #16a34a;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #0f172a;
+            --border: #cbd5e1;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 950px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #0f172a, #1e3a8a);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: #38bdf8;
+        }
+
+        .header p {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+
+        .badge-admin {
+            background-color: #f59e0b;
+            color: #78350f;
+            font-weight: bold;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 18px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #334155;
+        }
+
+        .form-group input, .form-group select {
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .folio-preview {
+            background-color: #ecfdf5;
+            border: 1.5px dashed #10b981;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .folio-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #047857;
+            letter-spacing: 1px;
+        }
+
+        .btn-submit {
+            background-color: var(--success);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            transition: background 0.2s;
+        }
+
+        .btn-submit:hover {
+            background-color: #15803d;
+        }
+
+        .btn-export {
+            background-color: var(--primary-light);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+
+        /* Modal de Confirmación y Ticket */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(15, 23, 42, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 28px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+        }
+
+        .ticket-box {
+            border: 2px dashed #94a3b8;
+            padding: 16px;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            margin: 16px 0;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .ticket-header {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--primary);
+            border-bottom: 1px solid #cbd5e1;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+
+        .btn-print {
+            background-color: #0284c7;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-right: 8px;
+        }
+
+        .btn-close {
+            background-color: #64748b;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #printableTicket, #printableTicket * { visibility: visible; }
+            #printableTicket { position: absolute; left: 0; top: 0; width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div>
+            <h1>Maratón Internacional Moroleón 2027</h1>
+            <p>Módulo de Captura y Registro Presencial (Efectivo / Módulo Comité)</p>
+        </div>
+        <span class="badge-admin">Módulo Admin</span>
+    </div>
+
+    <!-- Vista Previa de Folio a Asignar -->
+    <div class="folio-preview">
+        <span>Folio Oficial Offline a Asignar:</span>
+        <div class="folio-number" id="nextFolioDisplay">MM27-OFF-1001</div>
+    </div>
+
+    <form id="offlineRegistrationForm">
+        <!-- Datos de Identificación y Personales -->
+        <div class="card">
+            <div class="card-title">1. Datos Personales del Corredor</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>CURP *</label>
+                    <input type="text" id="curp" required maxlength="18" placeholder="AAAA000000XXXXXX00" style="text-transform: uppercase;">
+                </div>
+                <div class="form-group">
+                    <label>Nombre(s) *</label>
+                    <input type="text" id="nombre" required placeholder="Nombre completo">
+                </div>
+                <div class="form-group">
+                    <label>Apellido Paterno *</label>
+                    <input type="text" id="apellidoPaterno" required placeholder="Apellido paterno">
+                </div>
+                <div class="form-group">
+                    <label>Apellido Materno</label>
+                    <input type="text" id="apellidoMaterno" placeholder="Apellido materno">
+                </div>
+                <div class="form-group">
+                    <label>Fecha de Nacimiento *</label>
+                    <input type="date" id="fechaNacimiento" required>
+                </div>
+                <div class="form-group">
+                    <label>Género *</label>
+                    <select id="genero" required>
+                        <option value="">Selecciona...</option>
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Correo Electrónico *</label>
+                    <input type="email" id="email" required placeholder="correo@ejemplo.com">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono / WhatsApp *</label>
+                    <input type="tel" id="telefono" required placeholder="10 dígitos">
+                </div>
+                <div class="form-group">
+                    <label>Estado / Ciudad *</label>
+                    <input type="text" id="procedencia" required placeholder="Ej. Guanajuato, Moroleón">
+                </div>
+            </div>
+        </div>
+
+        <!-- Datos de la Competencia -->
+        <div class="card">
+            <div class="card-title">2. Datos de Carrera y Categoría</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Distancia *</label>
+                    <select id="distancia" required>
+                        <option value="">Selecciona distancia...</option>
+                        <option value="42K Maratón">42K - Maratón Completo</option>
+                        <option value="21K Medio Maratón">21K - Medio Maratón</option>
+                        <option value="10K">10K Recreativa</option>
+                        <option value="5K">5K Recreativa</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Categoría *</label>
+                    <select id="categoria" required>
+                        <option value="Libre">Libre (18 - 39 años)</option>
+                        <option value="Máster">Máster (40 - 49 años)</option>
+                        <option value="Veteranos">Veteranos (50 - 59 años)</option>
+                        <option value="Veteranos Plus">Veteranos Plus (60+ años)</option>
+                        <option value="Juventud">Juventud (Menores de 18 con responsiva)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Talla de Playera *</label>
+                    <select id="talla" required>
+                        <option value="">Selecciona talla...</option>
+                        <option value="XS">Extra Chica (XS)</option>
+                        <option value="S">Chica (S)</option>
+                        <option value="M">Mediana (M)</option>
+                        <option value="L">Grande (L)</option>
+                        <option value="XL">Extra Grande (XL)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Club / Equipo (Opcional)</label>
+                    <input type="text" id="club" placeholder="Nombre del club o equipo">
+                </div>
+            </div>
+        </div>
+
+        <!-- Contacto de Emergencia y Control de Caja -->
+        <div class="card">
+            <div class="card-title">3. Emergencia y Recibo en Efectivo</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Contacto de Emergencia *</label>
+                    <input type="text" id="contactoEmergencia" required placeholder="Nombre de familiar / contacto">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono de Emergencia *</label>
+                    <input type="tel" id="telefonoEmergencia" required placeholder="Teléfono de contacto">
+                </div>
+                <div class="form-group">
+                    <label>Monto Recibido en Efectivo ($ MXN) *</label>
+                    <input type="number" id="monto" required value="450" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Módulo / Operador de Registro *</label>
+                    <input type="text" id="operador" required value="Módulo Centro - Caja 1">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Confirmar Pago en Efectivo y Generar Folio Oficial</button>
+    </form>
+
+    <!-- Histórico de Capturas Locales -->
+    <div class="card" style="margin-top: 24px;">
+        <div class="card-title">
+            <span>Registros Offline Capturados Hoy</span>
+            <button class="btn-export" onclick="exportToCSV()">Exportar CSV para BD MetaX</button>
+        </div>
+        <p style="font-size: 0.85rem; color: #64748b;">Total capturados en esta sesión: <strong id="totalOfflineCount">0</strong></p>
+    </div>
+</div>
+
+<!-- Modal de Confirmación y Comprobante Imprimible -->
+<div class="modal" id="ticketModal">
+    <div class="modal-content">
+        <h3 style="color: var(--success);">¡Registro Offline Exitoso!</h3>
+        <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">El pago ha sido confirmado e ingresado a la base de datos.</p>
+
+        <div class="ticket-box" id="printableTicket">
+            <div class="ticket-header">
+                🏁 MARATÓN MOROLEÓN 2027 🏁<br>
+                <small style="font-weight: normal; font-size: 0.8rem;">Comprobante Oficial de Inscripción</small>
+            </div>
+            <p><strong>FOLIO OFICIAL:</strong> <span id="lblFolio" style="color: #0284c7; font-size: 1.1rem; font-weight: bold;"></span></p>
+            <p><strong>Corredor:</strong> <span id="lblNombre"></span></p>
+            <p><strong>CURP:</strong> <span id="lblCurp"></span></p>
+            <p><strong>Distancia:</strong> <span id="lblDistancia"></span></p>
+            <p><strong>Categoría:</strong> <span id="lblCategoria"></span></p>
+            <p><strong>Talla Playera:</strong> <span id="lblTalla"></span></p>
+            <p><strong>Pago Recibido:</strong> $<span id="lblMonto"></span> MXN (Efectivo)</p>
+            <p><strong>Atendido por:</strong> <span id="lblOperador"></span></p>
+            <hr style="margin: 10px 0; border: none; border-top: 1px dashed #cbd5e1;">
+            <p style="font-size: 0.75rem; text-align: center; color: #64748b;">Conserve este comprobante para recoger su kit de corredor.</p>
+        </div>
+
+        <div>
+            <button class="btn-print" onclick="window.print()">Imprimir Ticket</button>
+            <button class="btn-close" onclick="closeModal()">Nuevo Registro</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Contador inicial para folios offline (ej. arranca en 1001)
+    let currentOfflineCounter = parseInt(localStorage.getItem('metaX_offline_counter')) || 1001;
+    let offlineRecords = JSON.parse(localStorage.getItem('metaX_offline_records')) || [];
+
+    function updateFolioDisplay() {
+        const nextFolio = `MM27-OFF-${currentOfflineCounter}`;
+        document.getElementById('nextFolioDisplay').innerText = nextFolio;
+        document.getElementById('totalOfflineCount').innerText = offlineRecords.length;
+    }
+
+    updateFolioDisplay();
+
+    // Manejador del Formulario
+    document.getElementById('offlineRegistrationForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const folioGenerado = `MM27-OFF-${currentOfflineCounter}`;
+        const nombreCompleto = `${document.getElementById('nombre').value} ${document.getElementById('apellidoPaterno').value} ${document.getElementById('apellidoMaterno').value}`.trim();
+        
+        const record = {
+            folio: folioGenerado,
+            curp: document.getElementById('curp').value.toUpperCase(),
+            nombre: nombreCompleto,
+            fechaNacimiento: document.getElementById('fechaNacimiento').value,
+            genero: document.getElementById('genero').value,
+            email: document.getElementById('email').value,
+            telefono: document.getElementById('telefono').value,
+            procedencia: document.getElementById('procedencia').value,
+            distancia: document.getElementById('distancia').value,
+            categoria: document.getElementById('categoria').value,
+            talla: document.getElementById('talla').value,
+            club: document.getElementById('club').value || 'N/A',
+            contactoEmergencia: document.getElementById('contactoEmergencia').value,
+            telefonoEmergencia: document.getElementById('telefonoEmergencia').value,
+            monto: document.getElementById('monto').value,
+            operador: document.getElementById('operador').value,
+            metodoPago: 'CASH_PHYSICAL',
+            estatusPago: 'CONFIRMED',
+            fechaCaptura: new Date().toISOString()
+        };
+
+        // Guardar localmente
+        offlineRecords.push(record);
+        localStorage.setItem('metaX_offline_records', JSON.stringify(offlineRecords));
+        
+        // Incrementar contador
+        currentOfflineCounter++;
+        localStorage.setItem('metaX_offline_counter', currentOfflineCounter);
+
+        // Mostrar Ticket Modal
+        document.getElementById('lblFolio').innerText = record.folio;
+        document.getElementById('lblNombre').innerText = record.nombre;
+        document.getElementById('lblCurp').innerText = record.curp;
+        document.getElementById('lblDistancia').innerText = record.distancia;
+        document.getElementById('lblCategoria').innerText = record.categoria;
+        document.getElementById('lblTalla').innerText = record.talla;
+        document.getElementById('lblMonto').innerText = record.monto;
+        document.getElementById('lblOperador').innerText = record.operador;
+
+        document.getElementById('ticketModal').style.display = 'flex';
+    });
+
+    function closeModal() {
+        document.getElementById('ticketModal').style.display = 'none';
+        document.getElementById('offlineRegistrationForm').reset();
+        document.getElementById('monto').value = '450';
+        document.getElementById('operador').value = 'Módulo Centro - Caja 1';
+        updateFolioDisplay();
+    }
+
+    function exportToCSV() {
+        if (offlineRecords.length === 0) {
+            alert('No hay registros capturados en la sesión.');
+            return;
+        }
+
+        let csvContent = "data:text/csv;charset=utf-8,";
+        csvContent += "Folio,CURP,Nombre,Email,Telefono,Distancia,Categoria,Talla,Monto,Operador,Fecha\n";
+
+        offlineRecords.forEach(r => {
+            csvContent += `"${r.folio}","${r.curp}","${r.nombre}","${r.email}","${r.telefono}","${r.distancia}","${r.categoria}","${r.talla}","${r.monto}","${r.operador}","${r.fechaCaptura}"\n`;
+        });
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", `Registros_Offline_Maraton_Moroleon_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</body>
+</html>
