@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MetaX Admin - Sistema Integral de Registro - Maratón Moroleón 2027</title>
+    <title>MetaX Admin - Registro Offline y Gestión - Maratón Moroleón 2027</title>
     
     <!-- Carga del SDK de Supabase desde CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Biblioteca PapaParse para lectura e importación de CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
     <style>
         :root {
@@ -20,7 +22,6 @@
             --border-color: #cbd5e1;
             --input-bg: #f1f5f9;
             --success: #16a34a;
-            --warning: #d97706;
             --danger: #dc2626;
         }
 
@@ -34,26 +35,31 @@
         body {
             background-color: var(--bg-body);
             color: var(--text-main);
-            padding-bottom: 40px;
+            padding-top: 70px;
+            padding-bottom: 30px;
         }
 
-        /* --- BARRA DE NAVEGACIÓN SUPERIOR --- */
+        /* BARRA DE NAVEGACIÓN SUPERIOR (NAVBAR) */
         .navbar {
-            background-color: var(--primary);
-            padding: 12px 24px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
+            position: fixed;
             top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+            z-index: 900;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
         .navbar-brand {
-            color: #38bdf8;
             font-weight: 800;
             font-size: 1.1rem;
+            color: #38bdf8;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -63,39 +69,29 @@
             display: flex;
             gap: 8px;
             list-style: none;
-            flex-wrap: wrap;
         }
 
         .nav-btn {
-            background-color: #1e293b;
-            color: #f1f5f9;
-            border: 1px solid #334155;
+            background: transparent;
+            border: 1px solid transparent;
+            color: #94a3b8;
             padding: 8px 14px;
             border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            transition: all 0.2s;
         }
 
-        .nav-btn:hover {
-            background-color: var(--primary-blue);
+        .nav-btn:hover, .nav-btn.active {
             color: white;
-            border-color: var(--primary-blue);
-        }
-
-        .nav-btn.active {
-            background-color: var(--accent-blue);
-            color: white;
-            border-color: var(--accent-blue);
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         .container {
             max-width: 1100px;
-            margin: 20px auto;
+            margin: 0 auto;
             padding: 0 12px;
         }
 
@@ -288,130 +284,33 @@
             background-color: #15803d;
         }
 
-        /* --- ESTILOS DE MODALES GENERALES --- */
+        /* MODALES */
         .modal {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top:0; left:0; width:100%; height:100%;
             background: rgba(15, 23, 42, 0.75);
             justify-content: center; align-items: center;
             z-index: 1000;
-            padding: 16px;
-            overflow-y: auto;
         }
 
         .modal-content {
             background: white;
             border-radius: 12px;
             padding: 24px;
-            max-width: 900px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            position: relative;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-        }
-
-        .modal-close-icon {
-            position: absolute;
-            top: 16px; right: 20px;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #64748b;
-            cursor: pointer;
-        }
-
-        .modal-close-icon:hover { color: var(--danger); }
-
-        /* TABLAS EN MODALES */
-        .table-responsive {
-            width: 100%;
-            overflow-x: auto;
-            margin-top: 14px;
-        }
-
-        .data-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-            text-align: left;
-        }
-
-        .data-table th, .data-table td {
-            padding: 10px 12px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .data-table th {
-            background-color: #f1f5f9;
-            color: var(--primary);
-            font-weight: 700;
-            position: sticky;
-            top: 0;
-        }
-
-        .data-table tbody tr:hover {
-            background-color: #f8fafc;
-        }
-
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 0.75rem;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .btn-edit { background-color: #f59e0b; color: white; }
-        .btn-edit:hover { background-color: #d97706; }
-        .btn-cancel { background-color: #64748b; color: white; }
-        .btn-save { background-color: var(--success); color: white; }
-
-        /* GRID DE MÉTRICAS */
-        .metrics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
-            margin-top: 16px;
-        }
-
-        .metric-card {
-            background: #f8fafc;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 16px;
+            max-width: 500px;
+            width: 90%;
             text-align: center;
         }
 
-        .metric-value {
-            font-size: 1.8rem;
-            font-weight: 800;
-            color: var(--primary-blue);
-            margin: 6px 0;
-        }
-
-        .metric-label {
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            text-transform: uppercase;
-        }
-
-        .metric-list {
+        .modal-large {
+            max-width: 1000px;
+            width: 95%;
+            max-height: 90vh;
+            overflow-y: auto;
             text-align: left;
-            margin-top: 8px;
-            font-size: 0.85rem;
         }
 
-        .metric-list li {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 0;
-            border-bottom: 1px dashed #e2e8f0;
-        }
-
-        /* TICKET IMPRIMIBLE */
         .ticket-box {
             border: 2px dashed #94a3b8;
             padding: 16px;
@@ -435,19 +334,51 @@
 
         .btn-print { background-color: #0284c7; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .btn-close { background-color: #64748b; color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; }
+        .btn-action { background-color: var(--accent-blue); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
 
-        .search-input {
+        /* TABLA DE REGISTROS */
+        .table-responsive {
             width: 100%;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            font-size: 0.9rem;
-            margin-bottom: 12px;
+            overflow-x: auto;
+            margin-top: 12px;
         }
 
-        /* SECCIONES VISTAS */
-        .view-section { display: none; }
-        .view-section.active { display: block; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+
+        table th, table td {
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        /* MÉTRICAS GRID */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .metric-title { font-size: 0.8rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; }
+        .metric-value { font-size: 1.8rem; font-weight: 800; color: var(--primary); margin-top: 4px; }
 
         @media print {
             body * { visibility: hidden; }
@@ -458,405 +389,167 @@
 </head>
 <body>
 
-<!-- BARRA DE NAVEGACIÓN SUPERIOR -->
+<!-- MENU DE NAVEGACIÓN SUPERIOR -->
 <nav class="navbar">
     <div class="navbar-brand">
-        <span>🏃 MetaX Admin</span>
+        🏃 MetaX Admin | Moroleón 2027
     </div>
     <ul class="navbar-menu">
-        <li><button class="nav-btn active" onclick="switchView('sectionRegistro', this)">📝 Registro Individual</button></li>
-        <li><button class="nav-btn" onclick="switchView('sectionCSV', this)">📂 Cargar CSV</button></li>
-        <li><button class="nav-btn" onclick="openModalVerRegistros()">👁️ Ver Registros</button></li>
-        <li><button class="nav-btn" onclick="openModalEditarRegistros()">✏️ Editar Registros</button></li>
-        <li><button class="nav-btn" onclick="openModalMetricas()">📊 Panel Métricas</button></li>
+        <li><button class="nav-btn active" onclick="showSection('form')">📝 Registro Individual</button></li>
+        <li><button class="nav-btn" onclick="openCsvModal()">📁 Subir CSV</button></li>
+        <li><button class="nav-btn" onclick="openRegistrosModal()">📋 Ver / Editar Registros</button></li>
+        <li><button class="nav-btn" onclick="openMetricasModal()">📊 Métricas</button></li>
     </ul>
 </nav>
 
-<div class="container">
+<div class="container" id="formSection">
 
-    <!-- VISTA 1: REGISTRO INDIVIDUAL -->
-    <div id="sectionRegistro" class="view-section active">
-        <div class="header">
-            <div>
-                <h1>Maratón Internacional Moroleón 2027</h1>
-                <p>Módulo de Registro Presencial y Cobro en Efectivo (Comité Organizador)</p>
-            </div>
-            <span class="badge-admin">Módulo Admin</span>
+    <div class="header">
+        <div>
+            <h1>Maratón Internacional Moroleón 2027</h1>
+            <p>Módulo de Registro Presencial y Cobro en Efectivo (Comité Organizador)</p>
         </div>
-
-        <div class="folio-banner">
-            <span>Folio Oficial a Generar:</span>
-            <div class="folio-number" id="nextFolioDisplay">MM27-OFF-1001</div>
-        </div>
-
-        <form id="fullRegistrationForm">
-            <!-- SECCIÓN 1: DATOS DE INSCRIPCIÓN Y CARRERA -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-subtitle">Datos de Inscripción</div>
-                    <div class="card-title">Datos del Registro y Carrera</div>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Fecha de registro (auto)</label>
-                        <input type="text" id="fechaRegistro" readonly>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>CURP *</label>
-                        <input type="text" id="curp" required maxlength="18" placeholder="Ingresa tu CURP" style="text-transform: uppercase;">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Nombre(s) *</label>
-                        <input type="text" id="nombre" required placeholder="Nombre(s)">
-                    </div>
-                    <div class="form-group">
-                        <label>Primer apellido *</label>
-                        <input type="text" id="primerApellido" required placeholder="Primer apellido">
-                    </div>
-                    <div class="form-group">
-                        <label>Segundo apellido</label>
-                        <input type="text" id="segundoApellido" placeholder="Segundo apellido">
-                    </div>
-                    <div class="form-group">
-                        <label>Correo electrónico *</label>
-                        <input type="email" id="email" required placeholder="correo@ejemplo.com">
-                    </div>
-                    <div class="form-group">
-                        <label>Teléfono celular *</label>
-                        <input type="tel" id="telefono" required placeholder="10 dígitos">
-                    </div>
-                    <div class="form-group">
-                        <label>Carrera</label>
-                        <select id="carrera" disabled>
-                            <option selected>Maratón Internacional Moroleón 2027 (2.ª Edición) — Moroleón, Guanajuato.</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Distancia asignada *</label>
-                        <select id="distancia" required>
-                            <option value="">-----------</option>
-                            <option value="42K Maratón">42K Maratón Completo</option>
-                            <option value="21K Medio Maratón">21K Medio Maratón</option>
-                            <option value="10K Recreativa">10K Recreativa</option>
-                            <option value="5K Recreativa">5K Recreativa</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECCIÓN 2: INFORMACIÓN DE IDENTIDAD Y RESIDENCIA -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-subtitle">Información de Identidad</div>
-                    <div class="card-title">Residencia y Datos Extraídos</div>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>País de residencia *</label>
-                        <select id="paisResidencia" required>
-                            <option value="México" selected>México</option>
-                            <option value="Otro">Otro país</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Estado de residencia *</label>
-                        <select id="estadoResidencia" required>
-                            <option value="">Selecciona tu estado</option>
-                            <option value="Guanajuato">Guanajuato</option>
-                            <option value="Michoacán">Michoacán</option>
-                            <option value="Jalisco">Jalisco</option>
-                            <option value="Ciudad de México">Ciudad de México</option>
-                            <option value="Estado de México">Estado de México</option>
-                            <option value="Querétaro">Querétaro</option>
-                            <option value="Aguascalientes">Aguascalientes</option>
-                            <option value="San Luis Potosí">San Luis Potosí</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Edad (auto)</label>
-                        <input type="text" id="edadAuto" readonly placeholder="Se calcula con la CURP">
-                    </div>
-                    <div class="form-group">
-                        <label>Fecha de nacimiento</label>
-                        <input type="date" id="fechaNacimiento">
-                        <span class="field-help">Se llena automáticamente con CURP.</span>
-                    </div>
-                    <div class="form-group">
-                        <label>Género (auto)</label>
-                        <input type="text" id="generoAuto" readonly placeholder="Se llena con CURP">
-                    </div>
-                    <div class="form-group">
-                        <label>Entidad / Estado de nacimiento (auto)</label>
-                        <input type="text" id="entidadOrigenAuto" readonly placeholder="Se extrae de la CURP">
-                    </div>
-                    <div class="form-group">
-                        <label>Rama competencia (auto)</label>
-                        <input type="text" id="ramaAuto" readonly placeholder="Varonil / Femenil">
-                    </div>
-                    <div class="form-group" style="grid-column: span 2;">
-                        <label>Categoría asignada (auto)</label>
-                        <select id="categoriaAuto">
-                            <option value="">-----------</option>
-                            <option value="Libre (18-39 años)">Libre (18-39 años)</option>
-                            <option value="Master (40-49 años)">Master (40-49 años)</option>
-                            <option value="Veteranos (50-59 años)">Veteranos (50-59 años)</option>
-                            <option value="Veteranos Plus (60+ años)">Veteranos Plus (60+ años)</option>
-                            <option value="Juvenil (Menores de 18)">Juvenil (Menores de 18)</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECCIÓN 3: PERFIL DEL CORREDOR, PLAYERA Y FOTO -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-subtitle">Perfil del Corredor</div>
-                    <div class="card-title">Playera y fotografía</div>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Talla de playera *</label>
-                        <select id="tallaPlayera" required>
-                            <option value="">-----------</option>
-                            <option value="XS">Extra Chica (XS)</option>
-                            <option value="S">Chica (S)</option>
-                            <option value="M">Mediana (M)</option>
-                            <option value="L">Grande (L)</option>
-                            <option value="XL">Extra Grande (XL)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Perfil del corredor *</label>
-                        <select id="perfilCorredor" required>
-                            <option value="">Selecciona tu perfil</option>
-                            <option value="Atleta Local (Moroleón)">Atleta Local (Moroleón)</option>
-                            <option value="Atleta Estatal">Atleta Estatal (Guanajuato)</option>
-                            <option value="Atleta Nacional">Atleta Nacional</option>
-                            <option value="Atleta Internacional">Atleta Internacional</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Fotografía oficial</label>
-                        <input type="file" id="fotoFile" accept="image/*" onchange="previewImage(event)">
-                    </div>
-                    <div class="form-group">
-                        <label>Vista previa de foto</label>
-                        <div class="photo-preview-box" id="photoPreview">
-                            La foto del CURP aparecerá aquí cuando esté disponible.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- SECCIÓN 4: EXPEDIENTE MÉDICO Y SEGURIDAD -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-subtitle">Expediente Médico</div>
-                    <div class="card-title">Seguridad</div>
-                </div>
-                <div class="form-grid" style="margin-bottom: 16px;">
-                    <div class="form-group">
-                        <label>Tipo de sangre *</label>
-                        <select id="tipoSangre" required>
-                            <option value="">-----------</option>
-                            <option value="O+">O Positivo (O+)</option>
-                            <option value="O-">O Negativo (O-)</option>
-                            <option value="A+">A Positivo (A+)</option>
-                            <option value="A-">A Negativo (A-)</option>
-                            <option value="B+">B Positivo (B+)</option>
-                            <option value="B-">B Negativo (B-)</option>
-                            <option value="AB+">AB Positivo (AB+)</option>
-                            <option value="AB-">AB Negativo (AB-)</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Contacto emergencia (nombre) *</label>
-                        <input type="text" id="contactoNombre" required placeholder="Nombre completo del familiar">
-                    </div>
-                    <div class="form-group">
-                        <label>Teléfono emergencia *</label>
-                        <input type="tel" id="contactoTelefono" required placeholder="10 dígitos">
-                    </div>
-                    <div class="form-group">
-                        <label>Alergias conocidas</label>
-                        <select id="alergias">
-                            <option value="Ninguna" selected>Ninguna</option>
-                            <option value="Medicamentos">Medicamentos</option>
-                            <option value="Alimentos">Alimentos</option>
-                            <option value="Piquaduras / Insectos">Picaduras de insectos</option>
-                            <option value="Otra">Otra alergia</option>
-                        </select>
-                    </div>
-                </div>
-
-                <label style="font-size: 0.85rem; font-weight: 700; color: #1e293b;">Padecimientos crónicos</label>
-                <div class="checkbox-grid">
-                    <label class="checkbox-card">
-                        <input type="checkbox" name="padecimientos" value="Ninguno" checked onchange="handleNinguno(this)">
-                        <span>Ninguno</span>
-                    </label>
-                    <label class="checkbox-card">
-                        <input type="checkbox" name="padecimientos" value="Hipertensión arterial crónica" onchange="uncheckNinguno()">
-                        <span>Hipertensión arterial crónica</span>
-                    </label>
-                    <label class="checkbox-card">
-                        <input type="checkbox" name="padecimientos" value="Diabetes mellitus tipo 1 o 2" onchange="uncheckNinguno()">
-                        <span>Diabetes mellitus tipo 1 o 2</span>
-                    </label>
-                    <label class="checkbox-card">
-                        <input type="checkbox" name="padecimientos" value="Asma/deficiencias pulmonares" onchange="uncheckNinguno()">
-                        <span>Asma/deficiencias pulmonares</span>
-                    </label>
-                    <label class="checkbox-card">
-                        <input type="checkbox" name="padecimientos" value="Arritmias/cardiopatías isquémicas" onchange="uncheckNinguno()">
-                        <span>Arritmias/cardiopatías isquémicas</span>
-                    </label>
-                </div>
-
-                <div class="form-group" style="margin-top: 16px;">
-                    <label>Situaciones extraoficiales</label>
-                    <textarea id="situacionesExtra" rows="3" placeholder="Anotaciones médicas especiales..."></textarea>
-                </div>
-            </div>
-
-            <!-- COBRO Y CONFIRMACIÓN -->
-            <div class="card">
-                <div class="card-header">
-                    <div class="card-subtitle">Caja y Cobro</div>
-                    <div class="card-title">Confirmación de Pago en Efectivo</div>
-                </div>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Monto Recibido en Efectivo ($ MXN) *</label>
-                        <input type="number" id="montoCobrado" required value="450" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label>Módulo / Operador Responsable *</label>
-                        <input type="text" id="operadorNombre" required value="Módulo Centro - Caja 1">
-                    </div>
-                </div>
-            </div>
-
-            <button type="submit" class="btn-submit">Confirmar Pago en Efectivo y Generar Folio Oficial (MM27-OFF)</button>
-        </form>
+        <span class="badge-admin">Módulo Admin</span>
     </div>
 
-    <!-- VISTA 2: CARGA MASIVA CSV -->
-    <div id="sectionCSV" class="view-section">
+    <div class="folio-banner">
+        <span>Folio Oficial a Generar:</span>
+        <div class="folio-number" id="nextFolioDisplay">MM27OFF-RUN-MMO10002</div>
+    </div>
+
+    <form id="fullRegistrationForm">
+
+        <!-- SECCIÓN 1: DATOS DE INSCRIPCIÓN Y CARRERA -->
         <div class="card">
             <div class="card-header">
-                <div class="card-subtitle">Importación Masiva</div>
-                <div class="card-title">Subir Archivo CSV con Registros Existentes</div>
+                <div class="card-subtitle">Datos de Inscripción</div>
+                <div class="card-title">Datos del Registro y Carrera</div>
             </div>
-            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 16px;">
-                Carga un archivo en formato CSV. Asegúrate de incluir los encabezados mínimos: 
-                <code>nombre, primer_apellido, curp, email, telefono, distancia, categoria, talla_playera, monto_cobrado</code>.
-            </p>
-            
-            <div class="form-group">
-                <label>Seleccionar Archivo CSV *</label>
-                <input type="file" id="csvFileInput" accept=".csv">
-            </div>
-
-            <button type="button" class="btn-submit" onclick="processCSVUpload()" style="margin-top: 16px; background-color: var(--primary-blue);">
-                Procesar e Importar a Supabase
-            </button>
-
-            <div id="csvStatus" style="margin-top: 16px; font-weight: bold; font-size: 0.9rem;"></div>
-        </div>
-    </div>
-
-</div>
-
-<!-- MODAL 1: VER REGISTROS -->
-<div class="modal" id="modalVerRegistros">
-    <div class="modal-content">
-        <span class="modal-close-icon" onclick="closeModal('modalVerRegistros')">&times;</span>
-        <h2 style="color: var(--primary); margin-bottom: 8px;">📋 Lista Completa de Registros</h2>
-        <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 12px;">Consulta todos los atletas inscritos almacenados en Supabase.</p>
-        
-        <input type="text" id="searchVerRegistros" class="search-input" placeholder="Buscar por Nombre, CURP o Folio..." onkeyup="filterTable('tableVerRegistros', this.value)">
-
-        <div class="table-responsive">
-            <table class="data-table" id="tableVerRegistros">
-                <thead>
-                    <tr>
-                        <th>Folio</th>
-                        <th>Nombre Completo</th>
-                        <th>CURP</th>
-                        <th>Distancia</th>
-                        <th>Categoría</th>
-                        <th>Talla</th>
-                        <th>Monto</th>
-                        <th>Estatus</th>
-                    </tr>
-                </thead>
-                <tbody id="tbodyVerRegistros">
-                    <tr><td colspan="8" style="text-align: center;">Cargando datos...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
-<!-- MODAL 2: EDITAR REGISTROS -->
-<div class="modal" id="modalEditarRegistros">
-    <div class="modal-content">
-        <span class="modal-close-icon" onclick="closeModal('modalEditarRegistros')">&times;</span>
-        <h2 style="color: var(--primary); margin-bottom: 8px;">✏️ Modificación y Edición de Registros</h2>
-        <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 12px;">Selecciona un registro para modificar sus campos y guardar cambios en Supabase.</p>
-        
-        <input type="text" id="searchEditarRegistros" class="search-input" placeholder="Buscar participante a editar..." onkeyup="filterTable('tableEditarRegistros', this.value)">
-
-        <div class="table-responsive">
-            <table class="data-table" id="tableEditarRegistros">
-                <thead>
-                    <tr>
-                        <th>Folio</th>
-                        <th>Nombre</th>
-                        <th>CURP</th>
-                        <th>Distancia</th>
-                        <th>Talla</th>
-                        <th>Acción</th>
-                    </tr>
-                </thead>
-                <tbody id="tbodyEditarRegistros">
-                    <tr><td colspan="6" style="text-align: center;">Cargando datos...</td></tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- FORMULARIO DE EDICIÓN FLOTANTE/DINÁMICO -->
-        <div id="editRowContainer" style="display: none; margin-top: 20px; border-top: 2px solid var(--border-color); padding-top: 16px;">
-            <h3 style="font-size: 1rem; color: var(--accent-blue); margin-bottom: 12px;">Editar participante: <span id="editFolioTarget"></span></h3>
-            <input type="hidden" id="editRecordId">
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Nombre(s)</label>
-                    <input type="text" id="editNombre">
+                    <label>Fecha de registro (auto)</label>
+                    <input type="text" id="fechaRegistro" readonly>
+                </div>
+                
+                <!-- CAMPO CURP REUBICADO -->
+                <div class="form-group">
+                    <label>CURP *</label>
+                    <input type="text" id="curp" required maxlength="18" placeholder="Ingresa tu CURP" style="text-transform: uppercase;">
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre(s) *</label>
+                    <input type="text" id="nombre" required placeholder="Nombre(s)">
                 </div>
                 <div class="form-group">
-                    <label>Primer Apellido</label>
-                    <input type="text" id="editPrimerApellido">
+                    <label>Primer apellido *</label>
+                    <input type="text" id="primerApellido" required placeholder="Primer apellido">
                 </div>
                 <div class="form-group">
-                    <label>CURP</label>
-                    <input type="text" id="editCurp">
+                    <label>Segundo apellido</label>
+                    <input type="text" id="segundoApellido" placeholder="Segundo apellido">
                 </div>
                 <div class="form-group">
-                    <label>Distancia</label>
-                    <select id="editDistancia">
+                    <label>Correo electrónico *</label>
+                    <input type="email" id="email" required placeholder="correo@ejemplo.com">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono celular *</label>
+                    <input type="tel" id="telefono" required placeholder="10 dígitos">
+                </div>
+                <div class="form-group">
+                    <label>Carrera</label>
+                    <select id="carrera" disabled>
+                        <option selected>Maratón Internacional Moroleón 2027 (2.ª Edición) — Moroleón, Guanajuato.</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Distancia asignada *</label>
+                    <select id="distancia" required>
+                        <option value="">-----------</option>
                         <option value="42K Maratón">42K Maratón Completo</option>
                         <option value="21K Medio Maratón">21K Medio Maratón</option>
                         <option value="10K Recreativa">10K Recreativa</option>
                         <option value="5K Recreativa">5K Recreativa</option>
                     </select>
                 </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 2: INFORMACIÓN DE IDENTIDAD Y RESIDENCIA -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-subtitle">Información de Identidad</div>
+                <div class="card-title">Residencia y Datos Extraídos</div>
+            </div>
+            <div class="form-grid">
                 <div class="form-group">
-                    <label>Talla Playera</label>
-                    <select id="editTalla">
+                    <label>País de residencia *</label>
+                    <select id="paisResidencia" required>
+                        <option value="México" selected>México</option>
+                        <option value="Otro">Otro país</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Estado de residencia *</label>
+                    <select id="estadoResidencia" required>
+                        <option value="">Selecciona tu estado</option>
+                        <option value="Guanajuato">Guanajuato</option>
+                        <option value="Michoacán">Michoacán</option>
+                        <option value="Jalisco">Jalisco</option>
+                        <option value="Ciudad de México">Ciudad de México</option>
+                        <option value="Estado de México">Estado de México</option>
+                        <option value="Querétaro">Querétaro</option>
+                        <option value="Aguascalientes">Aguascalientes</option>
+                        <option value="San Luis Potosí">San Luis Potosí</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Edad (auto)</label>
+                    <input type="text" id="edadAuto" readonly placeholder="Se calcula con la CURP">
+                </div>
+                <div class="form-group">
+                    <label>Fecha de nacimiento</label>
+                    <input type="date" id="fechaNacimiento">
+                    <span class="field-help">Se llena automáticamente con CURP.</span>
+                </div>
+                <div class="form-group">
+                    <label>Género (auto)</label>
+                    <input type="text" id="generoAuto" readonly placeholder="Se llena con CURP">
+                </div>
+                <div class="form-group">
+                    <label>Entidad / Estado de nacimiento (auto)</label>
+                    <input type="text" id="entidadOrigenAuto" readonly placeholder="Se extrae de la CURP">
+                </div>
+                <div class="form-group">
+                    <label>Rama competencia (auto)</label>
+                    <input type="text" id="ramaAuto" readonly placeholder="Varonil / Femenil">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>Categoría asignada (auto)</label>
+                    <select id="categoriaAuto">
+                        <option value="">-----------</option>
+                        <option value="Libre (18-39 años)">Libre (18-39 años)</option>
+                        <option value="Master (40-49 años)">Master (40-49 años)</option>
+                        <option value="Veteranos (50-59 años)">Veteranos (50-59 años)</option>
+                        <option value="Veteranos Plus (60+ años)">Veteranos Plus (60+ años)</option>
+                        <option value="Juvenil (Menores de 18)">Juvenil (Menores de 18)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: PERFIL DEL CORREDOR, PLAYERA Y FOTO -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-subtitle">Perfil del Corredor</div>
+                <div class="card-title">Playera y fotografía</div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Talla de playera *</label>
+                    <select id="tallaPlayera" required>
+                        <option value="">-----------</option>
                         <option value="XS">Extra Chica (XS)</option>
                         <option value="S">Chica (S)</option>
                         <option value="M">Mediana (M)</option>
@@ -865,71 +558,145 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Estatus de Pago</label>
-                    <select id="editEstatusPago">
-                        <option value="Completado">Completado</option>
-                        <option value="Pendiente">Pendiente</option>
+                    <label>Perfil del corredor *</label>
+                    <select id="perfilCorredor" required>
+                        <option value="">Selecciona tu perfil</option>
+                        <option value="Atleta Local (Moroleón)">Atleta Local (Moroleón)</option>
+                        <option value="Atleta Estatal">Atleta Estatal (Guanajuato)</option>
+                        <option value="Atleta Nacional">Atleta Nacional</option>
+                        <option value="Atleta Internacional">Atleta Internacional</option>
                     </select>
                 </div>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 16px; justify-content: flex-end;">
-                <button type="button" class="btn-sm btn-cancel" onclick="cancelEditRow()">Cancelar</button>
-                <button type="button" class="btn-sm btn-save" onclick="saveEditedRow()">Guardar Cambios</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- MODAL 3: PANEL DE MÉTRICAS -->
-<div class="modal" id="modalMetricas">
-    <div class="modal-content">
-        <span class="modal-close-icon" onclick="closeModal('modalMetricas')">&times;</span>
-        <h2 style="color: var(--primary); margin-bottom: 4px;">📊 Panel General de Métricas e Indicadores</h2>
-        <p style="font-size: 0.8rem; color: #64748b;">Análisis en tiempo real de los datos registrados en el sistema.</p>
-
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-label">Total Inscritos</div>
-                <div class="metric-value" id="mTotalInscritos">0</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Monto Recaudado</div>
-                <div class="metric-value" id="mMontoRecaudado">$0</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Género</div>
-                <ul class="metric-list">
-                    <li><span>Hombres (Masculino):</span> <strong id="mHombres">0</strong></li>
-                    <li><span>Mujeres (Femenino):</span> <strong id="mMujeres">0</strong></li>
-                </ul>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Distancias Inscritas</div>
-                <ul class="metric-list" id="mDistanciasList">
-                    <!-- Dinámico -->
-                </ul>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Tallas de Playera</div>
-                <ul class="metric-list" id="mTallasList">
-                    <!-- Dinámico -->
-                </ul>
-            </div>
-            <div class="metric-card">
-                <div class="metric-label">Perfil del Corredor</div>
-                <ul class="metric-list" id="mPerfilList">
-                    <!-- Dinámico -->
-                </ul>
+                <div class="form-group">
+                    <label>Fotografía oficial</label>
+                    <input type="file" id="fotoFile" accept="image/*" onchange="previewImage(event)">
+                </div>
+                <div class="form-group">
+                    <label>Vista previa de foto</label>
+                    <div class="photo-preview-box" id="photoPreview">
+                        La foto del CURP aparecerá aquí cuando esté disponible.
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
+
+        <!-- SECCIÓN 4: EXPEDIENTE MÉDICO Y SEGURIDAD -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-subtitle">Expediente Médico</div>
+                <div class="card-title">Seguridad</div>
+            </div>
+            <div class="form-grid" style="margin-bottom: 16px;">
+                <div class="form-group">
+                    <label>Tipo de sangre *</label>
+                    <select id="tipoSangre" required>
+                        <option value="">-----------</option>
+                        <option value="O+">O Positivo (O+)</option>
+                        <option value="O-">O Negativo (O-)</option>
+                        <option value="A+">A Positivo (A+)</option>
+                        <option value="A-">A Negativo (A-)</option>
+                        <option value="B+">B Positivo (B+)</option>
+                        <option value="B-">B Negativo (B-)</option>
+                        <option value="AB+">AB Positivo (AB+)</option>
+                        <option value="AB-">AB Negativo (AB-)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Contacto emergencia (nombre) *</label>
+                    <input type="text" id="contactoNombre" required placeholder="Nombre completo del familiar">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono emergencia *</label>
+                    <input type="tel" id="contactoTelefono" required placeholder="10 dígitos">
+                </div>
+                <div class="form-group">
+                    <label>Alergias conocidas <span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:0.7rem;">SELECCIÓN MÚLTIPLE</span></label>
+                    <select id="alergias">
+                        <option value="Ninguna" selected>Ninguna</option>
+                        <option value="Medicamentos">Medicamentos (Penicilina, Aspirina, etc.)</option>
+                        <option value="Alimentos">Alimentos</option>
+                        <option value="Piquaduras / Insectos">Piquaduras de insectos</option>
+                        <option value="Otra">Otra alergia</option>
+                    </select>
+                    <span class="field-help">Selecciona una o más opciones. Si no aplica, deja "Ninguna".</span>
+                </div>
+            </div>
+
+            <!-- Padecimientos Crónicos -->
+            <label style="font-size: 0.85rem; font-weight: 700; color: #1e293b;">Padecimientos crónicos <span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:0.7rem;">SELECCIÓN MÚLTIPLE</span></label>
+            <div class="checkbox-grid">
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Ninguno" checked onchange="handleNinguno(this)">
+                    <span>Ninguno</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Hipertensión arterial crónica" onchange="uncheckNinguno()">
+                    <span>Hipertensión arterial crónica</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Diabetes mellitus tipo 1 o 2" onchange="uncheckNinguno()">
+                    <span>Diabetes mellitus tipo 1 o 2</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Asma/deficiencias pulmonares" onchange="uncheckNinguno()">
+                    <span>Asma/deficiencias pulmonares</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Arritmias/cardiopatías isquémicas" onchange="uncheckNinguno()">
+                    <span>Arritmias/cardiopatías isquémicas</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Epilepsia/convulsiones no controladas" onchange="uncheckNinguno()">
+                    <span>Epilepsia/convulsiones no controladas</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Insuficiencia renal" onchange="uncheckNinguno()">
+                    <span>Insuficiencia renal</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Problemas metabólicos" onchange="uncheckNinguno()">
+                    <span>Problemas metabólicos</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Obesidad/síndrome metabólico" onchange="uncheckNinguno()">
+                    <span>Obesidad/síndrome metabólico</span>
+                </label>
+            </div>
+
+            <div class="form-group" style="margin-top: 16px;">
+                <label>Situaciones extraoficiales</label>
+                <textarea id="situacionesExtra" rows="3" placeholder="Anotaciones médicas especiales..."></textarea>
+            </div>
+        </div>
+
+        <!-- COBRO Y CONFIRMACIÓN -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-subtitle">Caja y Cobro</div>
+                <div class="card-title">Confirmación de Pago en Efectivo</div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Monto Recibido en Efectivo ($ MXN) *</label>
+                    <input type="number" id="montoCobrado" required value="450" min="0">
+                </div>
+                <div class="form-group">
+                    <label>Módulo / Operador Responsable *</label>
+                    <input type="text" id="operadorNombre" required value="Módulo Centro - Caja 1">
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-submit">Confirmar Pago en Efectivo y Generar Folio Oficial (MM27-OFF)</button>
+    </form>
+
 </div>
 
-<!-- MODAL TICKET IMPRIMIBLE -->
+<!-- MODAL 1: TICKET IMPRIMIBLE -->
 <div class="modal" id="ticketModal">
-    <div class="modal-content" style="max-width: 480px;">
-        <h3 style="color: var(--success); margin-bottom: 4px; text-align: center;">¡Registro Offline Exitoso!</h3>
-        <p style="font-size: 0.8rem; color: #64748b; text-align: center;">Pago confirmado y registrado en la base de datos.</p>
+    <div class="modal-content">
+        <h3 style="color: var(--success); margin-bottom: 4px;">¡Registro Offline Exitoso!</h3>
+        <p style="font-size: 0.8rem; color: #64748b;">Pago confirmado y registrado en la base de datos.</p>
 
         <div class="ticket-box" id="printableTicket">
             <div class="ticket-header">
@@ -949,9 +716,184 @@
             <p style="font-size: 0.7rem; text-align: center; color: #64748b;">Presenta este ticket para la entrega de kit oficial.</p>
         </div>
 
-        <div style="text-align: center;">
+        <div>
             <button class="btn-print" onclick="window.print()">Imprimir Ticket</button>
             <button class="btn-close" onclick="closeModal('ticketModal')">Siguiente Registro</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL 2: CARGA CSV -->
+<div class="modal" id="csvModal">
+    <div class="modal-content">
+        <h3 style="color: var(--primary); margin-bottom: 8px;">📁 Carga Masiva de Registros via CSV</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">Selecciona un archivo CSV desde tu computadora para importar corredores preexistentes a Supabase.</p>
+        
+        <input type="file" id="csvFileInput" accept=".csv" style="margin-bottom: 16px; width: 100%;">
+        
+        <div id="csvStatus" style="font-size: 0.85rem; margin-bottom: 12px; color: var(--accent-blue);"></div>
+
+        <div style="display: flex; gap: 10px; justify-content: center;">
+            <button class="btn-print" onclick="processCSV()">Cargar a la Base de Datos</button>
+            <button class="btn-close" onclick="closeModal('csvModal')">Cancelar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL 3: VER Y EDITAR REGISTROS -->
+<div class="modal" id="registrosModal">
+    <div class="modal-content modal-large">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="color: var(--primary);">📋 Listado de Atletas Registrados</h3>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn-action" style="background-color: #16a34a;" onclick="exportTableToCSV()">📥 Exportar a CSV</button>
+                <button class="btn-close" onclick="closeModal('registrosModal')">✖ Cerrar</button>
+            </div>
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
+            <input type="text" id="searchRegistros" placeholder="Buscar por Nombre, CURP o Folio..." style="flex:1; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);" onkeyup="filterRegistros()">
+        </div>
+
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Folio</th>
+                        <th>Nombre Completo</th>
+                        <th>CURP</th>
+                        <th>Distancia</th>
+                        <th>Categoría</th>
+                        <th>Talla</th>
+                        <th>Pago</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="registrosTableBody">
+                    <tr><td colspan="8" style="text-align: center;">Cargando registros de Supabase...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL 4: FORMULARIO DE EDICIÓN DE REGISTRO INDIVIDUAL -->
+<div class="modal" id="editModal">
+    <div class="modal-content modal-large">
+        <h3 style="color: var(--primary); margin-bottom: 12px;">✏️ Editar Registro Atleta</h3>
+        <form id="editForm">
+            <input type="hidden" id="edit_id">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Folio Oficial</label>
+                    <input type="text" id="edit_folio" readonly>
+                </div>
+                <div class="form-group">
+                    <label>CURP</label>
+                    <input type="text" id="edit_curp" required>
+                </div>
+                <div class="form-group">
+                    <label>Nombre(s)</label>
+                    <input type="text" id="edit_nombre" required>
+                </div>
+                <div class="form-group">
+                    <label>Primer Apellido</label>
+                    <input type="text" id="edit_primerApellido" required>
+                </div>
+                <div class="form-group">
+                    <label>Segundo Apellido</label>
+                    <input type="text" id="edit_segundoApellido">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="edit_email" required>
+                </div>
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <input type="text" id="edit_telefono" required>
+                </div>
+                <div class="form-group">
+                    <label>Distancia</label>
+                    <select id="edit_distancia" required>
+                        <option value="42K Maratón">42K Maratón Completo</option>
+                        <option value="21K Medio Maratón">21K Medio Maratón</option>
+                        <option value="10K Recreativa">10K Recreativa</option>
+                        <option value="5K Recreativa">5K Recreativa</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <select id="edit_categoria" required>
+                        <option value="Libre (18-39 años)">Libre (18-39 años)</option>
+                        <option value="Master (40-49 años)">Master (40-49 años)</option>
+                        <option value="Veteranos (50-59 años)">Veteranos (50-59 años)</option>
+                        <option value="Veteranos Plus (60+ años)">Veteranos Plus (60+ años)</option>
+                        <option value="Juvenil (Menores de 18)">Juvenil (Menores de 18)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Talla Playera</label>
+                    <select id="edit_talla" required>
+                        <option value="XS">XS</option>
+                        <option value="S">S</option>
+                        <option value="M">M</option>
+                        <option value="L">L</option>
+                        <option value="XL">XL</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Monto Cobrado ($)</label>
+                    <input type="number" id="edit_monto" required>
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px;">
+                <button type="button" class="btn-close" onclick="closeModal('editModal')">Cancelar</button>
+                <button type="submit" class="btn-print" style="background-color: var(--success);">Guardar Cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- MODAL 5: MÉTRICAS Y ESTADÍSTICAS -->
+<div class="modal" id="metricasModal">
+    <div class="modal-content modal-large">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h3 style="color: var(--primary);">📊 Métricas y Analíticas en Tiempo Real</h3>
+            <button class="btn-close" onclick="closeModal('metricasModal')">✖ Cerrar</button>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-title">Total Registrados</div>
+                <div class="metric-value" id="mTotalAtletas">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Hombres (Varonil)</div>
+                <div class="metric-value" id="mHombres" style="color:#0284c7;">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Damas (Femenil)</div>
+                <div class="metric-value" id="mMujeres" style="color:#ec4899;">0</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-title">Monto Recaudado</div>
+                <div class="metric-value" id="mMontoTotal" style="color:#16a34a;">$0</div>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="card">
+                <div class="card-title" style="font-size:0.95rem; margin-bottom:8px;">Por Distancia</div>
+                <div id="mDistanciasList" style="font-size: 0.85rem; line-height: 1.8;"></div>
+            </div>
+            <div class="card">
+                <div class="card-title" style="font-size:0.95rem; margin-bottom:8px;">Por Categoría</div>
+                <div id="mCategoriasList" style="font-size: 0.85rem; line-height: 1.8;"></div>
+            </div>
+            <div class="card">
+                <div class="card-title" style="font-size:0.95rem; margin-bottom:8px;">Tallas de Playera</div>
+                <div id="mTallasList" style="font-size: 0.85rem; line-height: 1.8;"></div>
+            </div>
         </div>
     </div>
 </div>
@@ -962,6 +904,7 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwY2V2Ynh6cGZneW9iZWhnanRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMDA3MDQsImV4cCI6MjEwMTg3NjcwNH0.hECuSvVKVehKZjZ9jMqwHM1xspD2l1kS3G9X1jfHIuk';
     
     let supabase = null;
+    let cachedRegistros = []; // Cache local para busqueda y edición rápida
 
     try {
         if (window.supabase && typeof window.supabase.createClient === 'function') {
@@ -973,54 +916,58 @@
         console.error('Error al inicializar el cliente de Supabase:', err);
     }
 
-    // Helper seguro
+    // Auxiliares de Navegación y Modales
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) modal.style.display = 'none';
+        if(modalId === 'ticketModal') {
+            const form = document.getElementById('fullRegistrationForm');
+            if(form) form.reset();
+            const fechaRegEl = document.getElementById('fechaRegistro');
+            if (fechaRegEl) fechaRegEl.value = formattedFecha;
+            const preview = document.getElementById('photoPreview');
+            if (preview) preview.innerHTML = 'La foto del CURP aparecerá aquí cuando esté disponible.';
+            updateFolio();
+        }
+    }
+
+    function openCsvModal() {
+        document.getElementById('csvModal').style.display = 'flex';
+        document.getElementById('csvStatus').innerText = '';
+    }
+
+    // Función auxiliar para obtener valor de elemento HTML de forma segura
     function getSafeValue(id, defaultValue = '') {
         const el = document.getElementById(id);
         return el ? el.value : defaultValue;
     }
 
-    // Navegación de pestañas (Vistas Principales)
-    function switchView(viewId, btnEl) {
-        document.querySelectorAll('.view-section').forEach(sec => sec.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
-        
-        const targetView = document.getElementById(viewId);
-        if (targetView) targetView.classList.add('active');
-        if (btnEl) btnEl.classList.add('active');
-    }
-
-    // Controladores de Modales
-    function openModal(id) {
-        const modal = document.getElementById(id);
-        if (modal) modal.style.display = 'flex';
-    }
-
-    function closeModal(id) {
-        const modal = document.getElementById(id);
-        if (modal) modal.style.display = 'none';
-    }
-
-    // Fecha actual automática
+    // 2. Fecha actual automática
     const hoy = new Date();
     const formattedFecha = hoy.toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' });
     const fechaRegEl = document.getElementById('fechaRegistro');
     if (fechaRegEl) fechaRegEl.value = formattedFecha;
 
-    // Folio automático
+    // 3. Folio automático con localStorage seguro
     let offlineCounter = 1001;
     try {
         const storedCounter = localStorage.getItem('metaX_offline_counter');
-        if (storedCounter) offlineCounter = parseInt(storedCounter, 10) || 1001;
+        if (storedCounter) {
+            offlineCounter = parseInt(storedCounter, 10) || 1001;
+        }
     } catch (e) {
-        console.warn('localStorage inaccesible', e);
+        console.warn('localStorage no está accesible:', e);
     }
 
     function updateFolio() {
         const folioDisplay = document.getElementById('nextFolioDisplay');
-        if (folioDisplay) folioDisplay.innerText = `MM27-OFF-${offlineCounter}`;
+        if (folioDisplay) {
+            folioDisplay.innerText = `MM27-OFF-${offlineCounter}`;
+        }
     }
     updateFolio();
 
+    // Catálogo RENAPO para Estados de Nacimiento
     const estadosCURP = {
         'AS': 'Aguascalientes', 'BC': 'Baja California', 'BS': 'Baja California Sur',
         'CC': 'Campeche', 'CL': 'Coahuila', 'CM': 'Colima', 'CS': 'Chiapas',
@@ -1033,7 +980,7 @@
         'ZS': 'Zacatecas', 'NE': 'Nacido en el Extranjero'
     };
 
-    // Lectura automática de CURP
+    // 4. Lógica de lectura y cálculo con validación CURP
     const curpInput = document.getElementById('curp');
     if (curpInput) {
         curpInput.addEventListener('input', function(e) {
@@ -1044,12 +991,14 @@
                     let aa = val.substring(4, 6);
                     let mm = val.substring(6, 8);
                     let dd = val.substring(8, 10);
+                    
                     let anioNum = parseInt(aa, 10);
                     let siglo = (anioNum < 27) ? "20" : "19";
                     let anioNacimiento = parseInt(`${siglo}${aa}`, 10);
+                    let fechaISO = `${siglo}${aa}-${mm}-${dd}`;
                     
                     const fnEl = document.getElementById('fechaNacimiento');
-                    if (fnEl) fnEl.value = `${siglo}${aa}-${mm}-${dd}`;
+                    if (fnEl) fnEl.value = fechaISO;
 
                     let edad = 2027 - anioNacimiento;
                     const edadEl = document.getElementById('edadAuto');
@@ -1069,6 +1018,7 @@
                     let sexoChar = val.charAt(10);
                     const genEl = document.getElementById('generoAuto');
                     const ramaEl = document.getElementById('ramaAuto');
+                    
                     if (sexoChar === 'H') {
                         if (genEl) genEl.value = 'Masculino';
                         if (ramaEl) ramaEl.value = 'Varonil';
@@ -1080,31 +1030,38 @@
 
                 if (val.length >= 13) {
                     let entCode = val.substring(11, 13);
+                    let estadoNombre = estadosCURP[entCode] || `Entidad (${entCode})`;
                     const entEl = document.getElementById('entidadOrigenAuto');
-                    if (entEl) entEl.value = estadosCURP[entCode] || `Entidad (${entCode})`;
+                    if (entEl) entEl.value = estadoNombre;
                 }
             } catch (err) {
-                console.error('Error al procesar CURP:', err);
+                console.error('Error al procesar la CURP:', err);
             }
         });
     }
 
+    // Auxiliares de formulario
     function previewImage(event) {
-        const container = document.getElementById('photoPreview');
-        if (!container) return;
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                container.innerHTML = `<img src="${e.target.result}" style="max-height: 100px; border-radius: 6px;">`;
+        try {
+            const container = document.getElementById('photoPreview');
+            if (!container) return;
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    container.innerHTML = `<img src="${e.target.result}" style="max-height: 100px; border-radius: 6px;">`;
+                }
+                reader.readAsDataURL(file);
             }
-            reader.readAsDataURL(file);
+        } catch (err) {
+            console.error('Error en vista previa de imagen:', err);
         }
     }
 
     function handleNinguno(checkbox) {
         if (checkbox && checkbox.checked) {
-            document.querySelectorAll('input[name="padecimientos"]').forEach(item => { if (item !== checkbox) item.checked = false; });
+            const list = document.querySelectorAll('input[name="padecimientos"]');
+            list.forEach(item => { if (item !== checkbox) item.checked = false; });
         }
     }
 
@@ -1113,16 +1070,22 @@
         if (ninguno) ninguno.checked = false;
     }
 
-    // Submit Formulario Individual
+    // 5. Envío del Formulario e Inserción Controlada en Supabase
     const formEl = document.getElementById('fullRegistrationForm');
     if (formEl) {
         formEl.addEventListener('submit', async function(e) {
             e.preventDefault();
+
             const submitBtn = e.target.querySelector('button[type="submit"]');
-            if (submitBtn) { submitBtn.disabled = true; submitBtn.innerText = 'Guardando...'; }
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Guardando en Supabase...';
+            }
 
             try {
-                if (!supabase) throw new Error('Cliente Supabase no disponible.');
+                if (!supabase) {
+                    throw new Error('La biblioteca de Supabase no está disponible o no se inicializó correctamente.');
+                }
 
                 const folio = `MM27-OFF-${offlineCounter}`;
                 const nombreComp = `${getSafeValue('nombre')} ${getSafeValue('primerApellido')} ${getSafeValue('segundoApellido')}`.trim();
@@ -1162,121 +1125,121 @@
                     fecha_registro: new Date().toISOString()
                 };
 
-                const { error } = await supabase.from('registros').insert([registrationData]);
+                const { data, error } = await supabase
+                    .from('registros')
+                    .insert([registrationData]);
+
                 if (error) throw error;
 
-                document.getElementById('lblFolio').innerText = folio;
-                document.getElementById('lblNombre').innerText = nombreComp;
-                document.getElementById('lblCurp').innerText = registrationData.curp;
-                document.getElementById('lblDistancia').innerText = registrationData.distancia;
-                document.getElementById('lblCategoria').innerText = registrationData.categoria;
-                document.getElementById('lblTalla').innerText = registrationData.talla_playera;
-                document.getElementById('lblSangre').innerText = registrationData.tipo_sangre;
-                document.getElementById('lblMonto').innerText = registrationData.monto_cobrado;
-                document.getElementById('lblOperador').innerText = registrationData.operador_nombre;
+                const updateLabel = (id, val) => {
+                    const label = document.getElementById(id);
+                    if (label) label.innerText = val;
+                };
+
+                updateLabel('lblFolio', folio);
+                updateLabel('lblNombre', nombreComp);
+                updateLabel('lblCurp', registrationData.curp);
+                updateLabel('lblDistancia', registrationData.distancia);
+                updateLabel('lblCategoria', registrationData.categoria);
+                updateLabel('lblTalla', registrationData.talla_playera);
+                updateLabel('lblSangre', registrationData.tipo_sangre);
+                updateLabel('lblMonto', registrationData.monto_cobrado);
+                updateLabel('lblOperador', registrationData.operador_nombre);
 
                 offlineCounter++;
-                try { localStorage.setItem('metaX_offline_counter', offlineCounter); } catch (e) {}
+                try {
+                    localStorage.setItem('metaX_offline_counter', offlineCounter);
+                } catch (e) {
+                    console.warn('No se pudo guardar el nuevo folio en localStorage:', e);
+                }
 
-                openModal('ticketModal');
-                formEl.reset();
-                if (fechaRegEl) fechaRegEl.value = formattedFecha;
-                updateFolio();
+                const modal = document.getElementById('ticketModal');
+                if (modal) modal.style.display = 'flex';
 
             } catch (err) {
-                alert(`Error al guardar: ${err.message || err}`);
+                console.error('Error durante la inserción:', err);
+                alert(`Atención: No se pudo registrar la información.\nDetalle: ${err.message || err}`);
             } finally {
-                if (submitBtn) { submitBtn.disabled = false; submitBtn.innerText = 'Confirmar Pago en Efectivo y Generar Folio Oficial (MM27-OFF)'; }
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Confirmar Pago en Efectivo y Generar Folio Oficial (MM27-OFF)';
+                }
             }
         });
     }
 
-    // --- FUNCIONALIDAD 1: CARGA MASIVA DE CSV ---
-    async function processCSVUpload() {
+    // 6. CARGA MASIVA DE CSV
+    function processCSV() {
         const fileInput = document.getElementById('csvFileInput');
         const statusDiv = document.getElementById('csvStatus');
         
-        if (!fileInput || !fileInput.files.length) {
+        if (!fileInput.files || fileInput.files.length === 0) {
             alert('Por favor selecciona un archivo CSV.');
             return;
         }
 
-        const file = fileInput.files[0];
-        const reader = new FileReader();
+        statusDiv.innerText = 'Procesando archivo CSV...';
 
-        statusDiv.innerText = 'Leyendo archivo...';
-        statusDiv.style.color = 'var(--accent-blue)';
+        Papa.parse(fileInput.files[0], {
+            header: true,
+            skipEmptyLines: true,
+            complete: async function(results) {
+                try {
+                    if (results.errors.length > 0) {
+                        console.warn('Advertencias CSV:', results.errors);
+                    }
 
-        reader.onload = async function(e) {
-            try {
-                const text = e.target.result;
-                const lines = text.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-                
-                if (lines.length < 2) {
-                    throw new Error('El archivo CSV está vacío o no tiene registros.');
-                }
+                    const rows = results.data;
+                    if (rows.length === 0) {
+                        statusDiv.innerText = 'El archivo está vacío.';
+                        return;
+                    }
 
-                const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-                const recordsToInsert = [];
+                    statusDiv.innerText = `Subiendo ${rows.length} registros a Supabase...`;
 
-                for (let i = 1; i < lines.length; i++) {
-                    const row = lines[i].split(',').map(cell => cell.trim());
-                    if (row.length < headers.length) continue;
-
-                    let rowObj = {};
-                    headers.forEach((h, idx) => { rowObj[h] = row[idx]; });
-
-                    const folio = `MM27-CSV-${Date.now().toString().slice(-4)}-${i}`;
-                    const nombreComp = `${rowObj['nombre'] || ''} ${rowObj['primer_apellido'] || ''} ${rowObj['segundo_apellido'] || ''}`.trim();
-
-                    recordsToInsert.push({
-                        folio_oficial: folio,
-                        nombre: rowObj['nombre'] || 'N/A',
-                        primer_apellido: rowObj['primer_apellido'] || '',
-                        segundo_apellido: rowObj['segundo_apellido'] || '',
-                        nombre_completo: nombreComp,
-                        curp: (rowObj['curp'] || '').toUpperCase(),
-                        email: rowObj['email'] || '',
-                        telefono: rowObj['telefono'] || '',
-                        distancia: rowObj['distancia'] || '10K Recreativa',
-                        categoria: rowObj['categoria'] || 'Libre (18-39 años)',
-                        genero: rowObj['genero'] || 'No Especificado',
-                        talla_playera: rowObj['talla_playera'] || 'M',
-                        monto_cobrado: parseFloat(rowObj['monto_cobrado']) || 0,
-                        metodo_pago: 'CSV Import',
+                    // Mapeo dinámico de datos CSV
+                    const formattedRows = rows.map((r, i) => ({
+                        folio_oficial: r.folio_oficial || `MM27-CSV-${1000 + i}`,
+                        curp: (r.curp || '').toUpperCase(),
+                        nombre: r.nombre || 'Sin nombre',
+                        primer_apellido: r.primer_apellido || '',
+                        segundo_apellido: r.segundo_apellido || '',
+                        nombre_completo: r.nombre_completo || `${r.nombre || ''} ${r.primer_apellido || ''}`.trim(),
+                        email: r.email || 'sin_correo@ejemplo.com',
+                        telefono: r.telefono || '0000000000',
+                        distancia: r.distancia || '10K Recreativa',
+                        categoria: r.categoria || 'Libre (18-39 años)',
+                        talla_playera: r.talla_playera || 'M',
+                        genero: r.genero || 'Masculino',
+                        monto_cobrado: parseFloat(r.monto_cobrado) || 0,
+                        metodo_pago: r.metodo_pago || 'Importación CSV',
                         estatus_pago: 'Completado',
                         fecha_registro: new Date().toISOString()
-                    });
+                    }));
+
+                    const { error } = await supabase.from('registros').insert(formattedRows);
+                    if (error) throw error;
+
+                    statusDiv.innerHTML = `<span style="color:var(--success);">¡Éxito! Se importaron ${formattedRows.length} registros correctamente.</span>`;
+                    setTimeout(() => closeModal('csvModal'), 2000);
+
+                } catch (err) {
+                    console.error('Error al importar CSV:', err);
+                    statusDiv.innerHTML = `<span style="color:var(--danger);">Error: ${err.message || err}</span>`;
                 }
-
-                if (recordsToInsert.length === 0) {
-                    throw new Error('No se pudieron extraer registros válidos del CSV.');
-                }
-
-                statusDiv.innerText = `Insertando ${recordsToInsert.length} registros en Supabase...`;
-
-                const { data, error } = await supabase.from('registros').insert(recordsToInsert);
-                if (error) throw error;
-
-                statusDiv.innerText = `¡Éxito! Se importaron ${recordsToInsert.length} registros correctamente.`;
-                statusDiv.style.color = 'var(--success)';
-                fileInput.value = '';
-
-            } catch (err) {
-                console.error('Error procesando CSV:', err);
-                statusDiv.innerText = `Error: ${err.message || err}`;
-                statusDiv.style.color = 'var(--danger)';
             }
-        };
-
-        reader.readAsText(file);
+        });
     }
 
-    // --- FUNCIONALIDAD 2: VER REGISTROS (MODAL) ---
-    async function openModalVerRegistros() {
-        openModal('modalVerRegistros');
-        const tbody = document.getElementById('tbodyVerRegistros');
-        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Cargando datos de Supabase...</td></tr>';
+    // 7. VER Y BUSCAR REGISTROS EN MODAL
+    async function openRegistrosModal() {
+        document.getElementById('registrosModal').style.display = 'flex';
+        await fetchRegistros();
+    }
+
+    async function fetchRegistros() {
+        const tbody = document.getElementById('registrosTableBody');
+        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Cargando registros...</td></tr>';
 
         try {
             const { data, error } = await supabase
@@ -1286,199 +1249,179 @@
 
             if (error) throw error;
 
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No hay registros registrados.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = data.map(r => `
-                <tr>
-                    <td><strong>${r.folio_oficial || 'N/A'}</strong></td>
-                    <td>${r.nombre_completo || (r.nombre + ' ' + r.primer_apellido)}</td>
-                    <td>${r.curp || 'N/A'}</td>
-                    <td>${r.distancia || 'N/A'}</td>
-                    <td>${r.categoria || 'N/A'}</td>
-                    <td>${r.talla_playera || 'N/A'}</td>
-                    <td>$${r.monto_cobrado || 0}</td>
-                    <td><span style="color: green; font-weight:bold;">${r.estatus_pago || 'Completado'}</span></td>
-                </tr>
-            `).join('');
+            cachedRegistros = data || [];
+            renderRegistrosTable(cachedRegistros);
 
         } catch (err) {
-            console.error('Error al consultar registros:', err);
-            tbody.innerHTML = `<tr><td colspan="8" style="text-align: center; color: red;">Error: ${err.message}</td></tr>`;
+            console.error('Error al cargar registros:', err);
+            tbody.innerHTML = `<tr><td colspan="8" style="color:var(--danger); text-align:center;">Error al cargar datos: ${err.message}</td></tr>`;
         }
     }
 
-    // --- FUNCIONALIDAD 3: EDITAR REGISTROS (MODAL CON GUARDADO/CANCELACIÓN) ---
-    let cachedRegistrosForEdit = [];
-
-    async function openModalEditarRegistros() {
-        openModal('modalEditarRegistros');
-        document.getElementById('editRowContainer').style.display = 'none';
-        const tbody = document.getElementById('tbodyEditarRegistros');
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Cargando datos de Supabase...</td></tr>';
-
-        try {
-            const { data, error } = await supabase
-                .from('registros')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-            cachedRegistrosForEdit = data || [];
-
-            if (cachedRegistrosForEdit.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay registros para editar.</td></tr>';
-                return;
-            }
-
-            renderEditTable(cachedRegistrosForEdit);
-
-        } catch (err) {
-            console.error('Error cargando para edición:', err);
-            tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: red;">Error: ${err.message}</td></tr>`;
+    function renderRegistrosTable(data) {
+        const tbody = document.getElementById('registrosTableBody');
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">No hay registros encontrados.</td></tr>';
+            return;
         }
-    }
 
-    function renderEditTable(list) {
-        const tbody = document.getElementById('tbodyEditarRegistros');
-        tbody.innerHTML = list.map(r => `
+        tbody.innerHTML = data.map(r => `
             <tr>
                 <td><strong>${r.folio_oficial || 'N/A'}</strong></td>
-                <td>${r.nombre || ''} ${r.primer_apellido || ''}</td>
-                <td>${r.curp || 'N/A'}</td>
-                <td>${r.distancia || 'N/A'}</td>
-                <td>${r.talla_playera || 'N/A'}</td>
+                <td>${r.nombre_completo || `${r.nombre} ${r.primer_apellido}`}</td>
+                <td>${r.curp || '-'}</td>
+                <td>${r.distancia || '-'}</td>
+                <td>${r.categoria || '-'}</td>
+                <td>${r.talla_playera || '-'}</td>
+                <td>$${r.monto_cobrado || 0}</td>
                 <td>
-                    <button class="btn-sm btn-edit" onclick="selectRowForEdit('${r.id}')">Editar</button>
+                    <button class="btn-action" onclick="openEditModal('${r.id}')">✏️ Editar</button>
                 </td>
             </tr>
         `).join('');
     }
 
-    function selectRowForEdit(id) {
-        const item = cachedRegistrosForEdit.find(r => String(r.id) === String(id));
-        if (!item) return;
-
-        document.getElementById('editRecordId').value = item.id;
-        document.getElementById('editFolioTarget').innerText = item.folio_oficial || item.id;
-        document.getElementById('editNombre').value = item.nombre || '';
-        document.getElementById('editPrimerApellido').value = item.primer_apellido || '';
-        document.getElementById('editCurp').value = item.curp || '';
-        document.getElementById('editDistancia').value = item.distancia || '10K Recreativa';
-        document.getElementById('editTalla').value = item.talla_playera || 'M';
-        document.getElementById('editEstatusPago').value = item.estatus_pago || 'Completado';
-
-        document.getElementById('editRowContainer').style.display = 'block';
-        document.getElementById('editRowContainer').scrollIntoView({ behavior: 'smooth' });
+    function filterRegistros() {
+        const query = document.getElementById('searchRegistros').value.toLowerCase();
+        const filtered = cachedRegistros.filter(r => 
+            (r.nombre_completo && r.nombre_completo.toLowerCase().includes(query)) ||
+            (r.curp && r.curp.toLowerCase().includes(query)) ||
+            (r.folio_oficial && r.folio_oficial.toLowerCase().includes(query))
+        );
+        renderRegistrosTable(filtered);
     }
 
-    function cancelEditRow() {
-        document.getElementById('editRowContainer').style.display = 'none';
+    // 8. EDITAR REGISTROS
+    function openEditModal(id) {
+        const registro = cachedRegistros.find(r => r.id == id);
+        if (!registro) return;
+
+        document.getElementById('edit_id').value = registro.id;
+        document.getElementById('edit_folio').value = registro.folio_oficial || '';
+        document.getElementById('edit_curp').value = registro.curp || '';
+        document.getElementById('edit_nombre').value = registro.nombre || '';
+        document.getElementById('edit_primerApellido').value = registro.primer_apellido || '';
+        document.getElementById('edit_segundoApellido').value = registro.segundo_apellido || '';
+        document.getElementById('edit_email').value = registro.email || '';
+        document.getElementById('edit_telefono').value = registro.telefono || '';
+        document.getElementById('edit_distancia').value = registro.distancia || '10K Recreativa';
+        document.getElementById('edit_categoria').value = registro.categoria || 'Libre (18-39 años)';
+        document.getElementById('edit_talla').value = registro.talla_playera || 'M';
+        document.getElementById('edit_monto').value = registro.monto_cobrado || 0;
+
+        document.getElementById('editModal').style.display = 'flex';
     }
 
-    async function saveEditedRow() {
-        const id = document.getElementById('editRecordId').value;
-        if (!id) return;
+    document.getElementById('editForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const id = document.getElementById('edit_id').value;
+        const nombreComp = `${document.getElementById('edit_nombre').value} ${document.getElementById('edit_primerApellido').value} ${document.getElementById('edit_segundoApellido').value}`.trim();
 
-        const updatedNombre = document.getElementById('editNombre').value;
-        const updatedPrimerApellido = document.getElementById('editPrimerApellido').value;
-        const updatedCurp = document.getElementById('editCurp').value.toUpperCase();
-        const updatedDistancia = document.getElementById('editDistancia').value;
-        const updatedTalla = document.getElementById('editTalla').value;
-        const updatedEstatus = document.getElementById('editEstatusPago').value;
-
-        const nombreComp = `${updatedNombre} ${updatedPrimerApellido}`.trim();
+        const updatedData = {
+            curp: document.getElementById('edit_curp').value.toUpperCase(),
+            nombre: document.getElementById('edit_nombre').value,
+            primer_apellido: document.getElementById('edit_primerApellido').value,
+            segundo_apellido: document.getElementById('edit_segundoApellido').value,
+            nombre_completo: nombreComp,
+            email: document.getElementById('edit_email').value,
+            telefono: document.getElementById('edit_telefono').value,
+            distancia: document.getElementById('edit_distancia').value,
+            categoria: document.getElementById('edit_categoria').value,
+            talla_playera: document.getElementById('edit_talla').value,
+            monto_cobrado: parseFloat(document.getElementById('edit_monto').value) || 0
+        };
 
         try {
             const { error } = await supabase
                 .from('registros')
-                .update({
-                    nombre: updatedNombre,
-                    primer_apellido: updatedPrimerApellido,
-                    nombre_completo: nombreComp,
-                    curp: updatedCurp,
-                    distancia: updatedDistancia,
-                    talla_playera: updatedTalla,
-                    estatus_pago: updatedEstatus
-                })
+                .update(updatedData)
                 .eq('id', id);
 
             if (error) throw error;
 
-            alert('¡Registro actualizado exitosamente en Supabase!');
-            cancelEditRow();
-            openModalEditarRegistros(); // Recargar tabla
+            alert('Registro actualizado con éxito.');
+            closeModal('editModal');
+            await fetchRegistros();
 
         } catch (err) {
-            console.error('Error al actualizar registro:', err);
-            alert(`Error al guardar cambios: ${err.message || err}`);
+            console.error('Error al actualizar:', err);
+            alert(`Error al actualizar el registro: ${err.message}`);
         }
-    }
+    });
 
-    // --- FUNCIONALIDAD 4: PANEL DE MÉTRICAS ---
-    async function openModalMetricas() {
-        openModal('modalMetricas');
-
+    // 9. MÉTRICAS Y ANALÍTICA
+    async function openMetricasModal() {
+        document.getElementById('metricasModal').style.display = 'flex';
+        
         try {
             const { data, error } = await supabase.from('registros').select('*');
             if (error) throw error;
 
-            const records = data || [];
+            const total = data.length;
+            let hombres = 0, mujeres = 0, montoTotal = 0;
+            const distancias = {}, categorias = {}, tallas = {};
 
-            // Totales
-            document.getElementById('mTotalInscritos').innerText = records.length;
+            data.forEach(r => {
+                // Género
+                if (r.genero === 'Masculino' || r.rama === 'Varonil') hombres++;
+                else if (r.genero === 'Femenino' || r.rama === 'Femenil') mujeres++;
 
-            const recaudado = records.reduce((acc, r) => acc + (parseFloat(r.monto_cobrado) || 0), 0);
-            document.getElementById('mMontoRecaudado').innerText = `$${recaudado.toLocaleString('es-MX')}`;
+                // Monto
+                montoTotal += parseFloat(r.monto_cobrado) || 0;
 
-            // Géneros
-            let hombres = 0, mujeres = 0;
-            records.forEach(r => {
-                const g = (r.genero || '').toLowerCase();
-                if (g.includes('masculino') || g === 'h') hombres++;
-                else if (g.includes('femenino') || g === 'm') mujeres++;
+                // Conteo Distancias
+                const d = r.distancia || 'Sin Especificar';
+                distancias[d] = (distancias[d] || 0) + 1;
+
+                // Conteo Categorías
+                const c = r.categoria || 'Sin Categoría';
+                categorias[c] = (categorias[c] || 0) + 1;
+
+                // Conteo Tallas
+                const t = r.talla_playera || 'Sin Talla';
+                tallas[t] = (tallas[t] || 0) + 1;
             });
+
+            document.getElementById('mTotalAtletas').innerText = total;
             document.getElementById('mHombres').innerText = hombres;
             document.getElementById('mMujeres').innerText = mujeres;
+            document.getElementById('mMontoTotal').innerText = `$${montoTotal.toLocaleString('es-MX')}`;
 
-            // Helper agrupador
-            const countBy = (key) => records.reduce((acc, r) => {
-                const val = r[key] || 'No Especificado';
-                acc[val] = (acc[val] || 0) + 1;
-                return acc;
-            }, {});
+            const renderObjectList = (obj, targetId) => {
+                const el = document.getElementById(targetId);
+                if (!el) return;
+                el.innerHTML = Object.entries(obj).map(([k, v]) => `
+                    <div style="display:flex; justify-between; border-bottom: 1px solid #f1f5f9; padding: 2px 0;">
+                        <span>${k}:</span> <strong>${v}</strong>
+                    </div>
+                `).join('') || '<em>Sin datos</em>';
+            };
 
-            // Distancias
-            const distMap = countBy('distancia');
-            document.getElementById('mDistanciasList').innerHTML = Object.entries(distMap)
-                .map(([k, v]) => `<li><span>${k}:</span> <strong>${v}</strong></li>`).join('') || '<li>Sin datos</li>';
-
-            // Tallas
-            const tallasMap = countBy('talla_playera');
-            document.getElementById('mTallasList').innerHTML = Object.entries(tallasMap)
-                .map(([k, v]) => `<li><span>Talla ${k}:</span> <strong>${v}</strong></li>`).join('') || '<li>Sin datos</li>';
-
-            // Perfil
-            const perfilMap = countBy('perfil_corredor');
-            document.getElementById('mPerfilList').innerHTML = Object.entries(perfilMap)
-                .map(([k, v]) => `<li><span>${k}:</span> <strong>${v}</strong></li>`).join('') || '<li>Sin datos</li>';
+            renderObjectList(distancias, 'mDistanciasList');
+            renderObjectList(categorias, 'mCategoriasList');
+            renderObjectList(tallas, 'mTallasList');
 
         } catch (err) {
-            console.error('Error obteniendo métricas:', err);
-            alert('Error al calcular las métricas.');
+            console.error('Error cargando métricas:', err);
         }
     }
 
-    // Helper Filtro de Tablas
-    function filterTable(tableId, query) {
-        const q = query.toLowerCase();
-        const rows = document.querySelectorAll(`#${tableId} tbody tr`);
-        rows.forEach(row => {
-            const text = row.innerText.toLowerCase();
-            row.style.display = text.includes(q) ? '' : 'none';
-        });
+    // Exportar tabla visualizada a archivo CSV
+    function exportTableToCSV() {
+        if (cachedRegistros.length === 0) {
+            alert('No hay registros para exportar.');
+            return;
+        }
+
+        const csv = Papa.unparse(cachedRegistros);
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Registros_Moroleon_2027_${new Date().toISOString().slice(0,10)}.csv`);
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 </script>
 
