@@ -794,10 +794,10 @@
     </div>
 </div>
 
-<!-- MODAL 4: FORMULARIO DE EDICIÓN DE REGISTRO INDIVIDUAL -->
+<!-- MODAL 4: FORMULARIO DE EDICIÓN DE REGISTRO INDIVIDUAL COMPLETO -->
 <div class="modal" id="editModal">
     <div class="modal-content modal-large">
-        <h3 style="color: var(--primary); margin-bottom: 12px;">✏️ Editar Registro Atleta</h3>
+        <h3 style="color: var(--primary); margin-bottom: 12px;">✏️ Editar Registro Atleta (Completo)</h3>
         <form id="editForm">
             <input type="hidden" id="edit_id">
             <div class="form-grid">
@@ -839,6 +839,34 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>País de Residencia</label>
+                    <input type="text" id="edit_paisResidencia" required>
+                </div>
+                <div class="form-group">
+                    <label>Estado de Residencia</label>
+                    <input type="text" id="edit_estadoResidencia" required>
+                </div>
+                <div class="form-group">
+                    <label>Edad</label>
+                    <input type="text" id="edit_edad">
+                </div>
+                <div class="form-group">
+                    <label>Fecha de Nacimiento</label>
+                    <input type="text" id="edit_fechaNacimiento">
+                </div>
+                <div class="form-group">
+                    <label>Género</label>
+                    <input type="text" id="edit_genero">
+                </div>
+                <div class="form-group">
+                    <label>Entidad de Origen</label>
+                    <input type="text" id="edit_entidadOrigen">
+                </div>
+                <div class="form-group">
+                    <label>Rama</label>
+                    <input type="text" id="edit_rama">
+                </div>
+                <div class="form-group">
                     <label>Categoría</label>
                     <select id="edit_categoria" required>
                         <option value="Libre (18-39 años)">Libre (18-39 años)</option>
@@ -859,8 +887,36 @@
                     </select>
                 </div>
                 <div class="form-group">
+                    <label>Perfil del Corredor</label>
+                    <input type="text" id="edit_perfilCorredor">
+                </div>
+                <div class="form-group">
+                    <label>Tipo de Sangre</label>
+                    <input type="text" id="edit_tipoSangre">
+                </div>
+                <div class="form-group">
+                    <label>Contacto Emergencia (Nombre)</label>
+                    <input type="text" id="edit_contactoNombre">
+                </div>
+                <div class="form-group">
+                    <label>Contacto Emergencia (Teléfono)</label>
+                    <input type="text" id="edit_contactoTelefono">
+                </div>
+                <div class="form-group">
+                    <label>Alergias</label>
+                    <input type="text" id="edit_alergias">
+                </div>
+                <div class="form-group">
+                    <label>Situaciones Extra</label>
+                    <input type="text" id="edit_situacionesExtra">
+                </div>
+                <div class="form-group">
                     <label>Monto Cobrado ($)</label>
                     <input type="number" id="edit_monto" required>
+                </div>
+                <div class="form-group">
+                    <label>Operador / Módulo</label>
+                    <input type="text" id="edit_operador">
                 </div>
             </div>
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px;">
@@ -1313,7 +1369,7 @@
         renderRegistrosTable(filtered);
     }
 
-    // 8. EDITAR REGISTROS
+    // 8. EDITAR REGISTROS (COMPLETO)
     function openEditModal(id) {
         const registro = cachedRegistros.find(r => r.id == id);
         if (!registro) return;
@@ -1327,9 +1383,23 @@
         document.getElementById('edit_email').value = registro.email || '';
         document.getElementById('edit_telefono').value = registro.telefono || '';
         document.getElementById('edit_distancia').value = registro.distancia || '10K Recreativa';
+        document.getElementById('edit_paisResidencia').value = registro.pais_residencia || '';
+        document.getElementById('edit_estadoResidencia').value = registro.estado_residencia || '';
+        document.getElementById('edit_edad').value = registro.edad || '';
+        document.getElementById('edit_fechaNacimiento').value = registro.fecha_nacimiento || '';
+        document.getElementById('edit_genero').value = registro.genero || '';
+        document.getElementById('edit_entidadOrigen').value = registro.entidad_origen || '';
+        document.getElementById('edit_rama').value = registro.rama || '';
         document.getElementById('edit_categoria').value = registro.categoria || 'Libre (18-39 años)';
         document.getElementById('edit_talla').value = registro.talla_playera || 'M';
+        document.getElementById('edit_perfilCorredor').value = registro.perfil_corredor || '';
+        document.getElementById('edit_tipoSangre').value = registro.tipo_sangre || '';
+        document.getElementById('edit_contactoNombre').value = registro.contacto_nombre || '';
+        document.getElementById('edit_contactoTelefono').value = registro.contacto_telefono || '';
+        document.getElementById('edit_alergias').value = registro.alergias || '';
+        document.getElementById('edit_situacionesExtra').value = registro.situaciones_extra || '';
         document.getElementById('edit_monto').value = registro.monto_cobrado || 0;
+        document.getElementById('edit_operador').value = registro.operador_nombre || '';
 
         document.getElementById('editModal').style.display = 'flex';
     }
@@ -1350,9 +1420,23 @@
                 email: document.getElementById('edit_email').value,
                 telefono: document.getElementById('edit_telefono').value,
                 distancia: document.getElementById('edit_distancia').value,
+                pais_residencia: document.getElementById('edit_paisResidencia').value,
+                estado_residencia: document.getElementById('edit_estadoResidencia').value,
+                edad: document.getElementById('edit_edad').value,
+                fecha_nacimiento: document.getElementById('edit_fechaNacimiento').value,
+                genero: document.getElementById('edit_genero').value,
+                entidad_origen: document.getElementById('edit_entidadOrigen').value,
+                rama: document.getElementById('edit_rama').value,
                 categoria: document.getElementById('edit_categoria').value,
                 talla_playera: document.getElementById('edit_talla').value,
-                monto_cobrado: parseFloat(document.getElementById('edit_monto').value) || 0
+                perfil_corredor: document.getElementById('edit_perfilCorredor').value,
+                tipo_sangre: document.getElementById('edit_tipoSangre').value,
+                contacto_nombre: document.getElementById('edit_contactoNombre').value,
+                contacto_telefono: document.getElementById('edit_contactoTelefono').value,
+                alergias: document.getElementById('edit_alergias').value,
+                situaciones_extra: document.getElementById('edit_situacionesExtra').value,
+                monto_cobrado: parseFloat(document.getElementById('edit_monto').value) || 0,
+                operador_nombre: document.getElementById('edit_operador').value
             };
 
             try {
