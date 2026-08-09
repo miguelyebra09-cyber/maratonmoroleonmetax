@@ -229,6 +229,7 @@
             font-size: 0.85rem;
             text-align: center;
             padding: 10px;
+            overflow: hidden;
         }
 
         .checkbox-grid {
@@ -494,14 +495,38 @@
                     <label>Estado de residencia *</label>
                     <select id="estadoResidencia" required>
                         <option value="">Selecciona tu estado</option>
-                        <option value="Guanajuato">Guanajuato</option>
-                        <option value="Michoacán">Michoacán</option>
-                        <option value="Jalisco">Jalisco</option>
-                        <option value="Ciudad de México">Ciudad de México</option>
-                        <option value="Estado de México">Estado de México</option>
-                        <option value="Querétaro">Querétaro</option>
                         <option value="Aguascalientes">Aguascalientes</option>
+                        <option value="Baja California">Baja California</option>
+                        <option value="Baja California Sur">Baja California Sur</option>
+                        <option value="Campeche">Campeche</option>
+                        <option value="Chiapas">Chiapas</option>
+                        <option value="Chihuahua">Chihuahua</option>
+                        <option value="Ciudad de México">Ciudad de México</option>
+                        <option value="Coahuila">Coahuila</option>
+                        <option value="Colima">Colima</option>
+                        <option value="Durango">Durango</option>
+                        <option value="Estado de México">Estado de México</option>
+                        <option value="Guanajuato">Guanajuato</option>
+                        <option value="Guerrero">Guerrero</option>
+                        <option value="Hidalgo">Hidalgo</option>
+                        <option value="Jalisco">Jalisco</option>
+                        <option value="Michoacán">Michoacán</option>
+                        <option value="Morelos">Morelos</option>
+                        <option value="Nayarit">Nayarit</option>
+                        <option value="Nuevo León">Nuevo León</option>
+                        <option value="Oaxaca">Oaxaca</option>
+                        <option value="Puebla">Puebla</option>
+                        <option value="Querétaro">Querétaro</option>
+                        <option value="Quintana Roo">Quintana Roo</option>
                         <option value="San Luis Potosí">San Luis Potosí</option>
+                        <option value="Sinaloa">Sinaloa</option>
+                        <option value="Sonora">Sonora</option>
+                        <option value="Tabasco">Tabasco</option>
+                        <option value="Tamaulipas">Tamaulipas</option>
+                        <option value="Tlaxcala">Tlaxcala</option>
+                        <option value="Veracruz">Veracruz</option>
+                        <option value="Yucatán">Yucatán</option>
+                        <option value="Zacatecas">Zacatecas</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -574,7 +599,7 @@
                 <div class="form-group">
                     <label>Vista previa de foto</label>
                     <div class="photo-preview-box" id="photoPreview">
-                        La foto del CURP aparecerá aquí cuando esté disponible.
+                        La foto aparecerá aquí cuando esté seleccionada.
                     </div>
                 </div>
             </div>
@@ -899,22 +924,25 @@
 </div>
 
 <script>
-    // 1. Inicialización segura del cliente Supabase
+    // 1. Inicialización segura del cliente Supabase (Evita redeclaración)
     const SUPABASE_URL = 'https://rpcevbxzpfgyobehgjth.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwY2V2Ynh6cGZneW9iZWhnanRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMDA3MDQsImV4cCI6MjEwMTg3NjcwNH0.hECuSvVKVehKZjZ9jMqwHM1xspD2l1kS3G9X1jfHIuk';
     
-    let supabase = null;
-    let cachedRegistros = []; // Cache local para busqueda y edición rápida
-
-    try {
-        if (window.supabase && typeof window.supabase.createClient === 'function') {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        } else {
-            console.error('El SDK de Supabase no se ha cargado correctamente.');
+    if (typeof window.supabaseClientInstance === 'undefined') {
+        window.supabaseClientInstance = null;
+        try {
+            if (window.supabase && typeof window.supabase.createClient === 'function') {
+                window.supabaseClientInstance = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            } else {
+                console.error('El SDK de Supabase no se ha cargado correctamente.');
+            }
+        } catch (err) {
+            console.error('Error al inicializar el cliente de Supabase:', err);
         }
-    } catch (err) {
-        console.error('Error al inicializar el cliente de Supabase:', err);
     }
+    const supabase = window.supabaseClientInstance;
+
+    let cachedRegistros = [];
 
     // Auxiliares de Navegación y Modales
     function closeModal(modalId) {
@@ -926,7 +954,7 @@
             const fechaRegEl = document.getElementById('fechaRegistro');
             if (fechaRegEl) fechaRegEl.value = formattedFecha;
             const preview = document.getElementById('photoPreview');
-            if (preview) preview.innerHTML = 'La foto del CURP aparecerá aquí cuando esté disponible.';
+            if (preview) preview.innerHTML = 'La foto aparecerá aquí cuando esté seleccionada.';
             updateFolio();
         }
     }
@@ -936,7 +964,11 @@
         document.getElementById('csvStatus').innerText = '';
     }
 
-    // Función auxiliar para obtener valor de elemento HTML de forma segura
+    function showSection(sectionId) {
+        // Simple placeholder to handle navbar clicks safely
+        console.log("Sección activa:", sectionId);
+    }
+
     function getSafeValue(id, defaultValue = '') {
         const el = document.getElementById(id);
         return el ? el.value : defaultValue;
@@ -962,7 +994,7 @@
     function updateFolio() {
         const folioDisplay = document.getElementById('nextFolioDisplay');
         if (folioDisplay) {
-            folioDisplay.innerText = `MM27-OFF-${offlineCounter}`;
+            folioDisplay.innerText = `MM27OFF-RUN-MMO${offlineCounter}`;
         }
     }
     updateFolio();
@@ -1040,7 +1072,7 @@
         });
     }
 
-    // Auxiliares de formulario
+    // Auxiliares de formulario / Previsualización de imagen
     function previewImage(event) {
         try {
             const container = document.getElementById('photoPreview');
@@ -1049,7 +1081,7 @@
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    container.innerHTML = `<img src="${e.target.result}" style="max-height: 100px; border-radius: 6px;">`;
+                    container.innerHTML = `<img src="${e.target.result}" style="max-height: 100px; max-width: 100px; border-radius: 6px; object-fit: cover;">`;
                 }
                 reader.readAsDataURL(file);
             }
@@ -1087,7 +1119,7 @@
                     throw new Error('La biblioteca de Supabase no está disponible o no se inicializó correctamente.');
                 }
 
-                const folio = `MM27-OFF-${offlineCounter}`;
+                const folio = `MM27OFF-RUN-MMO${offlineCounter}`;
                 const nombreComp = `${getSafeValue('nombre')} ${getSafeValue('primerApellido')} ${getSafeValue('segundoApellido')}`.trim();
                 const padecimientosSelected = Array.from(document.querySelectorAll('input[name="padecimientos"]:checked')).map(cb => cb.value);
 
@@ -1197,7 +1229,6 @@
 
                     statusDiv.innerText = `Subiendo ${rows.length} registros a Supabase...`;
 
-                    // Mapeo dinámico de datos CSV
                     const formattedRows = rows.map((r, i) => ({
                         folio_oficial: r.folio_oficial || `MM27-CSV-${1000 + i}`,
                         curp: (r.curp || '').toUpperCase(),
@@ -1312,42 +1343,45 @@
         document.getElementById('editModal').style.display = 'flex';
     }
 
-    document.getElementById('editForm').addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const id = document.getElementById('edit_id').value;
-        const nombreComp = `${document.getElementById('edit_nombre').value} ${document.getElementById('edit_primerApellido').value} ${document.getElementById('edit_segundoApellido').value}`.trim();
+    const editFormEl = document.getElementById('editForm');
+    if (editFormEl) {
+        editFormEl.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit_id').value;
+            const nombreComp = `${document.getElementById('edit_nombre').value} ${document.getElementById('edit_primerApellido').value} ${document.getElementById('edit_segundoApellido').value}`.trim();
 
-        const updatedData = {
-            curp: document.getElementById('edit_curp').value.toUpperCase(),
-            nombre: document.getElementById('edit_nombre').value,
-            primer_apellido: document.getElementById('edit_primerApellido').value,
-            segundo_apellido: document.getElementById('edit_segundoApellido').value,
-            nombre_completo: nombreComp,
-            email: document.getElementById('edit_email').value,
-            telefono: document.getElementById('edit_telefono').value,
-            distancia: document.getElementById('edit_distancia').value,
-            categoria: document.getElementById('edit_categoria').value,
-            talla_playera: document.getElementById('edit_talla').value,
-            monto_cobrado: parseFloat(document.getElementById('edit_monto').value) || 0
-        };
+            const updatedData = {
+                curp: document.getElementById('edit_curp').value.toUpperCase(),
+                nombre: document.getElementById('edit_nombre').value,
+                primer_apellido: document.getElementById('edit_primerApellido').value,
+                segundo_apellido: document.getElementById('edit_segundoApellido').value,
+                nombre_completo: nombreComp,
+                email: document.getElementById('edit_email').value,
+                telefono: document.getElementById('edit_telefono').value,
+                distancia: document.getElementById('edit_distancia').value,
+                categoria: document.getElementById('edit_categoria').value,
+                talla_playera: document.getElementById('edit_talla').value,
+                monto_cobrado: parseFloat(document.getElementById('edit_monto').value) || 0
+            };
 
-        try {
-            const { error } = await supabase
-                .from('registros')
-                .update(updatedData)
-                .eq('id', id);
+            try {
+                const { error } = await supabase
+                    .from('registros')
+                    .update(updatedData)
+                    .eq('id', id);
 
-            if (error) throw error;
+                if (error) throw error;
 
-            alert('Registro actualizado con éxito.');
-            closeModal('editModal');
-            await fetchRegistros();
+                alert('Registro actualizado con éxito.');
+                closeModal('editModal');
+                await fetchRegistros();
 
-        } catch (err) {
-            console.error('Error al actualizar:', err);
-            alert(`Error al actualizar el registro: ${err.message}`);
-        }
-    });
+            } catch (err) {
+                console.error('Error al actualizar:', err);
+                alert(`Error al actualizar el registro: ${err.message}`);
+            }
+        });
+    }
 
     // 9. MÉTRICAS Y ANALÍTICA
     async function openMetricasModal() {
@@ -1362,22 +1396,17 @@
             const distancias = {}, categorias = {}, tallas = {};
 
             data.forEach(r => {
-                // Género
                 if (r.genero === 'Masculino' || r.rama === 'Varonil') hombres++;
                 else if (r.genero === 'Femenino' || r.rama === 'Femenil') mujeres++;
 
-                // Monto
                 montoTotal += parseFloat(r.monto_cobrado) || 0;
 
-                // Conteo Distancias
                 const d = r.distancia || 'Sin Especificar';
                 distancias[d] = (distancias[d] || 0) + 1;
 
-                // Conteo Categorías
                 const c = r.categoria || 'Sin Categoría';
                 categorias[c] = (categorias[c] || 0) + 1;
 
-                // Conteo Tallas
                 const t = r.talla_playera || 'Sin Talla';
                 tallas[t] = (tallas[t] || 0) + 1;
             });
@@ -1391,7 +1420,7 @@
                 const el = document.getElementById(targetId);
                 if (!el) return;
                 el.innerHTML = Object.entries(obj).map(([k, v]) => `
-                    <div style="display:flex; justify-between; border-bottom: 1px solid #f1f5f9; padding: 2px 0;">
+                    <div style="display:flex; justify-content:space-between; border-bottom: 1px solid #f1f5f9; padding: 2px 0;">
                         <span>${k}:</span> <strong>${v}</strong>
                     </div>
                 `).join('') || '<em>Sin datos</em>';
