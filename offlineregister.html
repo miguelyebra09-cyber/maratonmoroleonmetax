@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MetaX Admin - Registro Offline - Maratón Moroleón 2027</title>
+    
+    <!-- Carga del SDK de Supabase desde CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <style>
         :root {
             --primary: #0f172a;
@@ -288,7 +292,7 @@
 
     <div class="folio-banner">
         <span>Folio Oficial a Generar:</span>
-        <div class="folio-number" id="nextFolioDisplay">MM27-OFF-1001</div>
+        <div class="folio-number" id="nextFolioDisplay">MMO27-OF-RUN-1001</div>
     </div>
 
     <form id="fullRegistrationForm">
@@ -598,19 +602,54 @@
 </div>
 
 <script>
-    // Fecha actual automática
+    // 1. Inicialización segura del cliente Supabase
+    const SUPABASE_URL = 'https://rpcevbxzpfgyobehgjth.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwY2V2Ynh6cGZneW9iZWhnanRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMDA3MDQsImV4cCI6MjEwMTg3NjcwNH0.hECuSvVKVehKZjZ9jMqwHM1xspD2l1kS3G9X1jfHIuk';
+    
+    let supabase = null;
+
+    try {
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } else {
+            console.error('El SDK de Supabase no se ha cargado correctamente.');
+        }
+    } catch (err) {
+        console.error('Error al inicializar el cliente de Supabase:', err);
+    }
+
+    // Función auxiliar para obtener valor de elemento HTML de forma segura
+    function getSafeValue(id, defaultValue = '') {
+        const el = document.getElementById(id);
+        return el ? el.value : defaultValue;
+    }
+
+    // 2. Fecha actual automática
     const hoy = new Date();
     const formattedFecha = hoy.toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' });
-    document.getElementById('fechaRegistro').value = formattedFecha;
+    const fechaRegEl = document.getElementById('fechaRegistro');
+    if (fechaRegEl) fechaRegEl.value = formattedFecha;
 
-    // Folio automático
-    let offlineCounter = parseInt(localStorage.getItem('metaX_offline_counter')) || 1001;
+    // 3. Folio automático con localStorage seguro
+    let offlineCounter = 1001;
+    try {
+        const storedCounter = localStorage.getItem('metaX_offline_counter');
+        if (storedCounter) {
+            offlineCounter = parseInt(storedCounter, 10) || 1001;
+        }
+    } catch (e) {
+        console.warn('localStorage no está accesible:', e);
+    }
+
     function updateFolio() {
-        document.getElementById('nextFolioDisplay').innerText = `MM27-OFF-${offlineCounter}`;
+        const folioDisplay = document.getElementById('nextFolioDisplay');
+        if (folioDisplay) {
+            folioDisplay.innerText = `MM27-OFF-${offlineCounter}`;
+        }
     }
     updateFolio();
 
-    // Catálogo RENAPO para Estados de Nacimiento a partir de la CURP
+    // Catálogo RENAPO para Estados de Nacimiento
     const estadosCURP = {
         'AS': 'Aguascalientes', 'BC': 'Baja California', 'BS': 'Baja California Sur',
         'CC': 'Campeche', 'CL': 'Coahuila', 'CM': 'Colima', 'CS': 'Chiapas',
@@ -623,71 +662,86 @@
         'ZS': 'Zacatecas', 'NE': 'Nacido en el Extranjero'
     };
 
-    // Lógica JavaScript para desencadenar el cálculo al capturar la CURP
-    document.getElementById('curp').addEventListener('input', function(e) {
-        let val = e.target.value.toUpperCase();
-        
-        if (val.length >= 10) {
-            // Extraer fecha de nacimiento (posiciones 4 al 9)
-            let aa = val.substring(4, 6);
-            let mm = val.substring(6, 8);
-            let dd = val.substring(8, 10);
-            
-            // Asignar siglo (atletas nacidos a partir de 2000 vs 1900)
-            let anioNum = parseInt(aa);
-            let siglo = (anioNum < 27) ? "20" : "19";
-            let anioNacimiento = parseInt(`${siglo}${aa}`);
-            let fechaISO = `${siglo}${aa}-${mm}-${dd}`;
-            
-            document.getElementById('fechaNacimiento').value = fechaISO;
+    // 4. Lógica de lectura y cálculo con validación
+    const curpInput = document.getElementById('curp');
+    if (curpInput) {
+        curpInput.addEventListener('input', function(e) {
+            try {
+                let val = (e.target.value || '').toUpperCase();
+                
+                if (val.length >= 10) {
+                    let aa = val.substring(4, 6);
+                    let mm = val.substring(6, 8);
+                    let dd = val.substring(8, 10);
+                    
+                    let anioNum = parseInt(aa, 10);
+                    let siglo = (anioNum < 27) ? "20" : "19";
+                    let anioNacimiento = parseInt(`${siglo}${aa}`, 10);
+                    let fechaISO = `${siglo}${aa}-${mm}-${dd}`;
+                    
+                    const fnEl = document.getElementById('fechaNacimiento');
+                    if (fnEl) fnEl.value = fechaISO;
 
-            // Calcular Edad exacta considerando el evento en enero de 2027
-            let edad = 2027 - anioNacimiento;
-            document.getElementById('edadAuto').value = `${edad} años`;
+                    let edad = 2027 - anioNacimiento;
+                    const edadEl = document.getElementById('edadAuto');
+                    if (edadEl) edadEl.value = `${edad} años`;
 
-            // Asignar Categoría según la edad calculada
-            let catSelect = document.getElementById('categoriaAuto');
-            if (edad < 18) catSelect.value = "Juvenil (Menores de 18)";
-            else if (edad <= 39) catSelect.value = "Libre (18-39 años)";
-            else if (edad <= 49) catSelect.value = "Master (40-49 años)";
-            else if (edad <= 59) catSelect.value = "Veteranos (50-59 años)";
-            else catSelect.value = "Veteranos Plus (60+ años)";
-        }
+                    const catSelect = document.getElementById('categoriaAuto');
+                    if (catSelect) {
+                        if (edad < 18) catSelect.value = "Juvenil (Menores de 18)";
+                        else if (edad <= 39) catSelect.value = "Libre (18-39 años)";
+                        else if (edad <= 49) catSelect.value = "Master (40-49 años)";
+                        else if (edad <= 59) catSelect.value = "Veteranos (50-59 años)";
+                        else catSelect.value = "Veteranos Plus (60+ años)";
+                    }
+                }
 
-        // Extraer Género y Rama Competencia (posición 10)
-        if (val.length >= 11) {
-            let sexoChar = val.charAt(10);
-            if (sexoChar === 'H') {
-                document.getElementById('generoAuto').value = 'Masculino';
-                document.getElementById('ramaAuto').value = 'Varonil';
-            } else if (sexoChar === 'M') {
-                document.getElementById('generoAuto').value = 'Femenino';
-                document.getElementById('ramaAuto').value = 'Femenil';
+                if (val.length >= 11) {
+                    let sexoChar = val.charAt(10);
+                    const genEl = document.getElementById('generoAuto');
+                    const ramaEl = document.getElementById('ramaAuto');
+                    
+                    if (sexoChar === 'H') {
+                        if (genEl) genEl.value = 'Masculino';
+                        if (ramaEl) ramaEl.value = 'Varonil';
+                    } else if (sexoChar === 'M') {
+                        if (genEl) genEl.value = 'Femenino';
+                        if (ramaEl) ramaEl.value = 'Femenil';
+                    }
+                }
+
+                if (val.length >= 13) {
+                    let entCode = val.substring(11, 13);
+                    let estadoNombre = estadosCURP[entCode] || `Entidad (${entCode})`;
+                    const entEl = document.getElementById('entidadOrigenAuto');
+                    if (entEl) entEl.value = estadoNombre;
+                }
+            } catch (err) {
+                console.error('Error al procesar la CURP:', err);
             }
-        }
+        });
+    }
 
-        // Extraer Estado de Nacimiento / Entidad de Origen (posiciones 11 y 12)
-        if (val.length >= 13) {
-            let entCode = val.substring(11, 13);
-            let estadoNombre = estadosCURP[entCode] || `Entidad (${entCode})`;
-            document.getElementById('entidadOrigenAuto').value = estadoNombre;
-        }
-    });
-
+    // Auxiliares de formulario
     function previewImage(event) {
-        const container = document.getElementById('photoPreview');
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                container.innerHTML = `<img src="${e.target.result}" style="max-height: 100px; border-radius: 6px;">`;
+        try {
+            const container = document.getElementById('photoPreview');
+            if (!container) return;
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    container.innerHTML = `<img src="${e.target.result}" style="max-height: 100px; border-radius: 6px;">`;
+                }
+                reader.readAsDataURL(file);
             }
-            reader.readAsDataURL(file);
+        } catch (err) {
+            console.error('Error en vista previa de imagen:', err);
         }
     }
 
     function handleNinguno(checkbox) {
-        if (checkbox.checked) {
+        if (checkbox && checkbox.checked) {
             const list = document.querySelectorAll('input[name="padecimientos"]');
             list.forEach(item => { if (item !== checkbox) item.checked = false; });
         }
@@ -698,37 +752,129 @@
         if (ninguno) ninguno.checked = false;
     }
 
-    // Envío del Formulario
-    document.getElementById('fullRegistrationForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+    // 5. Envío del Formulario e Inserción Controlada en Supabase
+    const formEl = document.getElementById('fullRegistrationForm');
+    if (formEl) {
+        formEl.addEventListener('submit', async function(e) {
+            e.preventDefault();
 
-        const folio = `MM27-OFF-${offlineCounter}`;
-        const nombreComp = `${document.getElementById('nombre').value} ${document.getElementById('primerApellido').value} ${document.getElementById('segundoApellido').value}`.trim();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerText = 'Guardando en Supabase...';
+            }
 
-        // Llenar Modal
-        document.getElementById('lblFolio').innerText = folio;
-        document.getElementById('lblNombre').innerText = nombreComp;
-        document.getElementById('lblCurp').innerText = document.getElementById('curp').value.toUpperCase();
-        document.getElementById('lblDistancia').innerText = document.getElementById('distancia').value;
-        document.getElementById('lblCategoria').innerText = document.getElementById('categoriaAuto').value;
-        document.getElementById('lblTalla').innerText = document.getElementById('tallaPlayera').value;
-        document.getElementById('lblSangre').innerText = document.getElementById('tipoSangre').value;
-        document.getElementById('lblMonto').innerText = document.getElementById('montoCobrado').value;
-        document.getElementById('lblOperador').innerText = document.getElementById('operadorNombre').value;
+            try {
+                // Verificar cliente de Supabase
+                if (!supabase) {
+                    throw new Error('La biblioteca de Supabase no está disponible o no se inicializó correctamente.');
+                }
 
-        // Incrementar folio
-        offlineCounter++;
-        localStorage.setItem('metaX_offline_counter', offlineCounter);
+                const folio = `MM27-OFF-${offlineCounter}`;
+                const nombreComp = `${getSafeValue('nombre')} ${getSafeValue('primerApellido')} ${getSafeValue('segundoApellido')}`.trim();
+                
+                // Recopilar padecimientos seleccionados
+                const padecimientosSelected = Array.from(document.querySelectorAll('input[name="padecimientos"]:checked')).map(cb => cb.value);
 
-        document.getElementById('ticketModal').style.display = 'flex';
-    });
+                // Normalización de datos para la tabla
+                const registrationData = {
+                    folio_oficial: folio,
+                    curp: getSafeValue('curp').toUpperCase(),
+                    nombre: getSafeValue('nombre'),
+                    primer_apellido: getSafeValue('primerApellido'),
+                    segundo_apellido: getSafeValue('segundoApellido'),
+                    nombre_completo: nombreComp,
+                    email: getSafeValue('email'),
+                    telefono: getSafeValue('telefono'),
+                    carrera: getSafeValue('carrera'),
+                    distancia: getSafeValue('distancia'),
+                    pais_residencia: getSafeValue('paisResidencia'),
+                    estado_residencia: getSafeValue('estadoResidencia'),
+                    edad: getSafeValue('edadAuto'),
+                    fecha_nacimiento: getSafeValue('fechaNacimiento'),
+                    genero: getSafeValue('generoAuto'),
+                    entidad_origen: getSafeValue('entidadOrigenAuto'),
+                    rama: getSafeValue('ramaAuto'),
+                    categoria: getSafeValue('categoriaAuto'),
+                    talla_playera: getSafeValue('tallaPlayera'),
+                    perfil_corredor: getSafeValue('perfilCorredor'),
+                    tipo_sangre: getSafeValue('tipoSangre'),
+                    contacto_nombre: getSafeValue('contactoNombre'),
+                    contacto_telefono: getSafeValue('contactoTelefono'),
+                    alergias: getSafeValue('alergias'),
+                    padecimientos: padecimientosSelected,
+                    situaciones_extra: getSafeValue('situacionesExtra'),
+                    monto_cobrado: parseFloat(getSafeValue('montoCobrado')) || 0,
+                    operador_nombre: getSafeValue('operadorNombre'),
+                    metodo_pago: 'Efectivo',
+                    estatus_pago: 'Completado',
+                    fecha_registro: new Date().toISOString()
+                };
+
+                // Inserción en la tabla
+                const { data, error } = await supabase
+                    .from('registros')
+                    .insert([registrationData]);
+
+                if (error) {
+                    throw error;
+                }
+
+                // Asignar datos al modal si existen los elementos HTML
+                const updateLabel = (id, val) => {
+                    const label = document.getElementById(id);
+                    if (label) label.innerText = val;
+                };
+
+                updateLabel('lblFolio', folio);
+                updateLabel('lblNombre', nombreComp);
+                updateLabel('lblCurp', registrationData.curp);
+                updateLabel('lblDistancia', registrationData.distancia);
+                updateLabel('lblCategoria', registrationData.categoria);
+                updateLabel('lblTalla', registrationData.talla_playera);
+                updateLabel('lblSangre', registrationData.tipo_sangre);
+                updateLabel('lblMonto', registrationData.monto_cobrado);
+                updateLabel('lblOperador', registrationData.operador_nombre);
+
+                // Incrementar y persistir contador
+                offlineCounter++;
+                try {
+                    localStorage.setItem('metaX_offline_counter', offlineCounter);
+                } catch (e) {
+                    console.warn('No se pudo guardar el nuevo folio en localStorage:', e);
+                }
+
+                const modal = document.getElementById('ticketModal');
+                if (modal) modal.style.display = 'flex';
+
+            } catch (err) {
+                console.error('Error durante la inserción:', err);
+                alert(`Atención: No se pudo registrar la información.\nDetalle: ${err.message || err}`);
+            } finally {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Confirmar Pago en Efectivo y Generar Folio Oficial (MM27-OFF)';
+                }
+            }
+        });
+    }
 
     function closeModal() {
-        document.getElementById('ticketModal').style.display = 'none';
-        document.getElementById('fullRegistrationForm').reset();
-        document.getElementById('fechaRegistro').value = formattedFecha;
-        document.getElementById('photoPreview').innerHTML = 'La foto del CURP aparecerá aquí cuando esté disponible.';
-        updateFolio();
+        try {
+            const modal = document.getElementById('ticketModal');
+            if (modal) modal.style.display = 'none';
+
+            if (formEl) formEl.reset();
+
+            if (fechaRegEl) fechaRegEl.value = formattedFecha;
+
+            const preview = document.getElementById('photoPreview');
+            if (preview) preview.innerHTML = 'La foto del CURP aparecerá aquí cuando esté disponible.';
+
+            updateFolio();
+        } catch (err) {
+            console.error('Error al cerrar modal o limpiar formulario:', err);
+        }
     }
 </script>
 
