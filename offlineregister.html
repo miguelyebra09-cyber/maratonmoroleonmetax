@@ -1147,7 +1147,7 @@
                 };
 
                 const { data, error } = await dbClient
-                    .from('registros')
+                    .from('corredores')
                     .insert([registrationData]);
 
                 if (error) throw error;
@@ -1237,7 +1237,7 @@
                         fecha_registro: new Date().toISOString()
                     }));
 
-                    const { error } = await dbClient.from('registros').insert(formattedRows);
+                    const { error } = await dbClient.from('corredores').insert(formattedRows);
                     if (error) throw error;
 
                     statusDiv.innerHTML = `<span style="color:var(--success);">¡Éxito! Se importaron ${formattedRows.length} registros correctamente.</span>`;
@@ -1264,7 +1264,7 @@
 
         try {
             const { data, error } = await dbClient
-                .from('registros')
+                .from('corredores')
                 .select('*')
                 .order('created_at', { ascending: false });
 
@@ -1356,7 +1356,7 @@
 
             try {
                 const { error } = await dbClient
-                    .from('registros')
+                    .from('corredores')
                     .update(updatedData)
                     .eq('id', id);
 
@@ -1379,7 +1379,7 @@
         if (modal) modal.style.display = 'flex';
         
         try {
-            const { data, error } = await dbClient.from('registros').select('*');
+            const { data, error } = await dbClient.from('corredores').select('*');
             if (error) throw error;
 
             const total = data.length;
