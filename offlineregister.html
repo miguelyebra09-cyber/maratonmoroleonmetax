@@ -561,11 +561,11 @@
             </div>
         </div>
 
-        <!-- SECCIÓN 3: PERFIL DEL CORREDOR, PLAYERA Y FOTO -->
+        <!-- SECCIÓN 3: PERFIL DEL CORREDOR, PLAYERA Y FOTOS -->
         <div class="card">
             <div class="card-header">
-                <div class="card-subtitle">Perfil del Corredor</div>
-                <div class="card-title">Playera y fotografía</div>
+                <div class="card-subtitle">Perfil del Corredor y Documentación</div>
+                <div class="card-title">Playera, fotografía y comprobantes</div>
             </div>
             <div class="form-grid">
                 <div class="form-group">
@@ -598,6 +598,42 @@
                     <label>Vista previa de foto</label>
                     <div class="photo-preview-box" id="photoPreview">
                         La foto aparecerá aquí cuando esté seleccionada.
+                    </div>
+                </div>
+
+                <!-- SECCIÓN: EVIDENCIA DE PAGO -->
+                <div class="form-group">
+                    <label>Evidencia de Pago (Comprobante)</label>
+                    <input type="file" id="pagoFile" accept="image/*,application/pdf" onchange="previewPago(event)">
+                </div>
+                <div class="form-group">
+                    <label>Vista previa de Comprobante de Pago</label>
+                    <div class="photo-preview-box" id="pagoPreview">
+                        El comprobante aparecerá aquí.
+                    </div>
+                </div>
+
+                <!-- SECCIÓN: DOCUMENTO DE IDENTIDAD 1 -->
+                <div class="form-group">
+                    <label>Identificación Oficial (INE / CURP / Otro - Doc 1)</label>
+                    <input type="file" id="doc1File" accept="image/*,application/pdf" onchange="previewDoc(event, 'doc1Preview')">
+                </div>
+                <div class="form-group">
+                    <label>Vista previa Documento 1</label>
+                    <div class="photo-preview-box" id="doc1Preview">
+                        Documento 1 aparecerá aquí.
+                    </div>
+                </div>
+
+                <!-- SECCIÓN: DOCUMENTO DE IDENTIDAD 2 -->
+                <div class="form-group">
+                    <label>Identificación Oficial Adicional (Doc 2 - Opcional)</label>
+                    <input type="file" id="doc2File" accept="image/*,application/pdf" onchange="previewDoc(event, 'doc2Preview')">
+                </div>
+                <div class="form-group">
+                    <label>Vista previa Documento 2</label>
+                    <div class="photo-preview-box" id="doc2Preview">
+                        Documento 2 aparecerá aquí.
                     </div>
                 </div>
             </div>
@@ -1000,6 +1036,12 @@
             if (fechaRegEl) fechaRegEl.value = formattedFecha;
             const preview = document.getElementById('photoPreview');
             if (preview) preview.innerHTML = 'La foto aparecerá aquí cuando esté seleccionada.';
+            const pagoPrev = document.getElementById('pagoPreview');
+            if (pagoPrev) pagoPrev.innerHTML = 'El comprobante aparecerá aquí.';
+            const doc1Prev = document.getElementById('doc1Preview');
+            if (doc1Prev) doc1Prev.innerHTML = 'Documento 1 aparecerá aquí.';
+            const doc2Prev = document.getElementById('doc2Preview');
+            if (doc2Prev) doc2Prev.innerHTML = 'Documento 2 aparecerá aquí.';
             updateFolio();
         }
     }
@@ -1118,7 +1160,7 @@
         });
     }
 
-    // Previsualización de imagen corregida
+    // Previsualización de imágenes adicionales
     function previewImage(event) {
         try {
             const container = document.getElementById('photoPreview');
@@ -1136,6 +1178,48 @@
         }
     }
 
+    function previewPago(event) {
+        try {
+            const container = document.getElementById('pagoPreview');
+            if (!container) return;
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if(file.type.includes('pdf')) {
+                        container.innerHTML = `<span style="font-size:0.75rem; color:#0284c7; font-weight:bold;">PDF Cargado Correctamente</span>`;
+                    } else {
+                        container.innerHTML = `<img src="${e.target.result}" style="max-height: 100px; max-width: 100px; border-radius: 6px; object-fit: cover;">`;
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        } catch (err) {
+            console.error('Error en vista previa de pago:', err);
+        }
+    }
+
+    function previewDoc(event, targetId) {
+        try {
+            const container = document.getElementById(targetId);
+            if (!container) return;
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    if(file.type.includes('pdf')) {
+                        container.innerHTML = `<span style="font-size:0.75rem; color:#0284c7; font-weight:bold;">PDF Cargado Correctamente</span>`;
+                    } else {
+                        container.innerHTML = `<img src="${e.target.result}" style="max-height: 100px; max-width: 100px; border-radius: 6px; object-fit: cover;">`;
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        } catch (err) {
+            console.error('Error en vista previa de documento:', err);
+        }
+    }
+
     function handleNinguno(checkbox) {
         if (checkbox && checkbox.checked) {
             const list = document.querySelectorAll('input[name="padecimientos"]');
@@ -1148,7 +1232,39 @@
         if (ninguno) ninguno.checked = false;
     }
 
-    // 5. Envío del Formulario e Inserción Controlada en Supabase
+    // Función auxiliar para subir archivos al Storage de Supabase ('Documentos')
+    async function uploadFileToSupabase(fileInputId, folderName, folio) {
+        const fileInput = document.getElementById(fileInputId);
+        if (!fileInput || !fileInput.files || fileInput.files.length === 0) return null;
+        
+        const file = fileInput.files[0];
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${folio}_${folderName}_${Date.now()}.${fileExt}`;
+        const filePath = `${fileName}`;
+
+        try {
+            const { data, error } = await dbClient.storage
+                .from('Documentos')
+                .upload(filePath, file);
+
+            if (error) {
+                console.error(`Error subiendo archivo ${folderName}:`, error);
+                return null;
+            }
+
+            // Obtener URL pública
+            const { data: publicUrlData } = dbClient.storage
+                .from('Documentos')
+                .getPublicUrl(filePath);
+
+            return publicUrlData ? publicUrlData.publicUrl : null;
+        } catch (err) {
+            console.error(`Excepción al subir archivo ${folderName}:`, err);
+            return null;
+        }
+    }
+
+    // 5. Envío del Formulario e Inserción Controlada en Supabase con Subida de Archivos
     const formEl = document.getElementById('fullRegistrationForm');
     if (formEl) {
         formEl.addEventListener('submit', async function(e) {
@@ -1157,7 +1273,7 @@
             const submitBtn = e.target.querySelector('button[type="submit"]');
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.innerText = 'Guardando en Supabase...';
+                submitBtn.innerText = 'Subiendo archivos y guardando...';
             }
 
             try {
@@ -1166,6 +1282,13 @@
                 }
 
                 const folio = `MM27OFF-RUN-MMO${offlineCounter}`;
+                
+                // Subir archivos al bucket de Supabase
+                const fotoUrl = await uploadFileToSupabase('fotoFile', 'foto', folio);
+                const pagoUrl = await uploadFileToSupabase('pagoFile', 'pago', folio);
+                const doc1Url = await uploadFileToSupabase('doc1File', 'doc1', folio);
+                const doc2Url = await uploadFileToSupabase('doc2File', 'doc2', folio);
+
                 const nombreComp = `${getSafeValue('nombre')} ${getSafeValue('primerApellido')} ${getSafeValue('segundoApellido')}`.trim();
                 const padecimientosSelected = Array.from(document.querySelectorAll('input[name="padecimientos"]:checked')).map(cb => cb.value);
 
@@ -1198,6 +1321,10 @@
                     situaciones_extra: getSafeValue('situacionesExtra'),
                     monto_cobrado: parseFloat(getSafeValue('montoCobrado')) || 0,
                     operador_nombre: getSafeValue('operadorNombre'),
+                    foto_url: fotoUrl,
+                    pago_url: pagoUrl,
+                    doc1_url: doc1Url,
+                    doc2_url: doc2Url,
                     metodo_pago: 'Efectivo',
                     estatus_pago: 'Completado',
                     fecha_registro: new Date().toISOString()
