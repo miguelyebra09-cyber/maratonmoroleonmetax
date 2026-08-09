@@ -915,23 +915,20 @@
 </div>
 
 <script>
-    // 1. Inicialización segura del cliente Supabase sin redeclaración de identificadores globales
+    // 1. Inicialización ultra-segura para evitar conflictos globales de identificadores
     const SUPABASE_URL = 'https://rpcevbxzpfgyobehgjth.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwY2V2Ynh6cGZneW9iZWhnanRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMDA3MDQsImV4cCI6MjEwMTg3NjcwNH0.hECuSvVKVehKZjZ9jMqwHM1xspD2l1kS3G9X1jfHIuk';
     
-    if (typeof window.supabaseClientInstance === 'undefined') {
-        window.supabaseClientInstance = null;
-        try {
-            if (window.supabase && typeof window.supabase.createClient === 'function') {
-                window.supabaseClientInstance = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            } else {
-                console.error('El SDK de Supabase no se ha cargado correctamente.');
-            }
-        } catch (err) {
-            console.error('Error al inicializar el cliente de Supabase:', err);
+    let dbClient = null;
+    try {
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+            dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        } else {
+            console.error('El SDK de Supabase no se ha cargado correctamente.');
         }
+    } catch (err) {
+        console.error('Error al inicializar el cliente de Supabase:', err);
     }
-    const supabase = window.supabaseClientInstance;
 
     let cachedRegistros = [];
 
@@ -1107,7 +1104,7 @@
             }
 
             try {
-                if (!supabase) {
+                if (!dbClient) {
                     throw new Error('La biblioteca de Supabase no está disponible o no se inicializó correctamente.');
                 }
 
@@ -1149,7 +1146,7 @@
                     fecha_registro: new Date().toISOString()
                 };
 
-                const { data, error } = await supabase
+                const { data, error } = await dbClient
                     .from('registros')
                     .insert([registrationData]);
 
@@ -1240,7 +1237,7 @@
                         fecha_registro: new Date().toISOString()
                     }));
 
-                    const { error } = await supabase.from('registros').insert(formattedRows);
+                    const { error } = await dbClient.from('registros').insert(formattedRows);
                     if (error) throw error;
 
                     statusDiv.innerHTML = `<span style="color:var(--success);">¡Éxito! Se importaron ${formattedRows.length} registros correctamente.</span>`;
@@ -1266,7 +1263,7 @@
         tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Cargando registros...</td></tr>';
 
         try {
-            const { data, error } = await supabase
+            const { data, error } = await dbClient
                 .from('registros')
                 .select('*')
                 .order('created_at', { ascending: false });
@@ -1358,7 +1355,7 @@
             };
 
             try {
-                const { error } = await supabase
+                const { error } = await dbClient
                     .from('registros')
                     .update(updatedData)
                     .eq('id', id);
@@ -1382,7 +1379,7 @@
         if (modal) modal.style.display = 'flex';
         
         try {
-            const { data, error } = await supabase.from('registros').select('*');
+            const { data, error } = await dbClient.from('registros').select('*');
             if (error) throw error;
 
             const total = data.length;
