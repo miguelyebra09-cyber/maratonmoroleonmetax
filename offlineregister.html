@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MetaX Admin - Registro de Corredores Offline (Pago en Efectivo)</title>
+    <title>MetaX Admin - Registro Offline (Pago en Efectivo) - Maratón Moroleón 2027</title>
     <style>
         :root {
-            --primary: #1e3a8a;
-            --primary-light: #2563eb;
-            --accent: #0284c7;
-            --success: #16a34a;
-            --bg: #f8fafc;
+            --primary: #0f172a;
+            --primary-blue: #0284c7;
+            --accent-blue: #2563eb;
+            --bg-body: #f8fafc;
             --card-bg: #ffffff;
-            --text: #0f172a;
-            --border: #cbd5e1;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --input-bg: #f1f5f9;
+            --success: #16a34a;
         }
 
         * {
@@ -24,73 +26,96 @@
         }
 
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            padding: 20px;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 24px 12px;
         }
 
         .container {
-            max-width: 950px;
+            max-width: 1000px;
             margin: 0 auto;
         }
 
         .header {
-            background: linear-gradient(135deg, #0f172a, #1e3a8a);
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
             color: white;
             padding: 24px;
             border-radius: 12px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
         }
 
         .header h1 {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             color: #38bdf8;
+            margin-bottom: 4px;
         }
 
         .header p {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             color: #94a3b8;
-            margin-top: 4px;
         }
 
         .badge-admin {
             background-color: #f59e0b;
             color: #78350f;
             font-weight: bold;
-            padding: 6px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-size: 0.8rem;
             text-transform: uppercase;
         }
 
+        .folio-banner {
+            background-color: #ecfdf5;
+            border: 1.5px dashed #10b981;
+            padding: 14px;
+            border-radius: 10px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .folio-number {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #047857;
+            letter-spacing: 1px;
+        }
+
         .card {
             background: var(--card-bg);
-            border: 1px solid var(--border);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+        }
+
+        .card-header {
+            margin-bottom: 18px;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .card-subtitle {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .card-title {
-            font-size: 1.1rem;
-            font-weight: bold;
+            font-size: 1.2rem;
+            font-weight: 800;
             color: var(--primary);
-            margin-bottom: 18px;
-            padding-bottom: 8px;
-            border-bottom: 2px solid var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
         }
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 16px;
         }
 
@@ -101,88 +126,124 @@
 
         .form-group label {
             font-size: 0.85rem;
-            font-weight: 600;
+            font-weight: 700;
             margin-bottom: 6px;
-            color: #334155;
+            color: #1e293b;
         }
 
-        .form-group input, .form-group select {
+        .form-group input, .form-group select, .form-group textarea {
             padding: 10px 12px;
-            border: 1px solid var(--border);
-            border-radius: 6px;
-            font-size: 0.95rem;
-            transition: border-color 0.2s;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background-color: #ffffff;
+            transition: all 0.2s;
         }
 
-        .form-group input:focus, .form-group select:focus {
+        .form-group input[readonly] {
+            background-color: var(--input-bg);
+            color: #475569;
+            cursor: not-allowed;
+        }
+
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
             outline: none;
-            border-color: var(--primary-light);
+            border-color: var(--accent-blue);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
 
-        .folio-preview {
-            background-color: #ecfdf5;
-            border: 1.5px dashed #10b981;
-            padding: 12px;
-            border-radius: 8px;
-            text-align: center;
-            margin-bottom: 16px;
+        .field-help {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 4px;
         }
 
-        .folio-number {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #047857;
-            letter-spacing: 1px;
+        /* Foto preview box */
+        .photo-preview-box {
+            border: 1.5px dashed var(--border-color);
+            border-radius: 8px;
+            background-color: var(--input-bg);
+            height: 110px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 10px;
+        }
+
+        /* Checkboxes de padecimientos */
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .checkbox-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            background-color: #fff;
+            transition: all 0.2s;
+        }
+
+        .checkbox-card:hover {
+            border-color: var(--primary-blue);
+        }
+
+        .checkbox-card input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .checkbox-card span {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1e293b;
         }
 
         .btn-submit {
             background-color: var(--success);
             color: white;
             border: none;
-            padding: 14px 24px;
-            font-size: 1rem;
+            padding: 16px;
+            font-size: 1.05rem;
             font-weight: bold;
-            border-radius: 8px;
+            border-radius: 10px;
             cursor: pointer;
             width: 100%;
             transition: background 0.2s;
+            margin-top: 10px;
         }
 
         .btn-submit:hover {
             background-color: #15803d;
         }
 
-        .btn-export {
-            background-color: var(--primary-light);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-
-        /* Modal de Confirmación y Ticket */
+        /* Modal Ticket */
         .modal {
             display: none;
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(15, 23, 42, 0.7);
-            justify-content: center;
-            align-items: center;
+            top:0; left:0; width:100%; height:100%;
+            background: rgba(15, 23, 42, 0.75);
+            justify-content: center; align-items: center;
             z-index: 1000;
         }
 
         .modal-content {
             background: white;
             border-radius: 12px;
-            padding: 28px;
-            max-width: 450px;
+            padding: 24px;
+            max-width: 480px;
             width: 90%;
             text-align: center;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
         }
 
         .ticket-box {
@@ -192,38 +253,22 @@
             background-color: #f8fafc;
             margin: 16px 0;
             text-align: left;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            line-height: 1.5;
         }
 
         .ticket-header {
             text-align: center;
             font-weight: bold;
-            font-size: 1.1rem;
+            font-size: 1rem;
             color: var(--primary);
             border-bottom: 1px solid #cbd5e1;
             padding-bottom: 8px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
-        .btn-print {
-            background-color: #0284c7;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-right: 8px;
-        }
-
-        .btn-close {
-            background-color: #64748b;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 6px;
-            cursor: pointer;
-        }
+        .btn-print { background-color: #0284c7; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .btn-close { background-color: #64748b; color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; }
 
         @media print {
             body * { visibility: hidden; }
@@ -235,96 +280,149 @@
 <body>
 
 <div class="container">
+
     <div class="header">
         <div>
             <h1>Maratón Internacional Moroleón 2027</h1>
-            <p>Módulo de Captura y Registro Presencial (Efectivo / Módulo Comité)</p>
+            <p>Módulo de Registro Presencial y Cobro en Efectivo (Comité Organizador)</p>
         </div>
         <span class="badge-admin">Módulo Admin</span>
     </div>
 
-    <!-- Vista Previa de Folio a Asignar -->
-    <div class="folio-preview">
-        <span>Folio Oficial Offline a Asignar:</span>
+    <div class="folio-banner">
+        <span>Folio Oficial a Generar:</span>
         <div class="folio-number" id="nextFolioDisplay">MM27-OFF-1001</div>
     </div>
 
-    <form id="offlineRegistrationForm">
-        <!-- Datos de Identificación y Personales -->
+    <form id="fullRegistrationForm">
+
+        <!-- SECCIÓN 1: DATOS BÁSICOS DE REGISTRO Y CARRERA -->
         <div class="card">
-            <div class="card-title">1. Datos Personales del Corredor</div>
+            <div class="card-header">
+                <div class="card-subtitle">Datos de Inscripción</div>
+                <div class="card-title">Datos del Registro y Carrera</div>
+            </div>
             <div class="form-grid">
                 <div class="form-group">
-                    <label>CURP *</label>
-                    <input type="text" id="curp" required maxlength="18" placeholder="AAAA000000XXXXXX00" style="text-transform: uppercase;">
+                    <label>Fecha de registro (auto)</label>
+                    <input type="text" id="fechaRegistro" readonly>
                 </div>
                 <div class="form-group">
                     <label>Nombre(s) *</label>
-                    <input type="text" id="nombre" required placeholder="Nombre completo">
+                    <input type="text" id="nombre" required placeholder="Nombre(s)">
                 </div>
                 <div class="form-group">
-                    <label>Apellido Paterno *</label>
-                    <input type="text" id="apellidoPaterno" required placeholder="Apellido paterno">
+                    <label>Primer apellido *</label>
+                    <input type="text" id="primerApellido" required placeholder="Primer apellido">
                 </div>
                 <div class="form-group">
-                    <label>Apellido Materno</label>
-                    <input type="text" id="apellidoMaterno" placeholder="Apellido materno">
+                    <label>Segundo apellido</label>
+                    <input type="text" id="segundoApellido" placeholder="Segundo apellido">
                 </div>
                 <div class="form-group">
-                    <label>Fecha de Nacimiento *</label>
-                    <input type="date" id="fechaNacimiento" required>
-                </div>
-                <div class="form-group">
-                    <label>Género *</label>
-                    <select id="genero" required>
-                        <option value="">Selecciona...</option>
-                        <option value="Masculino">Masculino</option>
-                        <option value="Femenino">Femenino</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Correo Electrónico *</label>
+                    <label>Correo electrónico *</label>
                     <input type="email" id="email" required placeholder="correo@ejemplo.com">
                 </div>
                 <div class="form-group">
-                    <label>Teléfono / WhatsApp *</label>
+                    <label>Teléfono celular *</label>
                     <input type="tel" id="telefono" required placeholder="10 dígitos">
                 </div>
                 <div class="form-group">
-                    <label>Estado / Ciudad *</label>
-                    <input type="text" id="procedencia" required placeholder="Ej. Guanajuato, Moroleón">
+                    <label>Carrera</label>
+                    <select id="carrera" disabled>
+                        <option selected>Maratón Internacional Moroleón 2027 (2.ª Edición) — Moroleón, Guanajuato.</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Distancia asignada *</label>
+                    <select id="distancia" required>
+                        <option value="">-----------</option>
+                        <option value="42K Maratón">42K Maratón Completo</option>
+                        <option value="21K Medio Maratón">21K Medio Maratón</option>
+                        <option value="10K Recreativa">10K Recreativa</option>
+                        <option value="5K Recreativa">5K Recreativa</option>
+                    </select>
                 </div>
             </div>
         </div>
 
-        <!-- Datos de la Competencia -->
+        <!-- SECCIÓN 2: INFORMACIÓN DE IDENTIDAD, RESIDENCIA Y CURP -->
         <div class="card">
-            <div class="card-title">2. Datos de Carrera y Categoría</div>
+            <div class="card-header">
+                <div class="card-subtitle">Información de Identidad</div>
+                <div class="card-title">Residencia y CURP</div>
+            </div>
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Distancia *</label>
-                    <select id="distancia" required>
-                        <option value="">Selecciona distancia...</option>
-                        <option value="42K Maratón">42K - Maratón Completo</option>
-                        <option value="21K Medio Maratón">21K - Medio Maratón</option>
-                        <option value="10K">10K Recreativa</option>
-                        <option value="5K">5K Recreativa</option>
+                    <label>CURP *</label>
+                    <input type="text" id="curp" required maxlength="18" placeholder="Ingresa tu CURP" style="text-transform: uppercase;">
+                </div>
+                <div class="form-group">
+                    <label>País de residencia *</label>
+                    <select id="paisResidencia" required>
+                        <option value="México" selected>México</option>
+                        <option value="Otro">Otro país</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Categoría *</label>
-                    <select id="categoria" required>
-                        <option value="Libre">Libre (18 - 39 años)</option>
-                        <option value="Máster">Máster (40 - 49 años)</option>
-                        <option value="Veteranos">Veteranos (50 - 59 años)</option>
-                        <option value="Veteranos Plus">Veteranos Plus (60+ años)</option>
-                        <option value="Juventud">Juventud (Menores de 18 con responsiva)</option>
+                    <label>Estado de residencia *</label>
+                    <select id="estadoResidencia" required>
+                        <option value="">Selecciona tu estado</option>
+                        <option value="Guanajuato">Guanajuato</option>
+                        <option value="Michoacán">Michoacán</option>
+                        <option value="Jalisco">Jalisco</option>
+                        <option value="Ciudad de México">Ciudad de México</option>
+                        <option value="Estado de México">Estado de México</option>
+                        <option value="Querétaro">Querétaro</option>
+                        <!-- Agregar el resto de estados según se requiera -->
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Talla de Playera *</label>
-                    <select id="talla" required>
-                        <option value="">Selecciona talla...</option>
+                    <label>Edad (auto)</label>
+                    <input type="text" id="edadAuto" readonly placeholder="Se calcula con la CURP">
+                </div>
+                <div class="form-group">
+                    <label>Fecha de nacimiento</label>
+                    <input type="date" id="fechaNacimiento">
+                    <span class="field-help">Se llena con CURP cuando sea posible; también puedes seleccionarla manualmente.</span>
+                </div>
+                <div class="form-group">
+                    <label>Género (auto)</label>
+                    <input type="text" id="generoAuto" readonly placeholder="Se llena con CURP">
+                </div>
+                <div class="form-group">
+                    <label>Entidad de origen (auto)</label>
+                    <input type="text" id="entidadOrigenAuto" readonly placeholder="Se extrae de la CURP">
+                </div>
+                <div class="form-group">
+                    <label>Rama competencia (auto)</label>
+                    <input type="text" id="ramaAuto" readonly placeholder="Varonil / Femenil">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>Categoría asignada (auto)</label>
+                    <select id="categoriaAuto">
+                        <option value="">-----------</option>
+                        <option value="Libre (18-39 años)">Libre (18-39 años)</option>
+                        <option value="Master (40-49 años)">Master (40-49 años)</option>
+                        <option value="Veteranos (50-59 años)">Veteranos (50-59 años)</option>
+                        <option value="Veteranos Plus (60+ años)">Veteranos Plus (60+ años)</option>
+                        <option value="Juvenil (Menores de 18)">Juvenil (Menores de 18)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN 3: PERFIL DEL CORREDOR, PLAYERA Y FOTO -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-subtitle">Perfil del Corredor</div>
+                <div class="card-title">Playera y fotografía</div>
+            </div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Talla de playera *</label>
+                    <select id="tallaPlayera" required>
+                        <option value="">-----------</option>
                         <option value="XS">Extra Chica (XS)</option>
                         <option value="S">Chica (S)</option>
                         <option value="M">Mediana (M)</option>
@@ -333,169 +431,299 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Club / Equipo (Opcional)</label>
-                    <input type="text" id="club" placeholder="Nombre del club o equipo">
+                    <label>Perfil del corredor *</label>
+                    <select id="perfilCorredor" required>
+                        <option value="">Selecciona tu perfil</option>
+                        <option value="Atleta Local (Moroleón)">Atleta Local (Moroleón)</option>
+                        <option value="Atleta Estatal">Atleta Estatal (Guanajuato)</option>
+                        <option value="Atleta Nacional">Atleta Nacional</option>
+                        <option value="Atleta Internacional">Atleta Internacional</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Fotografía oficial</label>
+                    <input type="file" id="fotoFile" accept="image/*" onchange="previewImage(event)">
+                </div>
+                <div class="form-group">
+                    <label>Vista previa de foto</label>
+                    <div class="photo-preview-box" id="photoPreview">
+                        La foto del CURP aparecerá aquí cuando esté disponible.
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Contacto de Emergencia y Control de Caja -->
+        <!-- SECCIÓN 4: EXPEDIENTE MÉDICO Y SEGURIDAD -->
         <div class="card">
-            <div class="card-title">3. Emergencia y Recibo en Efectivo</div>
+            <div class="card-header">
+                <div class="card-subtitle">Expediente Médico</div>
+                <div class="card-title">Seguridad</div>
+            </div>
+            <div class="form-grid" style="margin-bottom: 16px;">
+                <div class="form-group">
+                    <label>Tipo de sangre *</label>
+                    <select id="tipoSangre" required>
+                        <option value="">-----------</option>
+                        <option value="O+">O Positivo (O+)</option>
+                        <option value="O-">O Negativo (O-)</option>
+                        <option value="A+">A Positivo (A+)</option>
+                        <option value="A-">A Negativo (A-)</option>
+                        <option value="B+">B Positivo (B+)</option>
+                        <option value="B-">B Negativo (B-)</option>
+                        <option value="AB+">AB Positivo (AB+)</option>
+                        <option value="AB-">AB Negativo (AB-)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Contacto emergencia (nombre) *</label>
+                    <input type="text" id="contactoNombre" required placeholder="Nombre completo del familiar o contacto">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono emergencia *</label>
+                    <input type="tel" id="contactoTelefono" required placeholder="10 dígitos">
+                </div>
+                <div class="form-group">
+                    <label>Alergias conocidas <span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:0.7rem;">SELECCIÓN MÚLTIPLE</span></label>
+                    <select id="alergias">
+                        <option value="Ninguna" selected>Ninguna</option>
+                        <option value="Medicamentos">Medicamentos (Penicilina, Aspirina, etc.)</option>
+                        <option value="Alimentos">Alimentos</option>
+                        <option value="Piquaduras / Insectos">Piquaduras de insectos</option>
+                        <option value="Otra">Otra alergia</option>
+                    </select>
+                    <span class="field-help">Selecciona una o más opciones. Si no aplica, deja marcado únicamente "Ninguna".</span>
+                </div>
+            </div>
+
+            <!-- Padecimientos Crónicos -->
+            <label style="font-size: 0.85rem; font-weight: 700; color: #1e293b;">Padecimientos crónicos <span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:0.7rem;">SELECCIÓN MÚLTIPLE</span></label>
+            <div class="checkbox-grid">
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Ninguno" checked onchange="handleNinguno(this)">
+                    <span>Ninguno</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Hipertensión arterial crónica" onchange="uncheckNinguno()">
+                    <span>Hipertensión arterial crónica</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Diabetes mellitus tipo 1 o 2" onchange="uncheckNinguno()">
+                    <span>Diabetes mellitus tipo 1 o 2</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Asma/deficiencias pulmonares" onchange="uncheckNinguno()">
+                    <span>Asma/deficiencias pulmonares</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Arritmias/cardiopatías isquémicas" onchange="uncheckNinguno()">
+                    <span>Arritmias/cardiopatías isquémicas</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Epilepsia/convulsiones no controladas" onchange="uncheckNinguno()">
+                    <span>Epilepsia/convulsiones no controladas</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Insuficiencia renal" onchange="uncheckNinguno()">
+                    <span>Insuficiencia renal</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Problemas metabólicos" onchange="uncheckNinguno()">
+                    <span>Problemas metabólicos</span>
+                </label>
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="Obesidad/síndrome metabólico" onchange="uncheckNinguno()">
+                    <span>Obesidad/síndrome metabólico</span>
+                </label>
+            </div>
+            <span class="field-help" style="display:block; margin-top:8px;">Selecciona una o más opciones. Si no aplica, deja marcado únicamente "Ninguno".</span>
+
+            <div class="form-group" style="margin-top: 16px;">
+                <label>Situaciones extraoficiales</label>
+                <textarea id="situacionesExtra" rows="3" placeholder="Anotaciones médicas especiales o medicamentos que toma actualmente..."></textarea>
+            </div>
+        </div>
+
+        <!-- COBRO Y CONFIRMACIÓN -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-subtitle">Caja y Cobro</div>
+                <div class="card-title">Confirmación de Pago en Efectivo</div>
+            </div>
             <div class="form-grid">
                 <div class="form-group">
-                    <label>Contacto de Emergencia *</label>
-                    <input type="text" id="contactoEmergencia" required placeholder="Nombre de familiar / contacto">
-                </div>
-                <div class="form-group">
-                    <label>Teléfono de Emergencia *</label>
-                    <input type="tel" id="telefonoEmergencia" required placeholder="Teléfono de contacto">
-                </div>
-                <div class="form-group">
                     <label>Monto Recibido en Efectivo ($ MXN) *</label>
-                    <input type="number" id="monto" required value="450" min="0">
+                    <input type="number" id="montoCobrado" required value="450" min="0">
                 </div>
                 <div class="form-group">
-                    <label>Módulo / Operador de Registro *</label>
-                    <input type="text" id="operador" required value="Módulo Centro - Caja 1">
+                    <label>Módulo / Operador Responsable *</label>
+                    <input type="text" id="operadorNombre" required value="Módulo Centro - Caja 1">
                 </div>
             </div>
         </div>
 
-        <button type="submit" class="btn-submit">Confirmar Pago en Efectivo y Generar Folio Oficial</button>
+        <button type="submit" class="btn-submit">Confirmar Pago en Efectivo y Generar Folio Oficial (MM27-OFF)</button>
     </form>
 
-    <!-- Histórico de Capturas Locales -->
-    <div class="card" style="margin-top: 24px;">
-        <div class="card-title">
-            <span>Registros Offline Capturados Hoy</span>
-            <button class="btn-export" onclick="exportToCSV()">Exportar CSV para BD MetaX</button>
-        </div>
-        <p style="font-size: 0.85rem; color: #64748b;">Total capturados en esta sesión: <strong id="totalOfflineCount">0</strong></p>
-    </div>
 </div>
 
-<!-- Modal de Confirmación y Comprobante Imprimible -->
+<!-- Modal Ticket Imprimible -->
 <div class="modal" id="ticketModal">
     <div class="modal-content">
-        <h3 style="color: var(--success);">¡Registro Offline Exitoso!</h3>
-        <p style="font-size: 0.85rem; color: #64748b; margin-top: 4px;">El pago ha sido confirmado e ingresado a la base de datos.</p>
+        <h3 style="color: var(--success); margin-bottom: 4px;">¡Registro Offline Exitoso!</h3>
+        <p style="font-size: 0.8rem; color: #64748b;">Pago confirmado y registrado en la base de datos.</p>
 
         <div class="ticket-box" id="printableTicket">
             <div class="ticket-header">
-                🏁 MARATÓN MOROLEÓN 2027 🏁<br>
-                <small style="font-weight: normal; font-size: 0.8rem;">Comprobante Oficial de Inscripción</small>
+                🏃 MARATÓN INTERNACIONAL MOROLEÓN 2027 🏃<br>
+                <small style="font-weight: normal; font-size: 0.75rem;">Comprobante Oficial de Inscripción</small>
             </div>
-            <p><strong>FOLIO OFICIAL:</strong> <span id="lblFolio" style="color: #0284c7; font-size: 1.1rem; font-weight: bold;"></span></p>
+            <p><strong>FOLIO OFICIAL:</strong> <span id="lblFolio" style="color: #0284c7; font-weight: bold; font-size: 1.1rem;"></span></p>
             <p><strong>Corredor:</strong> <span id="lblNombre"></span></p>
             <p><strong>CURP:</strong> <span id="lblCurp"></span></p>
             <p><strong>Distancia:</strong> <span id="lblDistancia"></span></p>
             <p><strong>Categoría:</strong> <span id="lblCategoria"></span></p>
             <p><strong>Talla Playera:</strong> <span id="lblTalla"></span></p>
+            <p><strong>Tipo Sangre:</strong> <span id="lblSangre"></span></p>
             <p><strong>Pago Recibido:</strong> $<span id="lblMonto"></span> MXN (Efectivo)</p>
-            <p><strong>Atendido por:</strong> <span id="lblOperador"></span></p>
-            <hr style="margin: 10px 0; border: none; border-top: 1px dashed #cbd5e1;">
-            <p style="font-size: 0.75rem; text-align: center; color: #64748b;">Conserve este comprobante para recoger su kit de corredor.</p>
+            <p><strong>Módulo Captura:</strong> <span id="lblOperador"></span></p>
+            <hr style="margin: 8px 0; border: none; border-top: 1px dashed #cbd5e1;">
+            <p style="font-size: 0.7rem; text-align: center; color: #64748b;">Presenta este ticket para la entrega de kit oficial.</p>
         </div>
 
         <div>
             <button class="btn-print" onclick="window.print()">Imprimir Ticket</button>
-            <button class="btn-close" onclick="closeModal()">Nuevo Registro</button>
+            <button class="btn-close" onclick="closeModal()">Siguiente Registro</button>
         </div>
     </div>
 </div>
 
 <script>
-    // Contador inicial para folios offline (ej. arranca en 1001)
-    let currentOfflineCounter = parseInt(localStorage.getItem('metaX_offline_counter')) || 1001;
-    let offlineRecords = JSON.parse(localStorage.getItem('metaX_offline_records')) || [];
+    // Fecha actual automática
+    const hoy = new Date();
+    const formattedFecha = hoy.toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    document.getElementById('fechaRegistro').value = formattedFecha;
 
-    function updateFolioDisplay() {
-        const nextFolio = `MM27-OFF-${currentOfflineCounter}`;
-        document.getElementById('nextFolioDisplay').innerText = nextFolio;
-        document.getElementById('totalOfflineCount').innerText = offlineRecords.length;
+    // Folio automático
+    let offlineCounter = parseInt(localStorage.getItem('metaX_offline_counter')) || 1001;
+    function updateFolio() {
+        document.getElementById('nextFolioDisplay').innerText = `MM27-OFF-${offlineCounter}`;
+    }
+    updateFolio();
+
+    // Lógica para desglosar la CURP automáticamente
+    document.getElementById('curp').addEventListener('input', function(e) {
+        let val = e.target.value.toUpperCase();
+        if (val.length >= 10) {
+            // Extraer fecha
+            let aa = val.substring(4, 6);
+            let mm = val.substring(6, 8);
+            let dd = val.substring(8, 10);
+            
+            // Determinar siglo (asumiendo maratón con atletas de 1920 a 2020)
+            let anioNum = parseInt(aa);
+            let siglo = (anioNum < 27) ? "20" : "19";
+            let fechaISO = `${siglo}${aa}-${mm}-${dd}`;
+            
+            document.getElementById('fechaNacimiento').value = fechaISO;
+
+            // Calcular Edad al día del evento (2027)
+            let edad = 2027 - parseInt(`${siglo}${aa}`);
+            document.getElementById('edadAuto').value = `${edad} años`;
+
+            // Asignar Categoría
+            let catSelect = document.getElementById('categoriaAuto');
+            if (edad < 18) catSelect.value = "Juvenil (Menores de 18)";
+            else if (edad <= 39) catSelect.value = "Libre (18-39 años)";
+            else if (edad <= 49) catSelect.value = "Master (40-49 años)";
+            else if (edad <= 59) catSelect.value = "Veteranos (50-59 años)";
+            else catSelect.value = "Veteranos Plus (60+ años)";
+
+            // Género y Rama
+            if (val.length >= 11) {
+                let sexoChar = val.charAt(10);
+                if (sexoChar === 'H') {
+                    document.getElementById('generoAuto').value = 'Masculino';
+                    document.getElementById('ramaAuto').value = 'Varonil';
+                } else if (sexoChar === 'M') {
+                    document.getElementById('generoAuto').value = 'Femenino';
+                    document.getElementById('ramaAuto').value = 'Femenil';
+                }
+            }
+
+            // Entidad de Origen (2 letras en posición 11 y 12)
+            if (val.length >= 13) {
+                let ent = val.substring(11, 13);
+                document.getElementById('entidadOrigenAuto').value = parseEstadoCURP(ent);
+            }
+        }
+    });
+
+    function parseEstadoCURP(code) {
+        const estados = {
+            'GT': 'Guanajuato', 'MC': 'Michoacán', 'JC': 'Jalisco', 'DF': 'Ciudad de México',
+            'QT': 'Querétaro', 'SL': 'San Luis Potosí', 'NL': 'Nuevo León', 'CL': 'Coahuila',
+            'DG': 'Durango', 'GR': 'Guerrero', 'HG': 'Hidalgo', 'NE': 'Navegante/Extranjero'
+        };
+        return estados[code] || `Entidad (${code})`;
     }
 
-    updateFolioDisplay();
+    // Manejo de la vista previa de la foto subida
+    function previewImage(event) {
+        const container = document.getElementById('photoPreview');
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                container.innerHTML = `<img src="${e.target.result}" style="max-height: 100px; border-radius: 6px;">`;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
 
-    // Manejador del Formulario
-    document.getElementById('offlineRegistrationForm').addEventListener('submit', function(e) {
+    // Checkboxes de padecimientos
+    function handleNinguno(checkbox) {
+        if (checkbox.checked) {
+            const list = document.querySelectorAll('input[name="padecimientos"]');
+            list.forEach(item => { if (item !== checkbox) item.checked = false; });
+        }
+    }
+
+    function uncheckNinguno() {
+        const ninguno = document.querySelector('input[name="padecimientos"][value="Ninguno"]');
+        if (ninguno) ninguno.checked = false;
+    }
+
+    // Envío del Formulario
+    document.getElementById('fullRegistrationForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
-        const folioGenerado = `MM27-OFF-${currentOfflineCounter}`;
-        const nombreCompleto = `${document.getElementById('nombre').value} ${document.getElementById('apellidoPaterno').value} ${document.getElementById('apellidoMaterno').value}`.trim();
-        
-        const record = {
-            folio: folioGenerado,
-            curp: document.getElementById('curp').value.toUpperCase(),
-            nombre: nombreCompleto,
-            fechaNacimiento: document.getElementById('fechaNacimiento').value,
-            genero: document.getElementById('genero').value,
-            email: document.getElementById('email').value,
-            telefono: document.getElementById('telefono').value,
-            procedencia: document.getElementById('procedencia').value,
-            distancia: document.getElementById('distancia').value,
-            categoria: document.getElementById('categoria').value,
-            talla: document.getElementById('talla').value,
-            club: document.getElementById('club').value || 'N/A',
-            contactoEmergencia: document.getElementById('contactoEmergencia').value,
-            telefonoEmergencia: document.getElementById('telefonoEmergencia').value,
-            monto: document.getElementById('monto').value,
-            operador: document.getElementById('operador').value,
-            metodoPago: 'CASH_PHYSICAL',
-            estatusPago: 'CONFIRMED',
-            fechaCaptura: new Date().toISOString()
-        };
+        const folio = `MM27-OFF-${offlineCounter}`;
+        const nombreComp = `${document.getElementById('nombre').value} ${document.getElementById('primerApellido').value} ${document.getElementById('segundoApellido').value}`.trim();
 
-        // Guardar localmente
-        offlineRecords.push(record);
-        localStorage.setItem('metaX_offline_records', JSON.stringify(offlineRecords));
-        
-        // Incrementar contador
-        currentOfflineCounter++;
-        localStorage.setItem('metaX_offline_counter', currentOfflineCounter);
+        // Actualizar Ticket Modal
+        document.getElementById('lblFolio').innerText = folio;
+        document.getElementById('lblNombre').innerText = nombreComp;
+        document.getElementById('lblCurp').innerText = document.getElementById('curp').value.toUpperCase();
+        document.getElementById('lblDistancia').innerText = document.getElementById('distancia').value;
+        document.getElementById('lblCategoria').innerText = document.getElementById('categoriaAuto').value;
+        document.getElementById('lblTalla').innerText = document.getElementById('tallaPlayera').value;
+        document.getElementById('lblSangre').innerText = document.getElementById('tipoSangre').value;
+        document.getElementById('lblMonto').innerText = document.getElementById('montoCobrado').value;
+        document.getElementById('lblOperador').innerText = document.getElementById('operadorNombre').value;
 
-        // Mostrar Ticket Modal
-        document.getElementById('lblFolio').innerText = record.folio;
-        document.getElementById('lblNombre').innerText = record.nombre;
-        document.getElementById('lblCurp').innerText = record.curp;
-        document.getElementById('lblDistancia').innerText = record.distancia;
-        document.getElementById('lblCategoria').innerText = record.categoria;
-        document.getElementById('lblTalla').innerText = record.talla;
-        document.getElementById('lblMonto').innerText = record.monto;
-        document.getElementById('lblOperador').innerText = record.operador;
+        // Guardar consecutivo
+        offlineCounter++;
+        localStorage.setItem('metaX_offline_counter', offlineCounter);
 
         document.getElementById('ticketModal').style.display = 'flex';
     });
 
     function closeModal() {
         document.getElementById('ticketModal').style.display = 'none';
-        document.getElementById('offlineRegistrationForm').reset();
-        document.getElementById('monto').value = '450';
-        document.getElementById('operador').value = 'Módulo Centro - Caja 1';
-        updateFolioDisplay();
-    }
-
-    function exportToCSV() {
-        if (offlineRecords.length === 0) {
-            alert('No hay registros capturados en la sesión.');
-            return;
-        }
-
-        let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "Folio,CURP,Nombre,Email,Telefono,Distancia,Categoria,Talla,Monto,Operador,Fecha\n";
-
-        offlineRecords.forEach(r => {
-            csvContent += `"${r.folio}","${r.curp}","${r.nombre}","${r.email}","${r.telefono}","${r.distancia}","${r.categoria}","${r.talla}","${r.monto}","${r.operador}","${r.fechaCaptura}"\n`;
-        });
-
-        const encodedUri = encodeURI(csvContent);
-        const link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", `Registros_Offline_Maraton_Moroleon_${new Date().toISOString().slice(0,10)}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        document.getElementById('fullRegistrationForm').reset();
+        document.getElementById('fechaRegistro').value = formattedFecha;
+        document.getElementById('photoPreview').innerHTML = 'La foto del CURP aparecerá aquí cuando esté disponible.';
+        updateFolio();
     }
 </script>
 
