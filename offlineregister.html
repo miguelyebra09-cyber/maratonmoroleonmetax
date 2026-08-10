@@ -528,24 +528,24 @@
                 </div>
                 <div class="form-group">
                     <label>Edad (auto)</label>
-                    <input type="text" id="edadAuto" readonly placeholder="Se calcula con la CURP">
+                    <input type="text" id="edadAuto" placeholder="Ej. 25 años">
                 </div>
                 <div class="form-group">
                     <label>Fecha de nacimiento</label>
                     <input type="date" id="fechaNacimiento">
-                    <span class="field-help">Se llena automáticamente con CURP.</span>
+                    <span class="field-help">Se llena automáticamente con CURP o manual.</span>
                 </div>
                 <div class="form-group">
                     <label>Género (auto)</label>
-                    <input type="text" id="generoAuto" readonly placeholder="Se llena con CURP">
+                    <input type="text" id="generoAuto" placeholder="Masculino / Femenino">
                 </div>
                 <div class="form-group">
                     <label>Entidad / Estado de nacimiento (auto)</label>
-                    <input type="text" id="entidadOrigenAuto" readonly placeholder="Se extrae de la CURP">
+                    <input type="text" id="entidadOrigenAuto" placeholder="Estado de nacimiento">
                 </div>
                 <div class="form-group">
                     <label>Rama competencia (auto)</label>
-                    <input type="text" id="ramaAuto" readonly placeholder="Varonil / Femenil">
+                    <input type="text" id="ramaAuto" placeholder="Varonil / Femenil">
                 </div>
                 <div class="form-group" style="grid-column: span 2;">
                     <label>Categoría asignada (auto)</label>
@@ -561,7 +561,7 @@
             </div>
         </div>
 
-        <!-- SECCIÓN 3: PERFIL DEL CORREDOR, PLAYERA Y FOTOS (ORDENADO SIMÉTRICAMENTE) -->
+        <!-- SECCIÓN 3: PERFIL DEL CORREDOR, PLAYERA Y FOTOS -->
         <div class="card">
             <div class="card-header">
                 <div class="card-subtitle">Perfil del Corredor y Documentación</div>
@@ -583,7 +583,6 @@
                     <label>Perfil del corredor *</label>
                     <select id="perfilCorredor" required>
                         <option value="">Selecciona tu perfil</option>
-                        <option value="No especificó">No especificó</option>
                         <option value="Recreativo">Recreativo</option>
                         <option value="Amateur">Amateur</option>
                         <option value="Intermedio">Intermedio</option>
