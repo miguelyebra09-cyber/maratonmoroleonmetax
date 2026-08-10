@@ -336,6 +336,7 @@
         .btn-print { background-color: #0284c7; color: white; border: none; padding: 10px 18px; border-radius: 6px; font-weight: bold; cursor: pointer; }
         .btn-close { background-color: #64748b; color: white; border: none; padding: 10px 18px; border-radius: 6px; cursor: pointer; }
         .btn-action { background-color: var(--accent-blue); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
+        .btn-ticket { background-color: #0d9488; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; font-weight: 600; }
 
         /* TABLA DE REGISTROS */
         .table-responsive {
@@ -477,11 +478,11 @@
             </div>
         </div>
 
-        <!-- SECCIÓN 2: INFORMACIÓN DE IDENTIDAD Y RESIDENCIA -->
+        <!-- SECCIÓN 2: INFORMACIÓN DE IDENTIDAD Y RESIDENCIA (CAMPOS EDITABLES MANUALMENTE) -->
         <div class="card">
             <div class="card-header">
                 <div class="card-subtitle">Información de Identidad</div>
-                <div class="card-title">Residencia y Datos Extraídos</div>
+                <div class="card-title">Residencia y Datos Extraídos o Manuales</div>
             </div>
             <div class="form-grid">
                 <div class="form-group">
@@ -527,7 +528,7 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Edad (auto)</label>
+                    <label>Edad (Auto / Manual)</label>
                     <input type="text" id="edadAuto" placeholder="Ej. 25 años">
                 </div>
                 <div class="form-group">
@@ -536,15 +537,15 @@
                     <span class="field-help">Se llena automáticamente con CURP o manual.</span>
                 </div>
                 <div class="form-group">
-                    <label>Género (auto)</label>
+                    <label>Género (Auto / Manual)</label>
                     <input type="text" id="generoAuto" placeholder="Masculino / Femenino">
                 </div>
                 <div class="form-group">
-                    <label>Entidad / Estado de nacimiento (auto)</label>
+                    <label>Entidad / Estado de nacimiento (Auto / Manual)</label>
                     <input type="text" id="entidadOrigenAuto" placeholder="Estado de nacimiento">
                 </div>
                 <div class="form-group">
-                    <label>Rama competencia (auto)</label>
+                    <label>Rama competencia (Auto / Manual)</label>
                     <input type="text" id="ramaAuto" placeholder="Varonil / Femenil">
                 </div>
                 <div class="form-group" style="grid-column: span 2;">
@@ -592,7 +593,6 @@
                     </select>
                 </div>
 
-                <!-- 1. Fotografía oficial y su vista previa -->
                 <div class="form-group">
                     <label>Fotografía oficial</label>
                     <input type="file" id="fotoFile" accept="image/*" onchange="previewImage(event)">
@@ -604,7 +604,6 @@
                     </div>
                 </div>
 
-                <!-- 2. Evidencia de Pago y su vista previa -->
                 <div class="form-group">
                     <label>Evidencia de Pago (Comprobante)</label>
                     <input type="file" id="pagoFile" accept="image/*,application/pdf" onchange="previewPago(event)">
@@ -616,7 +615,6 @@
                     </div>
                 </div>
 
-                <!-- 3. Documento 1 y su vista previa -->
                 <div class="form-group">
                     <label>Identificación Oficial (INE / CURP / Otro - Doc 1)</label>
                     <input type="file" id="doc1File" accept="image/*,application/pdf" onchange="previewDoc(event, 'doc1Preview')">
@@ -628,7 +626,6 @@
                     </div>
                 </div>
 
-                <!-- 4. Documento 2 y su vista previa -->
                 <div class="form-group">
                     <label>Identificación Oficial Adicional (Doc 2 - Opcional)</label>
                     <input type="file" id="doc2File" accept="image/*,application/pdf" onchange="previewDoc(event, 'doc2Preview')">
@@ -653,7 +650,7 @@
                     <label>Tipo de sangre *</label>
                     <select id="tipoSangre" required>
                         <option value="">-----------</option>
-                         <option value="No especifica">No especifica (O+)</option>
+                        <option value="No especifica">No especifica</option>
                         <option value="O+">O Positivo (O+)</option>
                         <option value="O-">O Negativo (O-)</option>
                         <option value="A+">A Positivo (A+)</option>
@@ -675,7 +672,6 @@
                 <div class="form-group">
                     <label>Alergias conocidas</label>
                     <input type="text" id="alergias" value="No especifica" placeholder="Ej. Medicamentos, alimentos...">
-                    <span class="field-help">Indica si tienes alguna alergia o escribe "No especifica".</span>
                 </div>
             </div>
 
@@ -687,7 +683,7 @@
                     <span>No especifica</span>
                 </label>
                 <label class="checkbox-card">
-                    <input type="checkbox" name="padecimientos" value="Ninguno" checked onchange="handleNinguno(this)">
+                    <input type="checkbox" name="padecimientos" value="Ninguno" onchange="handleNinguno(this)">
                     <span>Ninguno</span>
                 </label>
                 <label class="checkbox-card">
@@ -1238,6 +1234,8 @@
     function uncheckNinguno() {
         const ninguno = document.querySelector('input[name="padecimientos"][value="Ninguno"]');
         if (ninguno) ninguno.checked = false;
+        const ningunoEsp = document.querySelector('input[name="padecimientos"][value="No especifica"]');
+        if (ningunoEsp) ningunoEsp.checked = false;
     }
 
     // Función auxiliar para subir archivos al Storage de Supabase ('Documentos')
@@ -1443,7 +1441,7 @@
         });
     }
 
-    // 7. VER Y BUSCAR REGISTROS EN MODAL
+    // 7. VER Y BUSCAR REGISTROS EN MODAL (Con botón Descargar Ticket)
     async function openRegistrosModal() {
         const modal = document.getElementById('registrosModal');
         if (modal) modal.style.display = 'flex';
@@ -1481,17 +1479,42 @@
         tbody.innerHTML = data.map(r => `
             <tr>
                 <td><strong>${r.folio_oficial || 'N/A'}</strong></td>
-                <td>${r.nombre_completo || `${r.nombre} ${r.primer_apellido}`}</td>
+                <td>${r.nombre_completo || `${r.nombre || ''} ${r.primer_apellido || ''}`}</td>
                 <td>${r.curp || '-'}</td>
                 <td>${r.distancia || '-'}</td>
                 <td>${r.categoria || '-'}</td>
                 <td>${r.talla_playera || '-'}</td>
                 <td>$${r.monto_cobrado || 0}</td>
-                <td>
+                <td style="display: flex; gap: 6px;">
                     <button class="btn-action" onclick="openEditModal('${r.id}')">✏️ Editar</button>
+                    <button class="btn-ticket" onclick="descargarTicketPorId('${r.id}')">📥 Ticket</button>
                 </td>
             </tr>
         `).join('');
+    }
+
+    // Función para descargar/ver el ticket de un corredor específico desde la tabla
+    function descargarTicketPorId(id) {
+        const r = cachedRegistros.find(item => item.id == id);
+        if (!r) return;
+
+        const updateLabel = (elementId, val) => {
+            const label = document.getElementById(elementId);
+            if (label) label.innerText = val || '';
+        };
+
+        updateLabel('lblFolio', r.folio_oficial);
+        updateLabel('lblNombre', r.nombre_completo || `${r.nombre || ''} ${r.primer_apellido || ''}`);
+        updateLabel('lblCurp', r.curp);
+        updateLabel('lblDistancia', r.distancia);
+        updateLabel('lblCategoria', r.categoria);
+        updateLabel('lblTalla', r.talla_playera);
+        updateLabel('lblSangre', r.tipo_sangre);
+        updateLabel('lblMonto', r.monto_cobrado);
+        updateLabel('lblOperador', r.operador_nombre);
+
+        const modal = document.getElementById('ticketModal');
+        if (modal) modal.style.display = 'flex';
     }
 
     function filterRegistros() {
