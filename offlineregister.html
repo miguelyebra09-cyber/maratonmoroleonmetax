@@ -653,6 +653,7 @@
                     <label>Tipo de sangre *</label>
                     <select id="tipoSangre" required>
                         <option value="">-----------</option>
+                         <option value="No especifica">No especifica (O+)</option>
                         <option value="O+">O Positivo (O+)</option>
                         <option value="O-">O Negativo (O-)</option>
                         <option value="A+">A Positivo (A+)</option>
@@ -681,6 +682,10 @@
             <!-- Padecimientos Crónicos -->
             <label style="font-size: 0.85rem; font-weight: 700; color: #1e293b;">Padecimientos crónicos <span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:0.7rem;">SELECCIÓN MÚLTIPLE</span></label>
             <div class="checkbox-grid">
+                <label class="checkbox-card">
+                    <input type="checkbox" name="padecimientos" value="No especifica" checked onchange="handleNinguno(this)">
+                    <span>No especifica</span>
+                </label>
                 <label class="checkbox-card">
                     <input type="checkbox" name="padecimientos" value="Ninguno" checked onchange="handleNinguno(this)">
                     <span>Ninguno</span>
