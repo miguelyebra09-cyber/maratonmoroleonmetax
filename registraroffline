@@ -309,6 +309,7 @@
                         <option value="21K Medio Maratón">21K - Medio Maratón</option>
                         <option value="10K">10K Recreativa</option>
                         <option value="5K">5K Recreativa</option>
+                        <option value="No definió">No definió</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -358,6 +359,11 @@
                 <div class="form-group">
                     <label>Módulo / Operador de Registro *</label>
                     <input type="text" id="operador" required value="Módulo Centro - Caja 1">
+                </div>
+                <!-- CAMBIO AÑADIDO: Campo Comentarios -->
+                <div class="form-group">
+                    <label>Comentarios (Liebre captura)</label>
+                    <input type="text" id="comentarios" placeholder="Notas de registro">
                 </div>
             </div>
         </div>
@@ -442,6 +448,7 @@
             telefonoEmergencia: document.getElementById('telefonoEmergencia').value,
             monto: document.getElementById('monto').value,
             operador: document.getElementById('operador').value,
+            comentarios: document.getElementById('comentarios').value, // CAMBIO AÑADIDO
             metodoPago: 'CASH_PHYSICAL',
             estatusPago: 'CONFIRMED',
             fechaCaptura: new Date().toISOString()
@@ -483,10 +490,10 @@
         }
 
         let csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "Folio,CURP,Nombre,Email,Telefono,Distancia,Categoria,Talla,Monto,Operador,Fecha\n";
+        csvContent += "Folio,CURP,Nombre,Email,Telefono,Distancia,Categoria,Talla,Monto,Operador,Comentarios,Fecha\n"; // CAMBIO AÑADIDO
 
         offlineRecords.forEach(r => {
-            csvContent += `"${r.folio}","${r.curp}","${r.nombre}","${r.email}","${r.telefono}","${r.distancia}","${r.categoria}","${r.talla}","${r.monto}","${r.operador}","${r.fechaCaptura}"\n`;
+            csvContent += `"${r.folio}","${r.curp}","${r.nombre}","${r.email}","${r.telefono}","${r.distancia}","${r.categoria}","${r.talla}","${r.monto}","${r.operador}","${r.comentarios}","${r.fechaCaptura}"\n`; // CAMBIO AÑADIDO
         });
 
         const encodedUri = encodeURI(csvContent);
