@@ -128,19 +128,31 @@
         }
 
         .folio-banner {
-            background-color: #ecfdf5;
-            border: 1.5px dashed #10b981;
-            padding: 14px;
-            border-radius: 10px;
+            background: linear-gradient(135deg, #0f766e 0%, #0369a1 100%);
+            border: none;
+            padding: 20px;
+            border-radius: 12px;
             text-align: center;
             margin-bottom: 20px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+        }
+
+        .folio-banner span {
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #e0f2fe;
+            text-transform: uppercase;
         }
 
         .folio-number {
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: #047857;
-            letter-spacing: 1px;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 1.5px;
+            margin-top: 6px;
+            text-shadow: 0 0 12px rgba(56, 189, 248, 0.8), 0 0 25px rgba(16, 185, 129, 0.6);
         }
 
         .card {
@@ -416,7 +428,7 @@
 
     <div class="folio-banner">
         <span>Folio Oficial a Generar:</span>
-        <div class="folio-number" id="nextFolioDisplay">MM27OFF-RUN-MMO10002</div>
+        <div class="folio-number" id="nextFolioDisplay">MM27OFF-RUN-MMO1022</div>
     </div>
 
     <form id="fullRegistrationForm">
@@ -473,6 +485,7 @@
                         <option value="21K Medio Maratón">21K Medio Maratón</option>
                         <option value="10K Recreativa">10K Recreativa</option>
                         <option value="5K Recreativa">5K Recreativa</option>
+                        <option value="No definió">No definió</option>
                     </select>
                 </div>
             </div>
@@ -741,6 +754,10 @@
                     <label>Módulo / Operador Responsable *</label>
                     <input type="text" id="operadorNombre" required value="Inscripción CO (Mariana)">
                 </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>Comentarios</label>
+                    <textarea id="comentarios" rows="2" placeholder="Comentarios u observaciones adicionales..."></textarea>
+                </div>
             </div>
         </div>
 
@@ -769,6 +786,7 @@
             <p><strong>Tipo Sangre:</strong> <span id="lblSangre"></span></p>
             <p><strong>Pago Recibido:</strong> $<span id="lblMonto"></span> MXN (Efectivo)</p>
             <p><strong>Módulo Captura:</strong> <span id="lblOperador"></span></p>
+            <p><strong>Comentarios:</strong> <span id="lblComentarios"></span></p>
             <hr style="margin: 8px 0; border: none; border-top: 1px dashed #cbd5e1;">
             <p style="font-size: 0.7rem; text-align: center; color: #64748b;">Presenta este ticket para la entrega de kit oficial.</p>
         </div>
@@ -876,6 +894,7 @@
                         <option value="21K Medio Maratón">21K Medio Maratón</option>
                         <option value="10K Recreativa">10K Recreativa</option>
                         <option value="5K Recreativa">5K Recreativa</option>
+                        <option value="No definió">No definió</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -957,6 +976,10 @@
                 <div class="form-group">
                     <label>Operador / Módulo</label>
                     <input type="text" id="edit_operador">
+                </div>
+                <div class="form-group" style="grid-column: span 2;">
+                    <label>Comentarios</label>
+                    <textarea id="edit_comentarios" rows="2"></textarea>
                 </div>
             </div>
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px;">
@@ -1072,12 +1095,12 @@
     const fechaRegEl = document.getElementById('fechaRegistro');
     if (fechaRegEl) fechaRegEl.value = formattedFecha;
 
-    // 3. Folio automático con localStorage seguro
-    let offlineCounter = 1001;
+    // 3. Folio automático con localStorage seguro (Iniciado en 1022)
+    let offlineCounter = 1022;
     try {
         const storedCounter = localStorage.getItem('metaX_offline_counter');
         if (storedCounter) {
-            offlineCounter = parseInt(storedCounter, 10) || 1001;
+            offlineCounter = parseInt(storedCounter, 10) || 1022;
         }
     } catch (e) {
         console.warn('localStorage no está accesible:', e);
@@ -1327,6 +1350,7 @@
                     situaciones_extra: getSafeValue('situacionesExtra'),
                     monto_cobrado: parseFloat(getSafeValue('montoCobrado')) || 0,
                     operador_nombre: getSafeValue('operadorNombre'),
+                    comentarios: getSafeValue('comentarios'),
                     foto_url: fotoUrl,
                     pago_url: pagoUrl,
                     doc1_url: doc1Url,
@@ -1356,6 +1380,7 @@
                 updateLabel('lblSangre', registrationData.tipo_sangre);
                 updateLabel('lblMonto', registrationData.monto_cobrado);
                 updateLabel('lblOperador', registrationData.operador_nombre);
+                updateLabel('lblComentarios', registrationData.comentarios);
 
                 offlineCounter++;
                 try {
@@ -1422,6 +1447,7 @@
                         talla_playera: r.talla_playera || 'M',
                         genero: r.genero || 'Masculino',
                         monto_cobrado: parseFloat(r.monto_cobrado) || 0,
+                        comentarios: r.comentarios || '',
                         metodo_pago: r.metodo_pago || 'Importación CSV',
                         estatus_pago: 'Completado',
                         fecha_registro: new Date().toISOString()
@@ -1512,6 +1538,7 @@
         updateLabel('lblSangre', r.tipo_sangre);
         updateLabel('lblMonto', r.monto_cobrado);
         updateLabel('lblOperador', r.operador_nombre);
+        updateLabel('lblComentarios', r.comentarios);
 
         const modal = document.getElementById('ticketModal');
         if (modal) modal.style.display = 'flex';
@@ -1558,6 +1585,7 @@
         document.getElementById('edit_situacionesExtra').value = registro.situaciones_extra || '';
         document.getElementById('edit_monto').value = registro.monto_cobrado || 0;
         document.getElementById('edit_operador').value = registro.operador_nombre || '';
+        document.getElementById('edit_comentarios').value = registro.comentarios || '';
 
         document.getElementById('editModal').style.display = 'flex';
     }
@@ -1594,7 +1622,8 @@
                 alergias: document.getElementById('edit_alergias').value,
                 situaciones_extra: document.getElementById('edit_situacionesExtra').value,
                 monto_cobrado: parseFloat(document.getElementById('edit_monto').value) || 0,
-                operador_nombre: document.getElementById('edit_operador').value
+                operador_nombre: document.getElementById('edit_operador').value,
+                comentarios: document.getElementById('edit_comentarios').value
             };
 
             try {
