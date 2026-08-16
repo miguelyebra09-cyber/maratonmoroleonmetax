@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Generador de Presupuesto - Moroleón 2027</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        .admin-controls { background: #fee2e2; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .summary { font-size: 1.2rem; font-weight: bold; margin-top: 20px; padding: 15px; border-top: 2px solid #333; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Gestión de Presupuesto</h1>
+    
+    <!-- Controles de Admin -->
+    <div id="adminPanel" class="admin-controls" style="display:none;">
+        <h3>Modo Administrador</h3>
+        <label>Gastos extra (Hospedaje, viáticos, etc.): </label>
+        <input type="number" id="extraGastos" value="0" onchange="calcularTotal()">
+    </div>
+
+    <table id="serviciosTable">
+        <thead>
+            <tr>
+                <th>Servicio</th>
+                <th>Precio Base</th>
+                <th>Seleccionar</th>
+            </tr>
+        </thead>
+        <tbody id="tbodyServicios"></tbody>
+    </table>
+
+    <div class="summary">
+        Total Presupuesto: $<span id="totalDisplay">0.00</span>
+    </div>
+    
+    <button onclick="toggleAdmin()">Alternar Modo Admin</button>
+</div>
+
+<script>
+    // 1. Datos iniciales (Cargados de localStorage o por defecto)
+    let servicios = JSON.parse(localStorage.getItem('servicios_db')) || [
+        { id: 1, nombre: 'Servicio base cronometraje', precio: 44600 },
+        { id: 2, nombre: 'Chip desechable', precio: 41250 },
+        { id: 3, nombre: 'Dorsales / Números', precio: 16250 }
+    ];
+
+    let IS_ADMIN = false;
+
+    function render() {
+        const tbody = document.getElementById('tbodyServicios');
+        tbody.innerHTML = '';
+        servicios.forEach(s => {
+            tbody.innerHTML += `
+                <tr>
+                    <td>${IS_ADMIN ? `<input value="${s.nombre}" onchange="updateServicio(${s.id}, 'nombre', this.value)">` : s.nombre}</td>
+                    <td>$<input type="number" value="${s.precio}" onchange="updateServicio(${s.id}, 'precio', this.value)" ${!IS_ADMIN ? 'disabled' : ''}></td>
+                    <td><input type="checkbox" class="check-servicio" data-id="${s.id}" onchange="calcularTotal()"></td>
+                </tr>
+            `;
+        });
+    }
+
+    function updateServicio(id, campo, valor) {
+        const s = servicios.find(x => x.id === id);
+        s[campo] = campo === 'precio' ? parseFloat(valor) : valor;
+        localStorage.setItem('servicios_db', JSON.stringify(servicios));
+    }
+
+    function calcularTotal() {
+        const checks = document.querySelectorAll('.check-servicio:checked');
+        const extraGastos = parseFloat(document.getElementById('extraGastos').value) || 0;
+        
+        let subtotal = 0;
+        checks.forEach(c => {
+            const s = servicios.find(x => x.id == c.dataset.id);
+            subtotal += s.precio;
+        });
+
+        const numServicios = checks.length;
+        const total = subtotal + extraGastos; // El prorrateo ya está implícito en la suma total
+        
+        document.getElementById('totalDisplay').innerText = total.toLocaleString('es-MX', {minimumFractionDigits: 2});
+    }
+
+    function toggleAdmin() {
+        IS_ADMIN = !IS_ADMIN;
+        document.getElementById('adminPanel').style.display = IS_ADMIN ? 'block' : 'none';
+        render();
+    }
+
+    render();
+</script>
+</body>
+</html>
