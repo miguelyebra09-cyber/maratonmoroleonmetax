@@ -2,114 +2,124 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Cotización Oficial - Maratón Moroleón 2027</title>
-    <!-- Bibliotecas para exportar PDF -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Presupuestos - Maratón Moroleón 2027</title>
     <style>
-        :root { --primary: #0f172a; --success: #16a34a; --accent: #0284c7; }
-        body { font-family: 'Segoe UI', sans-serif; background: #f1f5f9; padding: 20px; color: var(--primary); }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
-        .header { text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th { background: #0f172a; color: white; padding: 12px; }
-        td { padding: 10px; border-bottom: 1px solid #e2e8f0; }
-        .controls { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-        .btn { padding: 10px 20px; border-radius: 6px; cursor: pointer; border: none; font-weight: bold; }
-        .btn-pdf { background: var(--primary); color: white; }
-        .btn-wp { background: #25d366; color: white; }
-        .input-qty { width: 60px; padding: 5px; text-align: center; }
+        :root { --primary: #0f172a; --primary-blue: #0284c7; --bg-body: #f8fafc; --text-muted: #64748b; --border-color: #cbd5e1; --success: #16a34a; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg-body); padding: 20px; }
+        .container { max-width: 1200px; margin: auto; background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { padding: 12px; border: 1px solid var(--border-color); text-align: left; vertical-align: top; }
+        th { background-color: #f1f5f9; }
+        .detalle-txt { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; margin-top: 4px; }
+        .summary-box { background: #f8fafc; border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-top: 20px; }
+        .admin-panel { background: #fff7ed; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; border: 1px solid #ffedd5; }
+        input[type="number"] { width: 100px; padding: 5px; }
     </style>
 </head>
 <body>
 
-<div class="container" id="cotizacionArea">
+<div class="container">
     <div class="header">
-        <h1>Cotización de Servicios</h1>
-        <p>Maratón Internacional Moroleón 2027</p>
+        <h1>📊 Cotizador - Maratón Moroleón 2027</h1>
+        <button onclick="toggleAdminMode()" id="btnMode">Cambiar a Vista Administrador</button>
     </div>
 
-    <div id="adminPanel" style="display:none; background:#fff7ed; padding:15px; border-radius:8px; margin-bottom:20px;">
-        <label>Costos Adicionales (Prorrateo): $</label>
-        <input type="number" id="extraGastos" value="0" oninput="calcularPresupuesto()">
+    <div class="admin-panel" id="adminPanel">
+        <h3>Panel Administrador</h3>
+        <label>Costos Adicionales (Prorrateo) [$]:</label>
+        <input type="number" id="extraGastos" value="0" oninput="renderTabla()">
     </div>
 
-    <table id="tablaServicios">
+    <table>
         <thead>
             <tr>
-                <th>Servicio</th>
-                <th>Cant.</th>
-                <th>Precio Unit.</th>
-                <th>Total</th>
-                <th>Activar</th>
+                <th>Numeral</th>
+                <th>Servicio / Detalle</th>
+                <th>Precio Base</th>
+                <th>Prorrateo Extra</th>
+                <th>Selección</th>
             </tr>
         </thead>
-        <tbody id="tbodyServicios"></tbody>
+        <tbody id="tablaServiciosBody"></tbody>
     </table>
 
-    <div style="text-align: right; font-size: 1.5rem;">
-        <strong>Total: $<span id="lblTotalFinal">0.00</span></strong>
-    </div>
-
-    <div class="controls">
-        <button class="btn btn-pdf" onclick="descargarPDF()">📥 Descargar PDF</button>
-        <button class="btn btn-wp" onclick="enviarWhatsApp()">💬 Enviar por WhatsApp</button>
-        <button class="btn" onclick="toggleAdmin()">⚙️ Admin</button>
+    <div class="summary-box">
+        <div>Total Final: <strong>$<span id="lblTotalFinal">0.00</span></strong></div>
     </div>
 </div>
 
 <script>
-    // Tu lógica funcional original se mantiene intacta, agregamos lo nuevo abajo
-    let servicios = JSON.parse(localStorage.getItem('metaX_presupuesto_servicios')) || serviciosIniciales;
+    let servicios = JSON.parse(localStorage.getItem('metaX_db_full')) || [
+        { numeral: "0", nombre: "Plataforma online", detalle: "Solución integral end-to-end...", precio: 0 },
+        { numeral: "0.1", nombre: "Solución Integral Registro/Branding", detalle: "Portal, pasarela, branding, consultoría...", precio: 0 },
+        { numeral: "1", nombre: "Cronometraje base", detalle: "Equipo, antenas, software, personal...", precio: 44600 },
+        { numeral: "2", nombre: "Chip + consumibles", detalle: "Etiqueta inteligente RFID...", precio: 41250 },
+        { numeral: "3", nombre: "Número", detalle: "Dorsal identificador único...", precio: 16250 },
+        { numeral: "4", nombre: "Puntos parciales", detalle: "Alfombras/antenas en ruta...", precio: 9800 },
+        { numeral: "5", nombre: "Jueceo", detalle: "Supervisiones y validaciones oficiales...", precio: 0 },
+        { numeral: "6", nombre: "Resultados en vivo", detalle: "Consulta automática en tiempo real...", precio: 0 },
+        { numeral: "6A", nombre: "Resultados preliminares", detalle: "Cálculos automáticos inmediatos...", precio: 0 },
+        { numeral: "6B", nombre: "Resultados oficiales", detalle: "Resultados validados por jueces...", precio: 0 },
+        { numeral: "7", nombre: "Viáticos completos", detalle: "Alimentación, hospedaje y transporte...", precio: 0 },
+        { numeral: "8", nombre: "Fotofinish", detalle: "Cámaras de alta velocidad en meta...", precio: 0 },
+        { numeral: "9", nombre: "Fotos (facial/número)", detalle: "Galería con búsqueda biométrica...", precio: 0 },
+        { numeral: "10", nombre: "APP de Seguimiento", detalle: "Seguimiento en vivo para familiares...", precio: 0 },
+        { numeral: "12", nombre: "Certificación de ruta", detalle: "Aval internacional (World Athletics/AIMS)...", precio: 0 },
+        { numeral: "13", nombre: "Promociones", detalle: "Gestión de patrocinios...", precio: 0 },
+        { numeral: "14", nombre: "Verifica tus datos", detalle: "Validación en entrega de kits...", precio: 0 },
+        { numeral: "15", nombre: "Portal certificados", detalle: "Descarga de constancia Finisher...", precio: 0 },
+        { numeral: "16", nombre: "Papelería", detalle: "Insumos varios...", precio: 0 },
+        { numeral: "17", nombre: "Sobres / Integración", detalle: "Armado de paquetes personalizados...", precio: 0 },
+        { numeral: "18", nombre: "Certificado participación", detalle: "Constancia oficial del comité...", precio: 0 },
+        { numeral: "19", nombre: "BD y respaldo", detalle: "Sistema de almacenamiento de datos...", precio: 0 },
+        { numeral: "20", nombre: "Protocolo contingencia", detalle: "Plan de acción ante fallas...", precio: 0 },
+        { numeral: "21", nombre: "Personal operación", detalle: "Coordinación en campo...", precio: 0 },
+        { numeral: "22", nombre: "Protocolo premiación", detalle: "Validación y ceremonia de podio...", precio: 0 }
+    ];
+
     let isAdmin = false;
 
+    function toggleAdminMode() {
+        isAdmin = !isAdmin;
+        document.getElementById('adminPanel').style.display = isAdmin ? 'block' : 'none';
+        renderTabla();
+    }
+
     function renderTabla() {
-        const tbody = document.getElementById('tbodyServicios');
+        const tbody = document.getElementById('tablaServiciosBody');
+        const extraGastos = parseFloat(document.getElementById('extraGastos').value) || 0;
+        const checks = document.querySelectorAll('.chk-servicio:checked');
+        const count = checks.length;
+        const prorrateo = count > 0 ? (extraGastos / count) : 0;
+        
         tbody.innerHTML = '';
         servicios.forEach((s, i) => {
+            const isSelected = document.querySelector(`.chk-servicio[data-index="${i}"]`)?.checked || false;
+            
             tbody.innerHTML += `
                 <tr>
-                    <td><strong>${s.nombre}</strong><br><small>${s.detalle}</small></td>
-                    <td><input type="number" class="input-qty" value="${s.cant || 1}" oninput="actualizarCant(${i}, this.value)"></td>
-                    <td>${isAdmin ? `<input type="number" value="${s.precio}" oninput="actualizarPrecio(${i}, this.value)">` : '$'+s.precio}</td>
-                    <td>$<span class="row-total">${(s.precio * (s.cant || 1)).toFixed(2)}</span></td>
-                    <td><input type="checkbox" class="chk" ${s.activo ? 'checked' : ''} onchange="actualizarActivo(${i}, this.checked)"></td>
+                    <td>${s.numeral}</td>
+                    <td><strong>${s.nombre}</strong><div class="detalle-txt">${s.detalle}</div></td>
+                    <td>${isSelected ? (isAdmin ? `<input type="number" value="${s.precio}" oninput="servicios[${i}].precio=this.value; localStorage.setItem('metaX_db_full', JSON.stringify(servicios)); renderTabla()">` : `$${parseFloat(s.precio).toLocaleString()}`) : '-'}</td>
+                    <td>${isSelected && extraGastos > 0 ? `$${prorrateo.toFixed(2)}` : '-'}</td>
+                    <td><input type="checkbox" class="chk-servicio" data-index="${i}" ${isSelected ? 'checked' : ''} onchange="renderTabla()"></td>
                 </tr>
             `;
         });
+        calcularTotal(extraGastos);
     }
 
-    function actualizarCant(i, val) { servicios[i].cant = parseInt(val); renderTabla(); calcularPresupuesto(); }
-    function actualizarActivo(i, val) { servicios[i].activo = val; calcularPresupuesto(); }
-
-    function calcularPresupuesto() {
+    function calcularTotal(extra) {
         let subtotal = 0;
-        servicios.forEach(s => { if(s.activo) subtotal += (s.precio * (s.cant || 1)); });
-        const extra = parseFloat(document.getElementById('extraGastos').value) || 0;
+        document.querySelectorAll('.chk-servicio:checked').forEach(chk => {
+            subtotal += parseFloat(servicios[chk.dataset.index].precio);
+        });
         document.getElementById('lblTotalFinal').innerText = (subtotal + extra).toLocaleString();
     }
 
-    function descargarPDF() {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        doc.text("Presupuesto Maraton Moroleon 2027", 10, 10);
-        doc.autoTable({ html: '#tablaServicios' });
-        doc.save("Cotizacion_Maraton.pdf");
-    }
-
-    function enviarWhatsApp() {
-        let msg = "Hola, solicito el siguiente presupuesto: ";
-        servicios.forEach(s => { if(s.activo) msg += `${s.nombre} ($${s.precio}), `; });
-        window.open(`https://wa.me/521XXXXXXXXXX?text=${encodeURIComponent(msg)}`);
-    }
-
-    function toggleAdmin() { 
-        isAdmin = !isAdmin; 
-        document.getElementById('adminPanel').style.display = isAdmin ? 'block' : 'none';
-        renderTabla(); 
-    }
-
-    // Inicialización
     renderTabla();
 </script>
 </body>
