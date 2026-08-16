@@ -2,99 +2,360 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Generador de Presupuesto - Moroleón 2027</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Presupuestos - Maratón Moroleón 2027</title>
     <style>
-        body { font-family: sans-serif; background: #f4f7f6; padding: 20px; }
-        .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
-        .admin-controls { background: #fee2e2; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
-        .summary { font-size: 1.2rem; font-weight: bold; margin-top: 20px; padding: 15px; border-top: 2px solid #333; }
+        :root {
+            --primary: #0f172a;
+            --primary-blue: #0284c7;
+            --accent-blue: #2563eb;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --success: #16a34a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .mode-toggle {
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .mode-toggle:hover {
+            background-color: var(--accent-blue);
+        }
+
+        .admin-panel {
+            background: #fff7ed;
+            border: 1px solid #ffedd5;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .admin-panel h3 {
+            color: #c2410c;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            max-width: 300px;
+        }
+
+        .form-group label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .form-group input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+
+        .table-responsive {
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        table th, table td {
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            text-align: left;
+            vertical-align: top;
+        }
+
+        table th {
+            background-color: #f1f5f9;
+            color: #1e293b;
+            font-weight: 700;
+        }
+
+        .detalle-txt {
+            font-size: 0.78rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            line-height: 1.4;
+        }
+
+        .summary-box {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .summary-details div {
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        .summary-total {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--success);
+        }
+
+        input[type="number"].precio-input {
+            width: 100px;
+            padding: 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
+
+        input[type="text"].nombre-input {
+            width: 100%;
+            padding: 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Gestión de Presupuesto</h1>
-    
-    <!-- Controles de Admin -->
-    <div id="adminPanel" class="admin-controls" style="display:none;">
-        <h3>Modo Administrador</h3>
-        <label>Gastos extra (Hospedaje, viáticos, etc.): </label>
-        <input type="number" id="extraGastos" value="0" onchange="calcularTotal()">
+    <div class="header">
+        <h1>📊 Cotizador y Presupuesto de Servicios - Maratón Moroleón 2027</h1>
+        <button class="mode-toggle" onclick="toggleAdminMode()" id="btnMode">Cambiar a Vista Administrador</button>
     </div>
 
-    <table id="serviciosTable">
-        <thead>
-            <tr>
-                <th>Servicio</th>
-                <th>Precio Base</th>
-                <th>Seleccionar</th>
-            </tr>
-        </thead>
-        <tbody id="tbodyServicios"></tbody>
-    </table>
-
-    <div class="summary">
-        Total Presupuesto: $<span id="totalDisplay">0.00</span>
+    <!-- PANEL DE ADMINISTRADOR: Gastos Adicionales para Prorrateo -->
+    <div class="admin-panel" id="adminPanel">
+        <h3>Panel de Control Administrador</h3>
+        <div class="form-group">
+            <label>Costos Adicionales (Viáticos, Hospedaje, etc.) [$ MXN]:</label>
+            <input type="number" id="extraGastos" value="0" min="0" oninput="calcularPresupuesto()">
+        </div>
+        <small style="color: #9a3412; display:block; margin-top:5px;">* Este monto se prorrateará automáticamente e incrementará el costo total de los servicios seleccionados.</small>
     </div>
-    
-    <button onclick="toggleAdmin()">Alternar Modo Admin</button>
+
+    <div class="table-responsive">
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 8%;">Numeral</th>
+                    <th style="width: 45%;">Detalle del Servicio</th>
+                    <th style="width: 15%;">Precio Base ($)</th>
+                    <th style="width: 15%;">Prorrateo Extra ($)</th>
+                    <th style="width: 17%; text-align: center;">Seleccionar / Activar</th>
+                </tr>
+            </thead>
+            <tbody id="tablaServiciosBody">
+                <!-- Se llena dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <div class="summary-box">
+        <div class="summary-details">
+            <div>Servicios Seleccionados: <span id="lblCantServicios" style="font-weight: bold;">0</span></div>
+            <div>Subtotal Servicios: $<span id="lblSubtotal">0.00</span> MXN</div>
+            <div>Total Prorrateo Adicionales: $<span id="lblProrrateoTotal">0.00</span> MXN</div>
+        </div>
+        <div>
+            <div style="font-size: 0.8rem; font-weight: bold; text-align: right; color: var(--text-muted);">PRESUPUESTO TOTAL FINAL</div>
+            <div class="summary-total">$<span id="lblTotalFinal">0.00</span></div>
+        </div>
+    </div>
 </div>
 
 <script>
-    // 1. Datos iniciales (Cargados de localStorage o por defecto)
-    let servicios = JSON.parse(localStorage.getItem('servicios_db')) || [
-        { id: 1, nombre: 'Servicio base cronometraje', precio: 44600 },
-        { id: 2, nombre: 'Chip desechable', precio: 41250 },
-        { id: 3, nombre: 'Dorsales / Números', precio: 16250 }
+    // Catálogo inicial basado en tus datos oficiales
+    const serviciosIniciales = [
+        { numeral: "0", nombre: "Plataforma online para inscripciones online y micrositio.", detalle: "Solución integral end-to-end con plataforma digital de alta disponibilidad, consultoría, identidad visual y soporte omnicanal.", precio: 0 },
+        { numeral: "0.1", nombre: "Solución Integral de Registro, Branding y Operación para el EVENTO.", detalle: "Incluye portal web, formulario dinámico, pasarela de pagos, branding, consultoría técnica, atención omnicanal, registro offline y gestión de BD.", precio: 0 },
+        { numeral: "1", nombre: "Cronometraje base", detalle: "Servicio central de medición electrónica de tiempos (equipo de lectura, antenas, alfombras, líneas de salida/meta redundantes y personal técnico).", precio: 44600 },
+        { numeral: "2", nombre: "Chip + consumibles", detalle: "Etiqueta inteligente de un solo uso que identifica electrónicamente al corredor mediante ondas de radio sin batería.", precio: 41250 },
+        { numeral: "3", nombre: "Número", detalle: "Dorsal o número de pecho con identificador numérico único para reconocimiento y acceso a servicios.", precio: 16250 },
+        { numeral: "4", nombre: "Puntos parciales", detalle: "Alfombras o antenas RFID adicionales a lo largo de la ruta para tiempos intermedios y control (ej. Salida, 10K, 21K, 30K, Meta).", precio: 9800 },
+        { numeral: "5", nombre: "Jueceo", detalle: "Revisiones y validaciones de jueces oficiales para asegurar el cumplimiento de las reglas del atletismo.", precio: 0 },
+        { numeral: "6", nombre: "Resultados en vivo", detalle: "Tiempos registrados de forma automática conforme los corredores cruzan los tapetes para consulta en tiempo real.", emoji: "", precio: 0 },
+        { numeral: "6A", nombre: "Resultados preliminares", detalle: "Tiempos y lugares iniciales calculados automáticamente tras cruzar la meta, sujetos a periodo corto de reclamaciones.", precio: 0 },
+        { numeral: "6B", nombre: "Resultados oficiales", detalle: "Listas validadas y corregidas por jueces de atletismo tras verificar cruce obligatorio por todos los tapetes.", precio: 0 },
+        { numeral: "7", nombre: "Viáticos completos", detalle: "Recursos económicos para alimentación, hospedaje y transporte del personal operativo y jueces fuera de su base.", precio: 0 },
+        { numeral: "8", nombre: "Fotofinish / identificación visual en meta", detalle: "Sistema de cámaras de alta velocidad en la línea de llegada para definir ganadores y tiempos exactos en finales apretados.", precio: 0 },
+        { numeral: "9", nombre: "Fotografías por reconocimiento facial y por número", detalle: "Sistema digital de búsqueda en galerías en línea mediante dorsal o análisis biométrico de rostros (selfie).", precio: 0 },
+        { numeral: "10", nombre: "APP de Seguimiento", detalle: "Aplicación opcional para rastrear avances y clasificaciones de corredores específicos en tiempo real para familiares.", precio: 0 },
+        { numeral: "12", nombre: "Certificación de ruta", detalle: "Aval internacional emitido por World Athletics o AIMS que garantiza la distancia exacta de 42.195 metros.", precio: 0 },
+        { numeral: "13", nombre: "Promociones", detalle: "Gestión de promociones y patrocinios varios.", precio: 0 },
+        { numeral: "14", nombre: "Módulo 'Verifica tus datos'", detalle: "Paso de apoyo durante la entrega de kits para comprobar datos correctos del corredor antes de entregar material oficial.", precio: 0 },
+        { numeral: "15", nombre: "Portal de resultados / certificados electrónicos", detalle: "Plataforma web para consulta de tiempos oficiales y descarga de certificado digital (Finisher) en PDF o imagen.", precio: 0 },
+        { numeral: "16", nombre: "Papelería y consumibles", detalle: "Insumos varios de papelería para operación general.", precio: 0 },
+        { numeral: "17", nombre: "Sobres / integración de kits", detalle: "Proceso logístico de armado de paquetes personalizados (sobres, dorsales, chips, imperdibles, playeras y artículos).", precio: 0 },
+        { numeral: "18", nombre: "Certificado / constancia de participación", detalle: "Documento oficial del comité organizador que acredita que el participante completó la carrera.", precio: 0 },
+        { numeral: "19", nombre: "Base de datos y respaldo de resultados", detalle: "Sistema digital que almacena información de atletas, tiempos parciales en puntos de control y respaldos de seguridad.", precio: 0 },
+        { numeral: "20", nombre: "Protocolo de contingencia", detalle: "Plan de acción previsto para resolver fallas técnicas, climáticas o logísticas asegurando validez de resultados.", precio: 0 },
+        { numeral: "21", nombre: "Personal de operación", detalle: "Coordinación y funciones de personal operativo en campo.", precio: 0 },
+        { numeral: "22", nombre: "Protocolo de resultados y premiación", detalle: "Normas técnicas para validación de tiempos, periodos de apelación, cortes por categorías y ceremonia de podio.", precio: 0 }
     ];
 
-    let IS_ADMIN = false;
+    // Cargar datos desde localStorage o inicializar
+    let servicios = JSON.parse(localStorage.getItem('metaX_presupuesto_servicios')) || serviciosIniciales;
+    let isAdmin = false;
 
-    function render() {
-        const tbody = document.getElementById('tbodyServicios');
+    function toggleAdminMode() {
+        isAdmin = !isAdmin;
+        const btn = document.getElementById('btnMode');
+        const adminPanel = document.getElementById('adminPanel');
+
+        if (isAdmin) {
+            btn.innerText = "Cambiar a Vista Cliente";
+            btn.style.backgroundColor = "#c2410c";
+            adminPanel.style.display = "block";
+        } else {
+            btn.innerText = "Cambiar a Vista Administrador";
+            btn.style.backgroundColor = "var(--primary-blue)";
+            adminPanel.style.display = "none";
+        }
+        renderTabla();
+    }
+
+    function renderTabla() {
+        const tbody = document.getElementById('tablaServiciosBody');
         tbody.innerHTML = '';
-        servicios.forEach(s => {
+
+        servicios.forEach((s, index) => {
+            let precioField = isAdmin 
+                ? `<input type="number" class="precio-input" value="${s.precio}" oninput="actualizarPrecio(${index}, this.value)">`
+                : `$${s.precio.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+
+            let nombreField = isAdmin
+                ? `<input type="text" class="nombre-input" value="${s.nombre}" oninput="actualizarNombre(${index}, this.value)">`
+                : `<strong>${s.nombre}</strong>`;
+
             tbody.innerHTML += `
                 <tr>
-                    <td>${IS_ADMIN ? `<input value="${s.nombre}" onchange="updateServicio(${s.id}, 'nombre', this.value)">` : s.nombre}</td>
-                    <td>$<input type="number" value="${s.precio}" onchange="updateServicio(${s.id}, 'precio', this.value)" ${!IS_ADMIN ? 'disabled' : ''}></td>
-                    <td><input type="checkbox" class="check-servicio" data-id="${s.id}" onchange="calcularTotal()"></td>
+                    <td style="font-weight: bold; color: var(--primary-blue);">${s.numeral}</td>
+                    <td>
+                        ${nombreField}
+                        <div class="detalle-txt">${s.detalle}</div>
+                    </td>
+                    <td>${precioField}</td>
+                    <td><span id="prorrateo_${index}">$0.00</span></td>
+                    <td style="text-align: center;">
+                        <input type="checkbox" class="chk-servicio" data-index="${index}" ${s.precio > 0 && !isAdmin ? 'checked' : ''} onchange="calcularPresupuesto()" style="width: 20px; height: 20px; cursor: pointer;">
+                    </td>
                 </tr>
             `;
         });
+        calcularPresupuesto();
     }
 
-    function updateServicio(id, campo, valor) {
-        const s = servicios.find(x => x.id === id);
-        s[campo] = campo === 'precio' ? parseFloat(valor) : valor;
-        localStorage.setItem('servicios_db', JSON.stringify(servicios));
+    function actualizarPrecio(index, valor) {
+        servicios[index].precio = parseFloat(valor) || 0;
+        guardarLocalStorage();
+        calcularPresupuesto();
     }
 
-    function calcularTotal() {
-        const checks = document.querySelectorAll('.check-servicio:checked');
+    function actualizarNombre(index, valor) {
+        servicios[index].nombre = valor;
+        guardarLocalStorage();
+    }
+
+    function guardarLocalStorage() {
+        localStorage.setItem('metaX_presupuesto_servicios', JSON.stringify(servicios));
+    }
+
+    function calcularPresupuesto() {
+        const checks = document.querySelectorAll('.chk-servicio:checked');
         const extraGastos = parseFloat(document.getElementById('extraGastos').value) || 0;
         
-        let subtotal = 0;
-        checks.forEach(c => {
-            const s = servicios.find(x => x.id == c.dataset.id);
-            subtotal += s.precio;
+        let subtotalServicios = 0;
+        checks.forEach(chk => {
+            const idx = chk.dataset.index;
+            subtotalServicios += servicios[idx].precio;
         });
 
-        const numServicios = checks.length;
-        const total = subtotal + extraGastos; // El prorrateo ya está implícito en la suma total
-        
-        document.getElementById('totalDisplay').innerText = total.toLocaleString('es-MX', {minimumFractionDigits: 2});
+        const cantidadSeleccionados = checks.length;
+        const prorrateoUnitario = cantidadSeleccionados > 0 ? (extraGastos / cantidadSeleccionados) : 0;
+
+        // Actualizar valores visuales en la tabla por cada fila
+        servicios.forEach((s, index) => {
+            const spanProrrateo = document.getElementById(`prorrateo_${index}`);
+            const chk = document.querySelector(`.chk-servicio[data-index="${index}"]`);
+            
+            if (spanProrrateo) {
+                if (chk && chk.checked && extraGastos > 0) {
+                    spanProrrateo.innerText = `$${prorrateoUnitario.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+                    spanProrrateo.style.color = "var(--success)";
+                } else {
+                    spanProrrateo.innerText = "$0.00";
+                    spanProrrateo.style.color = "inherit";
+                }
+            }
+        });
+
+        const totalFinal = subtotalServicios + extraGastos;
+
+        // Actualizar resumen inferior
+        document.getElementById('lblCantServicios').innerText = cantidadSeleccionados;
+        document.getElementById('lblSubtotal').innerText = subtotalServicios.toLocaleString('es-MX', {minimumFractionDigits: 2});
+        document.getElementById('lblProrrateoTotal').innerText = extraGastos.toLocaleString('es-MX', {minimumFractionDigits: 2});
+        document.getElementById('lblTotalFinal').innerText = totalFinal.toLocaleString('es-MX', {minimumFractionDigits: 2});
     }
 
-    function toggleAdmin() {
-        IS_ADMIN = !IS_ADMIN;
-        document.getElementById('adminPanel').style.display = IS_ADMIN ? 'block' : 'none';
-        render();
-    }
-
-    render();
+    // Inicializar renderizado
+    renderTabla();
 </script>
 </body>
 </html>
