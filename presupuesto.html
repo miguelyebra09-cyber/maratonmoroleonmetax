@@ -83,35 +83,35 @@
 </div>
 
 <script>
-    let servicios = JSON.parse(localStorage.getItem('metaX_db_struct')) || [
-        { numeral: "0", nombre: "Plataforma online", detalle: "Solución integral end-to-end con plataforma digital de alta disponibilidad, consultoría, identidad visual y soporte omnicanal.", costo: 30000, porc: 21 },
-        { numeral: "0.1", nombre: "Solución Integral Registro/Branding", detalle: "Portal web, formulario dinámico, pasarela de pagos, branding, consultoría técnica, atención omnicanal, registro offline y gestión de BD.", costo: 16700, porc: 1 },
-        { numeral: "1", nombre: "Cronometraje base", detalle: "Servicio central de medición electrónica de tiempos (equipo de lectura, antenas, alfombras, líneas de salida/meta redundantes).", costo: 44600, porc: 15 },
-        { numeral: "2", nombre: "Chip + consumibles", detalle: "Etiqueta inteligente de un solo uso que identifica electrónicamente al corredor mediante ondas de radio sin batería.", costo: 41250, porc: 15 },
-        { numeral: "3", nombre: "Número", detalle: "Dorsal o número de pecho con identificador numérico único para reconocimiento y acceso a servicios.", costo: 16250, porc: 15 },
-        { numeral: "4", nombre: "Puntos parciales", detalle: "Alfombras o antenas RFID adicionales a lo largo de la ruta para tiempos intermedios y control.", costo: 9800, porc: 15 },
-        { numeral: "5", nombre: "Jueceo", detalle: "Revisiones y validaciones de jueces oficiales para asegurar el cumplimiento de las reglas del atletismo.", costo: 0, porc: 15 },
-        { numeral: "6", nombre: "Resultados en vivo", detalle: "Tiempos registrados de forma automática conforme los corredores cruzan los tapetes para consulta en tiempo real.", costo: 0, porc: 15 },
-        { numeral: "6A", nombre: "Resultados preliminares", detalle: "Tiempos y lugares iniciales calculados automáticamente tras cruzar la meta, sujetos a periodo corto de reclamaciones.", costo: 0, porc: 15 },
-        { numeral: "6B", nombre: "Resultados oficiales", detalle: "Listas validadas y corregidas por jueces de atletismo tras verificar cruce obligatorio por todos los tapetes.", costo: 0, porc: 15 },
-        { numeral: "7", nombre: "Viáticos completos", detalle: "Recursos económicos para alimentación, hospedaje y transporte del personal operativo y jueces fuera de su base.", costo: 0, porc: 15 },
-        { numeral: "8", nombre: "Fotofinish", detalle: "Sistema de cámaras de alta velocidad en la línea de llegada para definir ganadores y tiempos exactos en finales apretados.", costo: 0, porc: 15 },
-        { numeral: "9", nombre: "Fotos (facial/número)", detalle: "Sistema digital de búsqueda en galerías en línea mediante dorsal o análisis biométrico de rostros (selfie).", costo: 0, porc: 15 },
-        { numeral: "10", nombre: "APP de Seguimiento", detalle: "Aplicación opcional para rastrear avances y clasificaciones de corredores específicos en tiempo real para familiares.", costo: 0, porc: 15 },
-        { numeral: "12", nombre: "Certificación de ruta", detalle: "Aval internacional emitido por World Athletics o AIMS que garantiza la distancia exacta de 42.195 metros.", costo: 0, porc: 15 },
-        { numeral: "13", nombre: "Promociones", detalle: "Gestión de promociones y patrocinios varios.", costo: 0, porc: 15 },
-        { numeral: "14", nombre: "Verifica tus datos", detalle: "Paso de apoyo durante la entrega de kits para comprobar datos correctos del corredor antes de entregar material oficial.", costo: 0, porc: 15 },
-        { numeral: "15", nombre: "Portal certificados", detalle: "Plataforma web para consulta de tiempos oficiales y descarga de certificado digital (Finisher) en PDF o imagen.", costo: 0, porc: 15 },
-        { numeral: "16", nombre: "Papelería", detalle: "Insumos varios de papelería para operación general.", costo: 0, porc: 15 },
-        { numeral: "17", nombre: "Sobres / Integración", detalle: "Proceso logístico de armado de paquetes personalizados (sobres, dorsales, chips, imperdibles, playeras y artículos).", costo: 0, porc: 15 },
-        { numeral: "18", nombre: "Certificado participación", detalle: "Documento oficial del comité organizador que acredita que el participante completó la carrera.", costo: 0, porc: 15 },
-        { numeral: "19", nombre: "BD y respaldo", detalle: "Sistema digital que almacena información de atletas, tiempos parciales en puntos de control y respaldos de seguridad.", costo: 0, porc: 15 },
-        { numeral: "20", nombre: "Protocolo contingencia", detalle: "Plan de acción previsto para resolver fallas técnicas, climáticas o logísticas asegurando validez de resultados.", costo: 0, porc: 15 },
-        { numeral: "21", nombre: "Personal operación", detalle: "Coordinación y funciones de personal operativo en campo.", costo: 0, porc: 15 },
-        { numeral: "22", nombre: "Protocolo premiación", detalle: "Normas técnicas para validación de tiempos, periodos de apelación, cortes por categorías y ceremonia de podio.", costo: 0, porc: 15 }
+    let servicios = JSON.parse(localStorage.getItem('metaX_db_struct_v2')) || [
+        { numeral: "0", nombre: "Plataforma online", detalle: "Solución integral end-to-end con plataforma digital de alta disponibilidad, consultoría, identidad visual y soporte omnicanal.", costo: 30000, porc: 21, seleccionado: true },
+        { numeral: "0.1", nombre: "Solución Integral Registro/Branding", detalle: "Portal web, formulario dinámico, pasarela de pagos, branding, consultoría técnica, atención omnicanal, registro offline y gestión de BD.", costo: 16700, porc: 1, seleccionado: true },
+        { numeral: "1", nombre: "Cronometraje base", detalle: "Servicio central de medición electrónica de tiempos (equipo de lectura, antenas, alfombras, líneas de salida/meta redundantes).", costo: 44600, porc: 15, seleccionado: true },
+        { numeral: "2", nombre: "Chip + consumibles", detalle: "Etiqueta inteligente de un solo uso que identifica electrónicamente al corredor mediante ondas de radio sin batería.", costo: 41250, porc: 15, seleccionado: true },
+        { numeral: "3", nombre: "Número", detalle: "Dorsal o número de pecho con identificador numérico único para reconocimiento y acceso a servicios.", costo: 16250, porc: 15, seleccionado: true },
+        { numeral: "4", nombre: "Puntos parciales", detalle: "Alfombras o antenas RFID adicionales a lo largo de la ruta para tiempos intermedios y control.", costo: 9800, porc: 15, seleccionado: true },
+        { numeral: "5", nombre: "Jueceo", detalle: "Revisiones y validaciones de jueces oficiales para asegurar el cumplimiento de las reglas del atletismo.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "6", nombre: "Resultados en vivo", detalle: "Tiempos registrados de forma automática conforme los corredores cruzan los tapetes para consulta en tiempo real.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "6A", nombre: "Resultados preliminares", detalle: "Tiempos y lugares iniciales calculados automáticamente tras cruzar la meta, sujetos a periodo corto de reclamaciones.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "6B", nombre: "Resultados oficiales", detalle: "Listas validadas y corregidas por jueces de atletismo tras verificar cruce obligatorio por todos los tapetes.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "7", nombre: "Viáticos completos", detalle: "Recursos económicos para alimentación, hospedaje y transporte del personal operativo y jueces fuera de su base.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "8", nombre: "Fotofinish", detalle: "Sistema de cámaras de alta velocidad en la línea de llegada para definir ganadores y tiempos exactos en finales apretados.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "9", nombre: "Fotos (facial/número)", detalle: "Sistema digital de búsqueda en galerías en línea mediante dorsal o análisis biométrico de rostros (selfie).", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "10", nombre: "APP de Seguimiento", detalle: "Aplicación opcional para rastrear avances y clasificaciones de corredores específicos en tiempo real para familiares.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "12", nombre: "Certificación de ruta", detalle: "Aval internacional emitido por World Athletics o AIMS que garantiza la distancia exacta de 42.195 metros.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "13", nombre: "Promociones", detalle: "Gestión de promociones y patrocinios varios.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "14", nombre: "Verifica tus datos", detalle: "Paso de apoyo durante la entrega de kits para comprobar datos correctos del corredor antes de entregar material oficial.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "15", nombre: "Portal certificados", detalle: "Plataforma web para consulta de tiempos oficiales y descarga de certificado digital (Finisher) en PDF o imagen.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "16", nombre: "Papelería", detalle: "Insumos varios de papelería para operación general.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "17", nombre: "Sobres / Integración", detalle: "Proceso logístico de armado de paquetes personalizados (sobres, dorsales, chips, imperdibles, playeras y artículos).", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "18", nombre: "Certificado participación", detalle: "Documento oficial del comité organizador que acredita que el participante completó la carrera.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "19", nombre: "BD y respaldo", detalle: "Sistema digital que almacena información de atletas, tiempos parciales en puntos de control y respaldos de seguridad.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "20", nombre: "Protocolo contingencia", detalle: "Plan de acción previsto para resolver fallas técnicas, climáticas o logísticas asegurando validez de resultados.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "21", nombre: "Personal operación", detalle: "Coordinación y funciones de personal operativo en campo.", costo: 0, porc: 15, seleccionado: false },
+        { numeral: "22", nombre: "Protocolo premiación", detalle: "Normas técnicas para validación de tiempos, periodos de apelación, cortes por categorías y ceremonia de podio.", costo: 0, porc: 15, seleccionado: false }
     ];
 
-    let visCliente = JSON.parse(localStorage.getItem('metaX_vis_cliente')) || {
+    let visCliente = JSON.parse(localStorage.getItem('metaX_vis_cliente_v2')) || {
         "col-num": true, "col-nombre": true, "col-detalle": true, 
         "col-costo": true, "col-porc": true, "col-total": true, 
         "col-iva": true, "col-select": true
@@ -128,7 +128,6 @@
         if (isAdmin) {
             btn.innerText = "Cambiar a Vista Cliente";
             btn.style.backgroundColor = "#c2410c";
-            // Mostrar todas las columnas en modo admin
             document.querySelectorAll('th, td').forEach(el => el.classList.remove('col-hidden'));
         } else {
             btn.innerText = "Cambiar a Vista Administrador";
@@ -142,7 +141,7 @@
         document.querySelectorAll('.vis-col').forEach(chk => {
             visCliente[chk.value] = chk.checked;
         });
-        localStorage.setItem('metaX_vis_cliente', JSON.stringify(visCliente));
+        localStorage.setItem('metaX_vis_cliente_v2', JSON.stringify(visCliente));
     }
 
     function aplicarVisibilidadCliente() {
@@ -151,10 +150,15 @@
                 if (!visible) el.classList.add('col-hidden');
                 else el.classList.remove('col-hidden');
             });
-            // Sincronizar checkboxes del panel admin
             const chk = document.querySelector(`.vis-col[value="${colClass}"]`);
             if (chk) chk.checked = visible;
         }
+    }
+
+    function cambiarSeleccion(index, checkbox) {
+        servicios[index].seleccionado = checkbox.checked;
+        guardar();
+        renderTabla();
     }
 
     function renderTabla() {
@@ -162,20 +166,17 @@
         const extraGastos = parseFloat(document.getElementById('extraGastos').value) || 0;
         
         // Contar seleccionados para prorrateo
-        const checksTemp = document.querySelectorAll('.chk-servicio:checked');
-        const count = checksTemp.length;
-        const prorrateoU = count > 0 ? (extraGastos / count) : 0;
+        const seleccionadosCount = servicios.filter(s => s.seleccionado).length;
+        const prorrateoU = seleccionadosCount > 0 ? (extraGastos / seleccionadosCount) : 0;
 
         tbody.innerHTML = '';
         servicios.forEach((s, i) => {
-            const isSelected = document.querySelector(`.chk-servicio[data-index="${i}"]`)?.checked || (s.costo > 0 && !isAdmin);
+            const isSelected = s.seleccionado;
             
-            // Cálculos
             const costoBase = parseFloat(s.costo) || 0;
             const porcVal = parseFloat(s.porc) || 0;
-            // Total = Costo + Porcentaje aplicado + Prorrateo unitario si aplica
             let totalItem = isSelected ? (costoBase * (1 + porcVal / 100)) + (extraGastos > 0 ? prorrateoU : 0) : 0;
-            let ivaItem = totalItem * 0.16; // 16% de IVA estándar mexicano (ajustable)
+            let ivaItem = totalItem * 0.16;
 
             let costoField = isAdmin 
                 ? `<input type="number" value="${s.costo}" oninput="servicios[${i}].costo=this.value; guardar(); renderTabla()">` 
@@ -203,7 +204,7 @@
                     <td class="col-total" style="font-weight: bold;">${isSelected ? '$' + totalItem.toLocaleString('es-MX', {minimumFractionDigits: 2}) : '-'}</td>
                     <td class="col-iva">${isSelected ? '$' + ivaItem.toLocaleString('es-MX', {minimumFractionDigits: 2}) : '-'}</td>
                     <td class="col-select" style="text-align: center;">
-                        <input type="checkbox" class="chk-servicio" data-index="${i}" ${isSelected ? 'checked' : ''} onchange="renderTabla()" style="width:18px; height:18px; cursor:pointer;">
+                        <input type="checkbox" class="chk-servicio" data-index="${i}" ${isSelected ? 'checked' : ''} onchange="cambiarSeleccion(${i}, this)" style="width:18px; height:18px; cursor:pointer;">
                     </td>
                 </tr>
             `;
@@ -216,30 +217,30 @@
     }
 
     function guardar() {
-        localStorage.setItem('metaX_db_struct', JSON.stringify(servicios));
+        localStorage.setItem('metaX_db_struct_v2', JSON.stringify(servicios));
     }
 
     function calcularTotalesGlobales(prorrateoU) {
         let sumaTotalFinal = 0;
-        const checks = document.querySelectorAll('.chk-servicio:checked');
         const extraGastos = parseFloat(document.getElementById('extraGastos').value) || 0;
+        const seleccionadosCount = servicios.filter(s => s.seleccionado).length;
 
-        checks.forEach(chk => {
-            const s = servicios[chk.dataset.index];
-            const c = parseFloat(s.costo) || 0;
-            const p = parseFloat(s.porc) || 0;
-            const t = (c * (1 + p / 100)) + (checks.length > 0 ? (extraGastos / checks.length) : 0);
-            sumaTotalFinal += t;
+        servicios.forEach(s => {
+            if (s.seleccionado) {
+                const c = parseFloat(s.costo) || 0;
+                const p = parseFloat(s.porc) || 0;
+                const t = (c * (1 + p / 100)) + (seleccionadosCount > 0 ? (extraGastos / seleccionadosCount) : 0);
+                sumaTotalFinal += t;
+            }
         });
 
-        document.getElementById('lblCant').innerText = checks.length;
+        document.getElementById('lblCant').innerText = seleccionadosCount;
         document.getElementById('lblProrrateoU').innerText = prorrateoU.toLocaleString('es-MX', {minimumFractionDigits: 2});
         document.getElementById('lblTotalFinal').innerText = sumaTotalFinal.toLocaleString('es-MX', {minimumFractionDigits: 2});
     }
 
     // Inicialización
     renderTabla();
-    // Cargar selección inicial de checkboxes de visibilidad
     document.querySelectorAll('.vis-col').forEach(chk => {
         if(visCliente[chk.value] !== undefined) chk.checked = visCliente[chk.value];
     });
