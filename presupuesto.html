@@ -7,120 +7,242 @@
     <style>
         :root { --primary: #0f172a; --primary-blue: #0284c7; --bg-body: #f8fafc; --text-muted: #64748b; --border-color: #cbd5e1; --success: #16a34a; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
-        body { background-color: var(--bg-body); padding: 20px; }
-        .container { max-width: 1200px; margin: auto; background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-        th, td { padding: 12px; border: 1px solid var(--border-color); text-align: left; vertical-align: top; }
-        th { background-color: #f1f5f9; }
-        .detalle-txt { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; margin-top: 4px; }
-        .summary-box { background: #f8fafc; border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-top: 20px; }
+        body { background-color: var(--bg-body); padding: 20px; color: var(--primary); }
+        .container { max-width: 1400px; margin: auto; background: white; border-radius: 12px; padding: 24px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 0.85rem; }
+        th, td { padding: 10px 12px; border: 1px solid var(--border-color); text-align: left; vertical-align: middle; }
+        th { background-color: #f1f5f9; color: #1e293b; font-weight: 700; }
+        .detalle-txt { font-size: 0.78rem; color: var(--text-muted); line-height: 1.4; margin-top: 2px; }
+        .summary-box { background: #f8fafc; border: 1px solid var(--border-color); padding: 20px; border-radius: 8px; margin-top: 20px; display: flex; justify-content: space-between; align-items: center; }
         .admin-panel { background: #fff7ed; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; border: 1px solid #ffedd5; }
-        input[type="number"] { width: 100px; padding: 5px; }
+        .admin-controls-vis { background: #e0f2fe; padding: 12px; border-radius: 8px; margin-bottom: 20px; display: none; border: 1px solid #bae6fd; font-size: 0.85rem; }
+        input[type="number"] { width: 90px; padding: 5px; }
+        input[type="text"] { width: 100%; padding: 5px; }
+        .btn-mode { background-color: var(--primary-blue); color: white; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .col-hidden { display: none !important; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>📊 Cotizador - Maratón Moroleón 2027</h1>
-        <button onclick="toggleAdminMode()" id="btnMode">Cambiar a Vista Administrador</button>
+        <h1>📊 Cotizador y Presupuestos - Maratón Moroleón 2027</h1>
+        <button class="btn-mode" onclick="toggleAdminMode()" id="btnMode">Cambiar a Vista Administrador</button>
     </div>
 
+    <!-- PANEL DE CONFIGURACIÓN ADMIN: Gastos Adicionales y Visibilidad -->
     <div class="admin-panel" id="adminPanel">
-        <h3>Panel Administrador</h3>
-        <label>Costos Adicionales (Prorrateo) [$]:</label>
-        <input type="number" id="extraGastos" value="0" oninput="renderTabla()">
+        <h3>Panel de Control Administrador</h3>
+        <div style="margin-top: 8px;">
+            <label><strong>Costos Adicionales (Prorrateo Global) [$]:</strong></label>
+            <input type="number" id="extraGastos" value="0" oninput="renderTabla()">
+        </div>
+    </div>
+
+    <div class="admin-controls-vis" id="adminVisPanel">
+        <strong>⚙️ Configuración de Columnas Visibles para el Perfil Cliente:</strong>
+        <div style="display: flex; gap: 15px; margin-top: 8px; flex-wrap: wrap;">
+            <label><input type="checkbox" class="vis-col" value="col-num" checked onchange="actualizarVisibilidadCliente()"> Numeral</label>
+            <label><input type="checkbox" class="vis-col" value="col-nombre" checked onchange="actualizarVisibilidadCliente()"> Nombre</label>
+            <label><input type="checkbox" class="vis-col" value="col-detalle" checked onchange="actualizarVisibilidadCliente()"> Detalle</label>
+            <label><input type="checkbox" class="vis-col" value="col-costo" checked onchange="actualizarVisibilidadCliente()"> Costo</label>
+            <label><input type="checkbox" class="vis-col" value="col-porc" checked onchange="actualizarVisibilidadCliente()"> %</label>
+            <label><input type="checkbox" class="vis-col" value="col-total" checked onchange="actualizarVisibilidadCliente()"> Total</label>
+            <label><input type="checkbox" class="vis-col" value="col-iva" checked onchange="actualizarVisibilidadCliente()"> IVA</label>
+            <label><input type="checkbox" class="vis-col" value="col-select" checked onchange="actualizarVisibilidadCliente()"> Selección</label>
+        </div>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>Numeral</th>
-                <th>Servicio / Detalle</th>
-                <th>Precio Base</th>
-                <th>Prorrateo Extra</th>
-                <th>Selección</th>
+                <th class="col-num" style="width: 6%;">Numeral</th>
+                <th class="col-nombre" style="width: 20%;">Nombre del Servicio</th>
+                <th class="col-detalle" style="width: 30%;">Detalle del Servicio</th>
+                <th class="col-costo" style="width: 10%;">Costo ($)</th>
+                <th class="col-porc" style="width: 8%;">%</th>
+                <th class="col-total" style="width: 10%;">Total ($)</th>
+                <th class="col-iva" style="width: 8%;">IVA ($)</th>
+                <th class="col-select" style="width: 8%; text-align: center;">Selección</th>
             </tr>
         </thead>
         <tbody id="tablaServiciosBody"></tbody>
     </table>
 
     <div class="summary-box">
-        <div>Total Final: <strong>$<span id="lblTotalFinal">0.00</span></strong></div>
+        <div>
+            <div>Servicios Seleccionados: <strong id="lblCant">0</strong></div>
+            <div>Prorrateo Extra Unitario: $<span id="lblProrrateoU">0.00</span></div>
+        </div>
+        <div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); text-align: right;">PRESUPUESTO TOTAL GENERAL</div>
+            <div style="font-size: 1.6rem; font-weight: 800; color: var(--success);">$<span id="lblTotalFinal">0.00</span></div>
+        </div>
     </div>
 </div>
 
 <script>
-    let servicios = JSON.parse(localStorage.getItem('metaX_db_full')) || [
-        { numeral: "0", nombre: "Plataforma online", detalle: "Solución integral end-to-end...", precio: 0 },
-        { numeral: "0.1", nombre: "Solución Integral Registro/Branding", detalle: "Portal, pasarela, branding, consultoría...", precio: 0 },
-        { numeral: "1", nombre: "Cronometraje base", detalle: "Equipo, antenas, software, personal...", precio: 44600 },
-        { numeral: "2", nombre: "Chip + consumibles", detalle: "Etiqueta inteligente RFID...", precio: 41250 },
-        { numeral: "3", nombre: "Número", detalle: "Dorsal identificador único...", precio: 16250 },
-        { numeral: "4", nombre: "Puntos parciales", detalle: "Alfombras/antenas en ruta...", precio: 9800 },
-        { numeral: "5", nombre: "Jueceo", detalle: "Supervisiones y validaciones oficiales...", precio: 0 },
-        { numeral: "6", nombre: "Resultados en vivo", detalle: "Consulta automática en tiempo real...", precio: 0 },
-        { numeral: "6A", nombre: "Resultados preliminares", detalle: "Cálculos automáticos inmediatos...", precio: 0 },
-        { numeral: "6B", nombre: "Resultados oficiales", detalle: "Resultados validados por jueces...", precio: 0 },
-        { numeral: "7", nombre: "Viáticos completos", detalle: "Alimentación, hospedaje y transporte...", precio: 0 },
-        { numeral: "8", nombre: "Fotofinish", detalle: "Cámaras de alta velocidad en meta...", precio: 0 },
-        { numeral: "9", nombre: "Fotos (facial/número)", detalle: "Galería con búsqueda biométrica...", precio: 0 },
-        { numeral: "10", nombre: "APP de Seguimiento", detalle: "Seguimiento en vivo para familiares...", precio: 0 },
-        { numeral: "12", nombre: "Certificación de ruta", detalle: "Aval internacional (World Athletics/AIMS)...", precio: 0 },
-        { numeral: "13", nombre: "Promociones", detalle: "Gestión de patrocinios...", precio: 0 },
-        { numeral: "14", nombre: "Verifica tus datos", detalle: "Validación en entrega de kits...", precio: 0 },
-        { numeral: "15", nombre: "Portal certificados", detalle: "Descarga de constancia Finisher...", precio: 0 },
-        { numeral: "16", nombre: "Papelería", detalle: "Insumos varios...", precio: 0 },
-        { numeral: "17", nombre: "Sobres / Integración", detalle: "Armado de paquetes personalizados...", precio: 0 },
-        { numeral: "18", nombre: "Certificado participación", detalle: "Constancia oficial del comité...", precio: 0 },
-        { numeral: "19", nombre: "BD y respaldo", detalle: "Sistema de almacenamiento de datos...", precio: 0 },
-        { numeral: "20", nombre: "Protocolo contingencia", detalle: "Plan de acción ante fallas...", precio: 0 },
-        { numeral: "21", nombre: "Personal operación", detalle: "Coordinación en campo...", precio: 0 },
-        { numeral: "22", nombre: "Protocolo premiación", detalle: "Validación y ceremonia de podio...", precio: 0 }
+    let servicios = JSON.parse(localStorage.getItem('metaX_db_struct')) || [
+        { numeral: "0", nombre: "Plataforma online", detalle: "Solución integral end-to-end con plataforma digital de alta disponibilidad, consultoría, identidad visual y soporte omnicanal.", costo: 30000, porc: 21 },
+        { numeral: "0.1", nombre: "Solución Integral Registro/Branding", detalle: "Portal web, formulario dinámico, pasarela de pagos, branding, consultoría técnica, atención omnicanal, registro offline y gestión de BD.", costo: 16700, porc: 1 },
+        { numeral: "1", nombre: "Cronometraje base", detalle: "Servicio central de medición electrónica de tiempos (equipo de lectura, antenas, alfombras, líneas de salida/meta redundantes).", costo: 44600, porc: 15 },
+        { numeral: "2", nombre: "Chip + consumibles", detalle: "Etiqueta inteligente de un solo uso que identifica electrónicamente al corredor mediante ondas de radio sin batería.", costo: 41250, porc: 15 },
+        { numeral: "3", nombre: "Número", detalle: "Dorsal o número de pecho con identificador numérico único para reconocimiento y acceso a servicios.", costo: 16250, porc: 15 },
+        { numeral: "4", nombre: "Puntos parciales", detalle: "Alfombras o antenas RFID adicionales a lo largo de la ruta para tiempos intermedios y control.", costo: 9800, porc: 15 },
+        { numeral: "5", nombre: "Jueceo", detalle: "Revisiones y validaciones de jueces oficiales para asegurar el cumplimiento de las reglas del atletismo.", costo: 0, porc: 15 },
+        { numeral: "6", nombre: "Resultados en vivo", detalle: "Tiempos registrados de forma automática conforme los corredores cruzan los tapetes para consulta en tiempo real.", costo: 0, porc: 15 },
+        { numeral: "6A", nombre: "Resultados preliminares", detalle: "Tiempos y lugares iniciales calculados automáticamente tras cruzar la meta, sujetos a periodo corto de reclamaciones.", costo: 0, porc: 15 },
+        { numeral: "6B", nombre: "Resultados oficiales", detalle: "Listas validadas y corregidas por jueces de atletismo tras verificar cruce obligatorio por todos los tapetes.", costo: 0, porc: 15 },
+        { numeral: "7", nombre: "Viáticos completos", detalle: "Recursos económicos para alimentación, hospedaje y transporte del personal operativo y jueces fuera de su base.", costo: 0, porc: 15 },
+        { numeral: "8", nombre: "Fotofinish", detalle: "Sistema de cámaras de alta velocidad en la línea de llegada para definir ganadores y tiempos exactos en finales apretados.", costo: 0, porc: 15 },
+        { numeral: "9", nombre: "Fotos (facial/número)", detalle: "Sistema digital de búsqueda en galerías en línea mediante dorsal o análisis biométrico de rostros (selfie).", costo: 0, porc: 15 },
+        { numeral: "10", nombre: "APP de Seguimiento", detalle: "Aplicación opcional para rastrear avances y clasificaciones de corredores específicos en tiempo real para familiares.", costo: 0, porc: 15 },
+        { numeral: "12", nombre: "Certificación de ruta", detalle: "Aval internacional emitido por World Athletics o AIMS que garantiza la distancia exacta de 42.195 metros.", costo: 0, porc: 15 },
+        { numeral: "13", nombre: "Promociones", detalle: "Gestión de promociones y patrocinios varios.", costo: 0, porc: 15 },
+        { numeral: "14", nombre: "Verifica tus datos", detalle: "Paso de apoyo durante la entrega de kits para comprobar datos correctos del corredor antes de entregar material oficial.", costo: 0, porc: 15 },
+        { numeral: "15", nombre: "Portal certificados", detalle: "Plataforma web para consulta de tiempos oficiales y descarga de certificado digital (Finisher) en PDF o imagen.", costo: 0, porc: 15 },
+        { numeral: "16", nombre: "Papelería", detalle: "Insumos varios de papelería para operación general.", costo: 0, porc: 15 },
+        { numeral: "17", nombre: "Sobres / Integración", detalle: "Proceso logístico de armado de paquetes personalizados (sobres, dorsales, chips, imperdibles, playeras y artículos).", costo: 0, porc: 15 },
+        { numeral: "18", nombre: "Certificado participación", detalle: "Documento oficial del comité organizador que acredita que el participante completó la carrera.", costo: 0, porc: 15 },
+        { numeral: "19", nombre: "BD y respaldo", detalle: "Sistema digital que almacena información de atletas, tiempos parciales en puntos de control y respaldos de seguridad.", costo: 0, porc: 15 },
+        { numeral: "20", nombre: "Protocolo contingencia", detalle: "Plan de acción previsto para resolver fallas técnicas, climáticas o logísticas asegurando validez de resultados.", costo: 0, porc: 15 },
+        { numeral: "21", nombre: "Personal operación", detalle: "Coordinación y funciones de personal operativo en campo.", costo: 0, porc: 15 },
+        { numeral: "22", nombre: "Protocolo premiación", detalle: "Normas técnicas para validación de tiempos, periodos de apelación, cortes por categorías y ceremonia de podio.", costo: 0, porc: 15 }
     ];
+
+    let visCliente = JSON.parse(localStorage.getItem('metaX_vis_cliente')) || {
+        "col-num": true, "col-nombre": true, "col-detalle": true, 
+        "col-costo": true, "col-porc": true, "col-total": true, 
+        "col-iva": true, "col-select": true
+    };
 
     let isAdmin = false;
 
     function toggleAdminMode() {
         isAdmin = !isAdmin;
         document.getElementById('adminPanel').style.display = isAdmin ? 'block' : 'none';
+        document.getElementById('adminVisPanel').style.display = isAdmin ? 'block' : 'none';
+        const btn = document.getElementById('btnMode');
+        
+        if (isAdmin) {
+            btn.innerText = "Cambiar a Vista Cliente";
+            btn.style.backgroundColor = "#c2410c";
+            // Mostrar todas las columnas en modo admin
+            document.querySelectorAll('th, td').forEach(el => el.classList.remove('col-hidden'));
+        } else {
+            btn.innerText = "Cambiar a Vista Administrador";
+            btn.style.backgroundColor = "var(--primary-blue)";
+            aplicarVisibilidadCliente();
+        }
         renderTabla();
+    }
+
+    function actualizarVisibilidadCliente() {
+        document.querySelectorAll('.vis-col').forEach(chk => {
+            visCliente[chk.value] = chk.checked;
+        });
+        localStorage.setItem('metaX_vis_cliente', JSON.stringify(visCliente));
+    }
+
+    function aplicarVisibilidadCliente() {
+        for (let [colClass, visible] of Object.entries(visCliente)) {
+            document.querySelectorAll('.' + colClass).forEach(el => {
+                if (!visible) el.classList.add('col-hidden');
+                else el.classList.remove('col-hidden');
+            });
+            // Sincronizar checkboxes del panel admin
+            const chk = document.querySelector(`.vis-col[value="${colClass}"]`);
+            if (chk) chk.checked = visible;
+        }
     }
 
     function renderTabla() {
         const tbody = document.getElementById('tablaServiciosBody');
         const extraGastos = parseFloat(document.getElementById('extraGastos').value) || 0;
-        const checks = document.querySelectorAll('.chk-servicio:checked');
-        const count = checks.length;
-        const prorrateo = count > 0 ? (extraGastos / count) : 0;
         
+        // Contar seleccionados para prorrateo
+        const checksTemp = document.querySelectorAll('.chk-servicio:checked');
+        const count = checksTemp.length;
+        const prorrateoU = count > 0 ? (extraGastos / count) : 0;
+
         tbody.innerHTML = '';
         servicios.forEach((s, i) => {
-            const isSelected = document.querySelector(`.chk-servicio[data-index="${i}"]`)?.checked || false;
+            const isSelected = document.querySelector(`.chk-servicio[data-index="${i}"]`)?.checked || (s.costo > 0 && !isAdmin);
             
+            // Cálculos
+            const costoBase = parseFloat(s.costo) || 0;
+            const porcVal = parseFloat(s.porc) || 0;
+            // Total = Costo + Porcentaje aplicado + Prorrateo unitario si aplica
+            let totalItem = isSelected ? (costoBase * (1 + porcVal / 100)) + (extraGastos > 0 ? prorrateoU : 0) : 0;
+            let ivaItem = totalItem * 0.16; // 16% de IVA estándar mexicano (ajustable)
+
+            let costoField = isAdmin 
+                ? `<input type="number" value="${s.costo}" oninput="servicios[${i}].costo=this.value; guardar(); renderTabla()">` 
+                : (isSelected ? `$${costoBase.toLocaleString('es-MX', {minimumFractionDigits: 2})}` : '-');
+
+            let porcField = isAdmin 
+                ? `<input type="number" value="${s.porc}" oninput="servicios[${i}].porc=this.value; guardar(); renderTabla()">` 
+                : (isSelected ? `${porcVal}%` : '-');
+
+            let nombreField = isAdmin
+                ? `<input type="text" value="${s.nombre}" oninput="servicios[${i}].nombre=this.value; guardar()">`
+                : `<strong>${s.nombre}</strong>`;
+
+            let detalleField = isAdmin
+                ? `<input type="text" value="${s.detalle}" oninput="servicios[${i}].detalle=this.value; guardar()">`
+                : `<div class="detalle-txt">${s.detalle}</div>`;
+
             tbody.innerHTML += `
                 <tr>
-                    <td>${s.numeral}</td>
-                    <td><strong>${s.nombre}</strong><div class="detalle-txt">${s.detalle}</div></td>
-                    <td>${isSelected ? (isAdmin ? `<input type="number" value="${s.precio}" oninput="servicios[${i}].precio=this.value; localStorage.setItem('metaX_db_full', JSON.stringify(servicios)); renderTabla()">` : `$${parseFloat(s.precio).toLocaleString()}`) : '-'}</td>
-                    <td>${isSelected && extraGastos > 0 ? `$${prorrateo.toFixed(2)}` : '-'}</td>
-                    <td><input type="checkbox" class="chk-servicio" data-index="${i}" ${isSelected ? 'checked' : ''} onchange="renderTabla()"></td>
+                    <td class="col-num" style="font-weight: bold; color: var(--primary-blue);">${s.numeral}</td>
+                    <td class="col-nombre">${nombreField}</td>
+                    <td class="col-detalle">${detalleField}</td>
+                    <td class="col-costo">${costoField}</td>
+                    <td class="col-porc">${porcField}</td>
+                    <td class="col-total" style="font-weight: bold;">${isSelected ? '$' + totalItem.toLocaleString('es-MX', {minimumFractionDigits: 2}) : '-'}</td>
+                    <td class="col-iva">${isSelected ? '$' + ivaItem.toLocaleString('es-MX', {minimumFractionDigits: 2}) : '-'}</td>
+                    <td class="col-select" style="text-align: center;">
+                        <input type="checkbox" class="chk-servicio" data-index="${i}" ${isSelected ? 'checked' : ''} onchange="renderTabla()" style="width:18px; height:18px; cursor:pointer;">
+                    </td>
                 </tr>
             `;
         });
-        calcularTotal(extraGastos);
+
+        if (!isAdmin) {
+            aplicarVisibilidadCliente();
+        }
+        calcularTotalesGlobales(prorrateoU);
     }
 
-    function calcularTotal(extra) {
-        let subtotal = 0;
-        document.querySelectorAll('.chk-servicio:checked').forEach(chk => {
-            subtotal += parseFloat(servicios[chk.dataset.index].precio);
+    function guardar() {
+        localStorage.setItem('metaX_db_struct', JSON.stringify(servicios));
+    }
+
+    function calcularTotalesGlobales(prorrateoU) {
+        let sumaTotalFinal = 0;
+        const checks = document.querySelectorAll('.chk-servicio:checked');
+        const extraGastos = parseFloat(document.getElementById('extraGastos').value) || 0;
+
+        checks.forEach(chk => {
+            const s = servicios[chk.dataset.index];
+            const c = parseFloat(s.costo) || 0;
+            const p = parseFloat(s.porc) || 0;
+            const t = (c * (1 + p / 100)) + (checks.length > 0 ? (extraGastos / checks.length) : 0);
+            sumaTotalFinal += t;
         });
-        document.getElementById('lblTotalFinal').innerText = (subtotal + extra).toLocaleString();
+
+        document.getElementById('lblCant').innerText = checks.length;
+        document.getElementById('lblProrrateoU').innerText = prorrateoU.toLocaleString('es-MX', {minimumFractionDigits: 2});
+        document.getElementById('lblTotalFinal').innerText = sumaTotalFinal.toLocaleString('es-MX', {minimumFractionDigits: 2});
     }
 
+    // Inicialización
     renderTabla();
+    // Cargar selección inicial de checkboxes de visibilidad
+    document.querySelectorAll('.vis-col').forEach(chk => {
+        if(visCliente[chk.value] !== undefined) chk.checked = visCliente[chk.value];
+    });
 </script>
 </body>
 </html>
