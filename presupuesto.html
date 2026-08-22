@@ -243,6 +243,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      font-family: monospace;
     }
 
     .stat-badge .lbl {
@@ -343,6 +344,13 @@
       border-radius: 4px;
       margin-top: 15px;
     }
+
+    .icon-box {
+      display: inline-block;
+      width: 24px;
+      text-align: center;
+      margin-right: 8px;
+    }
   </style>
 </head>
 <body>
@@ -419,7 +427,10 @@
     <div class="card">
       <div class="card-title">
         <span>Gestión Maestro de Cotización Final (Metax Admin)</span>
-        <button class="btn btn-accent" onclick="addExtraService()">+ Agregar Servicio Adicional</button>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-accent" onclick="addExtraService()">+ Agregar Servicio Adicional</button>
+          <button class="btn" style="background:#059669;" onclick="saveCatalogGeneral()">Guardar en Catálogo General</button>
+        </div>
       </div>
 
       <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; align-items: center;">
@@ -462,6 +473,7 @@
               <th>Comisión Outsourcing (17%)</th>
               <th>IVA (16%)</th>
               <th>Detalle Técnico</th>
+              <th>Propuesta Técnica</th>
               <th>Visibilidad / Regla</th>
             </tr>
           </thead>
@@ -472,9 +484,33 @@
               <td id="m2-sum-base">$0.00</td>
               <td id="m2-sum-outsourcing" style="color: #10b981;">$0.00</td>
               <td id="m2-sum-iva" style="color: #f59e0b;">$0.00</td>
-              <td colspan="2"></td>
+              <td colspan="3"></td>
             </tr>
           </tfoot>
+        </table>
+      </div>
+    </div>
+
+    <!-- SECCIÓN DE CONSIDERACIONES DEL ORGANIZADOR (MODULO 2) -->
+    <div class="card">
+      <div class="card-title">
+        <span>Consideraciones y Requerimientos del Organizador (Logística Externa)</span>
+        <button class="btn btn-accent btn-sm" onclick="addConsideration()">+ Agregar Consideración</button>
+      </div>
+      <p style="font-size:0.85rem; color: var(--text-muted); margin-bottom: 10px;">
+        Insumos, permisos y equipamiento que corren a cargo del comité organizador (no representan un costo dentro de la cotización Metax).
+      </p>
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th style="width: 40px; text-align: center;">#</th>
+              <th>Concepto / Requerimiento Logístico</th>
+              <th>Especificación Técnica</th>
+              <th style="width: 180px;">Visibilidad / Regla</th>
+            </tr>
+          </thead>
+          <tbody id="tbody-considerations"></tbody>
         </table>
       </div>
     </div>
@@ -507,6 +543,24 @@
             </table>
           </div>
         </div>
+
+        <!-- TABLA CONSIDERACIONES CLIENTE -->
+        <div class="card">
+          <div class="card-title">Consideraciones y Requerimientos a Cargo del Organizador</div>
+          <div class="table-responsive">
+            <table>
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Concepto</th>
+                  <th>Especificación</th>
+                  <th>Estatus</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-mod3-considerations"></tbody>
+            </table>
+          </div>
+        </div>
       </div>
 
       <div>
@@ -526,7 +580,7 @@
 
           <div class="stat-badge">
             <div class="lbl">Costo Total Estimado</div>
-            <div class="val" id="stat-total">$0.00</div>
+            <div class="val" id="stat-total">000000</div>
             <div class="progress-bar-container" id="p-container">
               <div class="progress-bar-fill" id="p-fill"></div>
             </div>
@@ -579,29 +633,37 @@
   <script>
     // BASE DE DATOS INICIAL EXTRAÍDA DEL CATÁLOGO EN EXCEL
     const catalogData = [
-      { num: "1", type: "Base", concept: "Cronometraje Base", cost: 18000, detail: "Medición electrónica central de tiempos con tecnología RFID. Incluye antenas/alfombras en salida y meta, línea redundante de respaldo, decoders, software y personal técnico.", proposal: "2 líneas de lectura de 8m en salida/meta (principal y respaldo) y 4 personas de staff técnico. Los equipos MyLaps guardan lecturas localmente en memoria interna.", vis: "obligatorio", selectedAdmin: true },
-      { num: "2", type: "Base", concept: "Chip + Consumibles", cost: 62500, detail: "Etiqueta RFID de un solo uso adherida al reverso del número. Incluye programación, asociación chip-corredor y pruebas previas.", proposal: "BibTag MYLAPS descartable ($25.00/u en escala de 2,500). Tasa de detección >99.8%. OFRECE REEMBOLSO de $14.00 por cada chip no utilizado/pegado.", vis: "obligatorio", selectedAdmin: true },
-      { num: "3", type: "Base", concept: "Número de Competidor (Dorsal)", cost: 25000, detail: "Dorsal impreso e individualizado con número, categoría, gráfica del evento e integración del chip.", proposal: "Número Full Color 19x22 cm ($10.00/u) o Media Carta por $16,250.00 ($6.50/u). Incluye integración.", vis: "obligatorio", selectedAdmin: true },
-      { num: "4", type: "Base", concept: "Puntos Parciales (Ruta)", cost: 6000, detail: "Líneas de lectura intermedias en ruta (5k, 10k, 21k, 30k) para cronometraje de tiempos parciales, ritmos y prevención de cortes.", proposal: "Puntos intermedios con tapetes MyLaps y personal dedicado. $6,000.00 por paquete de parciales. Conectividad celular autónoma.", vis: "visualizar", selectedAdmin: true },
-      { num: "5", type: "Base", concept: "Jueceo de Atletismo", cost: 10500, detail: "Supervisión, juzgamiento de llegadas, validación de recorrido, atención de protestas y emisión de listados oficiales.", proposal: "Especifica 8 jueces (6 meta, 2 ruta) por $10,500.00; o 12 jueces por $14,850.00. Incluye honorarios y traslados.", vis: "visualizar", selectedAdmin: true },
-      { num: "6", type: "Base", concept: "Resultados en Vivo (Live Tracking)", cost: 2000, detail: "Publicación y transmisión en tiempo real de los tiempos de paso y llegadas vía web para consulta de corredores y público.", proposal: "Publicación en web/QR. Búsqueda por nombre, dorsal, filtro por categoría y tiempo chip/oficial. Costo integrado ($2,000.00).", vis: "visualizar", selectedAdmin: true },
-      { num: "6A", type: "Base", concept: "Resultados Preliminares", cost: 0, detail: "Listados iniciales emitidos el mismo día del evento, sujetos a revisión y periodo de protestas.", proposal: "Incluido $0.00. Publicación física en evento y digital vía código QR en sobres/dorsales de forma inmediata al cruzar la meta.", vis: "obligatorio", selectedAdmin: true },
-      { num: "6B", type: "Base", concept: "Resultados Oficiales", cost: 0, detail: "Listas finales validadas por jueces tras depurar descalificaciones, no-iniciados (DNS) y protestas.", proposal: "Incluido $0.00. Lista oficial de premiación el día del evento y depuración final total en 72 horas.", vis: "obligatorio", selectedAdmin: true },
-      { num: "7", type: "Base", concept: "Viáticos Completos (Personal + Jueces)", cost: 18450, detail: "Gastos de hospedaje, transporte, casetas, combustible y alimentación para personal técnico y cuerpo de jueces.", proposal: "INCLUIDO AL 100% ($10,800 staff + $7,650 jueces = $18,450.00). Especifica 2 noches de hospedaje, transporte QRO-GTO y alimentos.", vis: "obligatorio", selectedAdmin: true },
-      { num: "8", type: "Adicional", concept: "Fotofinish / Identificación Visual", cost: 6000, detail: "Sistema de cámara de alta velocidad en meta (escaneo vertical) para desempates en llegadas cerradas.", proposal: "Cámara IdentiLynx frontal 4K integrada al sistema ($6,000.00). Captura continua y respaldo visual para jueces.", vis: "visualizar", selectedAdmin: true },
-      { num: "9", type: "Adicional", concept: "Fotos por Reconocimiento Facial y Dorsal", cost: 20000, detail: "Galería fotográfica interactiva en línea con búsqueda por número de corredor o selfie (reconocimiento biométrico).", proposal: "Sistema de búsqueda biométrica ($8.00/u x 2,500 = $20,000.00). Permite marcos con patrocinadores y descarga social.", vis: "visualizar", selectedAdmin: true },
-      { num: "10", type: "Adicional", concept: "APP de Seguimiento (Live App)", cost: 39000, detail: "Aplicación móvil para seguimiento individual de corredores por parte de familiares, alertas de paso y mapa interactivo.", proposal: "App avanzada ($39,000.00 para 2,500 corredores). Incluye seguimiento de hasta 20 atletas, guía turística y branding.", vis: "visualizar", selectedAdmin: true },
-      { num: "12", type: "Adicional", concept: "Certificación Oficial de Ruta", cost: 18000, detail: "Medición de ruta con Contador Jones por agrimensor certificado WA/AIMS para aval de marcas y récords.", proposal: "$18,000.00 con viáticos incluidos. Medidor Clase A en bicicleta.", vis: "visualizar", selectedAdmin: true },
-      { num: "13", type: "Adicional", concept: "Promociones y Difusión Comercial", cost: 0, detail: "Difusión del evento en plataformas masivas y redes sociales para impulsar inscripciones.", proposal: "Incluye cortesías técnicas y descuentos en puntos adicionales según paquete.", vis: "visualizar", selectedAdmin: true },
-      { num: "14", type: "Adicional", concept: "Módulo 'Verifica tus Datos'", cost: 0, detail: "Estación con lectores RFID en la Expo/Entrega de kits para que el corredor valide que su chip corresponda a sus datos.", proposal: "INCLUIDO $0.00. Lectores RFID autónomos (sin necesidad de internet) y tablets con staff.", vis: "visualizar", selectedAdmin: true },
-      { num: "15", type: "Adicional", concept: "Portal de Resultados / Certificados", cost: 0, detail: "Plataforma web para consulta de tiempos oficiales, desglose por parciales y descarga de certificados digitales Finisher.", proposal: "INCLUIDO $0.00. Alta en portal Everesp/Oclock, envío de mail personalizado y descarga gratuita ilimitada.", vis: "visualizar", selectedAdmin: true },
-      { num: "16", type: "Adicional", concept: "Papelería y Consumibles Operativos", cost: 4500, detail: "Materiales de oficina para meta y kits: listas impresas, etiquetas, imperdibles, papelería de jueceo.", proposal: "Cotiza $1.80 por participante ($4,500.00 para 2,500). Incluye imprenta, diplomas físicos, etiquetas e imperdibles.", vis: "visualizar", selectedAdmin: true },
-      { num: "17", type: "Adicional", concept: "Sobres / Integración de Kits", cost: 3600, detail: "Empacado, personalizado e integración del dorsal, chip e insumos del corredor en sobre transparente.", proposal: "Sobre celofán $1,200/millar ($3,600.00 para 2,500 u).", vis: "visualizar", selectedAdmin: true },
-      { num: "18", type: "Adicional", concept: "Certificado / Constancia de Participación", cost: 0, detail: "Emisión e impresión digital de constancias de participación para cada atleta finalista.", proposal: "INCLUIDO $0.00 dentro del servicio de resultados digitales.", vis: "visualizar", selectedAdmin: true },
-      { num: "19", type: "Adicional", concept: "Base de Datos y Respaldo de Resultados", cost: 0, detail: "Entrega de bases de datos completas de participantes, tiempos chip/gun, parciales y reportes estadísticos.", proposal: "INCLUIDO $0.00. Entrega archivos digitales finales, respaldo de lecturas y reporte estadístico detallado.", vis: "visualizar", selectedAdmin: true },
-      { num: "20", type: "Adicional", concept: "Protocolo de Contingencia Técnica", cost: 3000, detail: "Planes de respaldo ante fallas de energía, pérdida de red celular/internet, falla de antenas o computadoras.", proposal: "Equipos autónomos con batería de 8h, antenas dobles de respaldo, comunicación Starlink + celular e impresión local.", vis: "visualizar", selectedAdmin: true },
-      { num: "21", type: "Adicional", concept: "Personal de Operación Dedicado", cost: 1600, detail: "Staff técnico especializado para dirección, instalación, operación de software y gestión de incidencias.", proposal: "Desglosa staff: Coordinador, técnicos de cronometraje, operadores de resultados ($1,600 adicional).", vis: "visualizar", selectedAdmin: true },
-      { num: "22", type: "Adicional", concept: "Protocolo de Resultados y Premiación", cost: 0, detail: "Impresión de listados oficiales firmados por Juez Árbitro, filtros de control pre-premiación y atención de protestas.", proposal: "INCLUIDO $0.00. Impresión de clasificaciones por categoría firmadas por Jueces previo al estrado.", vis: "visualizar", selectedAdmin: true }
+      { num: "1", type: "Base", concept: "Cronometraje Base", cost: 18000, detail: "Medición electrónica central de tiempos con tecnología RFID. Incluye antenas/alfombras en salida y meta, línea redundante de respaldo, decoders, software y personal técnico.", proposal: "2 líneas de lectura de 8m en salida/meta (principal y respaldo) y 4 personas de staff técnico. Los equipos MyLaps guardan lecturas localmente en memoria interna.", vis: "obligatorio", selectedAdmin: true, icon: "⏱️" },
+      { num: "2", type: "Base", concept: "Chip + Consumibles", cost: 62500, detail: "Etiqueta RFID de un solo uso adherida al reverso del número. Incluye programación, asociación chip-corredor y pruebas previas.", proposal: "BibTag MYLAPS descartable ($25.00/u en escala de 2,500). Tasa de detección >99.8%. OFRECE REEMBOLSO de $14.00 por cada chip no utilizado/pegado.", vis: "obligatorio", selectedAdmin: true, icon: "🏷️" },
+      { num: "3", type: "Base", concept: "Número de Competidor (Dorsal)", cost: 25000, detail: "Dorsal impreso e individualizado con número, categoría, gráfica del evento e integración del chip.", proposal: "Número Full Color 19x22 cm ($10.00/u) o Media Carta por $16,250.00 ($6.50/u). Incluye integración.", vis: "obligatorio", selectedAdmin: true, icon: "🎽" },
+      { num: "4", type: "Base", concept: "Puntos Parciales (Ruta)", cost: 6000, detail: "Líneas de lectura intermedias en ruta (5k, 10k, 21k, 30k) para cronometraje de tiempos parciales, ritmos y prevención de cortes.", proposal: "Puntos intermedios con tapetes MyLaps y personal dedicado. $6,000.00 por paquete de parciales. Conectividad celular autónoma.", vis: "visualizar", selectedAdmin: true, icon: "📍" },
+      { num: "5", type: "Base", concept: "Jueceo de Atletismo", cost: 10500, detail: "Supervisión, juzgamiento de llegadas, validación de recorrido, atención de protestas y emisión de listados oficiales.", proposal: "Especifica 8 jueces (6 meta, 2 ruta) por $10,500.00; o 12 jueces por $14,850.00. Incluye honorarios y traslados.", vis: "visualizar", selectedAdmin: true, icon: "👨‍⚖️" },
+      { num: "6", type: "Base", concept: "Resultados en Vivo (Live Tracking)", cost: 2000, detail: "Publicación y transmisión en tiempo real de los tiempos de paso y llegadas vía web para consulta de corredores y público.", proposal: "Publicación en web/QR. Búsqueda por nombre, dorsal, filtro por categoría y tiempo chip/oficial. Costo integrado ($2,000.00).", vis: "visualizar", selectedAdmin: true, icon: "📱" },
+      { num: "6A", type: "Base", concept: "Resultados Preliminares", cost: 0, detail: "Listados iniciales emitidos el mismo día del evento, sujetos a revisión y periodo de protestas.", proposal: "Incluido $0.00. Publicación física en evento y digital vía código QR en sobres/dorsales de forma inmediata al cruzar la meta.", vis: "obligatorio", selectedAdmin: true, icon: "📋" },
+      { num: "6B", type: "Base", concept: "Resultados Oficiales", cost: 0, detail: "Listas finales validadas por jueces tras depurar descalificaciones, no-iniciados (DNS) y protestas.", proposal: "Incluido $0.00. Lista oficial de premiación el día del evento y depuración final total en 72 horas.", vis: "obligatorio", selectedAdmin: true, icon: "🏆" },
+      { num: "7", type: "Base", concept: "Viáticos Completos (Personal + Jueces)", cost: 18450, detail: "Gastos de hospedaje, transporte, casetas, combustible y alimentación para personal técnico y cuerpo de jueces.", proposal: "INCLUIDO AL 100% ($10,800 staff + $7,650 jueces = $18,450.00). Especifica 2 noches de hospedaje, transporte QRO-GTO y alimentos.", vis: "obligatorio", selectedAdmin: true, icon: "🚗" },
+      { num: "8", type: "Adicional", concept: "Fotofinish / Identificación Visual", cost: 6000, detail: "Sistema de cámara de alta velocidad en meta (escaneo vertical) para desempates en llegadas cerradas.", proposal: "Cámara IdentiLynx frontal 4K integrada al sistema ($6,000.00). Captura continua y respaldo visual para jueces.", vis: "visualizar", selectedAdmin: true, icon: "📷" },
+      { num: "9", type: "Adicional", concept: "Fotos por Reconocimiento Facial y Dorsal", cost: 20000, detail: "Galería fotográfica interactiva en línea con búsqueda por número de corredor o selfie (reconocimiento biométrico).", proposal: "Sistema de búsqueda biométrica ($8.00/u x 2,500 = $20,000.00). Permite marcos con patrocinadores y descarga social.", vis: "visualizar", selectedAdmin: true, icon: "🤳" },
+      { num: "10", type: "Adicional", concept: "APP de Seguimiento (Live App)", cost: 39000, detail: "Aplicación móvil para seguimiento individual de corredores por parte de familiares, alertas de paso y mapa interactivo.", proposal: "App avanzada ($39,000.00 para 2,500 corredores). Incluye seguimiento de hasta 20 atletas, guía turística y branding.", vis: "visualizar", selectedAdmin: true, icon: "📲" },
+      { num: "12", type: "Adicional", concept: "Certificación Oficial de Ruta", cost: 18000, detail: "Medición de ruta con Contador Jones por agrimensor certificado WA/AIMS para aval de marcas y récords.", proposal: "$18,000.00 con viáticos incluidos. Medidor Clase A en bicicleta.", vis: "visualizar", selectedAdmin: true, icon: "📐" },
+      { num: "13", type: "Adicional", concept: "Promociones y Difusión Comercial", cost: 0, detail: "Difusión del evento en plataformas masivas y redes sociales para impulsar inscripciones.", proposal: "Incluye cortesías técnicas y descuentos en puntos adicionales según paquete.", vis: "visualizar", selectedAdmin: true, icon: "📢" },
+      { num: "14", type: "Adicional", concept: "Módulo 'Verifica tus Datos'", cost: 0, detail: "Estación con lectores RFID en la Expo/Entrega de kits para que el corredor valide que su chip corresponda a sus datos.", proposal: "INCLUIDO $0.00. Lectores RFID autónomos (sin necesidad de internet) y tablets con staff.", vis: "visualizar", selectedAdmin: true, icon: "🔍" },
+      { num: "15", type: "Adicional", concept: "Portal de Resultados / Certificados", cost: 0, detail: "Plataforma web para consulta de tiempos oficiales, desglose por parciales y descarga de certificados digitales Finisher.", proposal: "INCLUIDO $0.00. Alta en portal Everesp/Oclock, envío de mail personalizado y descarga gratuita ilimitada.", vis: "visualizar", selectedAdmin: true, icon: "🌐" },
+      { num: "16", type: "Adicional", concept: "Papelería y Consumibles Operativos", cost: 4500, detail: "Materiales de oficina para meta y kits: listas impresas, etiquetas, imperdibles, papelería de jueceo.", proposal: "Cotiza $1.80 por participante ($4,500.00 para 2,500). Incluye imprenta, diplomas físicos, etiquetas e imperdibles.", vis: "visualizar", selectedAdmin: true, icon: "📦" },
+      { num: "17", type: "Adicional", concept: "Sobres / Integración de Kits", cost: 3600, detail: "Empacado, personalizado e integración del dorsal, chip e insumos del corredor en sobre transparente.", proposal: "Sobre celofán $1,200/millar ($3,600.00 para 2,500 u).", vis: "visualizar", selectedAdmin: true, icon: "✉️" },
+      { num: "18", type: "Adicional", concept: "Certificado / Constancia de Participación", cost: 0, detail: "Emisión e impresión digital de constancias de participación para cada atleta finalista.", proposal: "INCLUIDO $0.00 dentro del servicio de resultados digitales.", vis: "visualizar", selectedAdmin: true, icon: "📜" },
+      { num: "19", type: "Adicional", concept: "Base de Datos y Respaldo de Resultados", cost: 0, detail: "Entrega de bases de datos completas de participantes, tiempos chip/gun, parciales y reportes estadísticos.", proposal: "INCLUIDO $0.00. Entrega archivos digitales finales, respaldo de lecturas y reporte estadístico detallado.", vis: "visualizar", selectedAdmin: true, icon: "💾" },
+      { num: "20", type: "Adicional", concept: "Protocolo de Contingencia Técnica", cost: 3000, detail: "Planes de respaldo ante fallas de energía, pérdida de red celular/internet, falla de antenas o computadoras.", proposal: "Equipos autónomos con batería de 8h, antenas dobles de respaldo, comunicación Starlink + celular e impresión local.", vis: "visualizar", selectedAdmin: true, icon: "🛡️" },
+      { num: "21", type: "Adicional", concept: "Personal de Operación Dedicado", cost: 1600, detail: "Staff técnico especializado para dirección, instalación, operación de software y gestión de incidencias.", proposal: "Desglosa staff: Coordinador, técnicos de cronometraje, operadores de resultados ($1,600 adicional).", vis: "visualizar", selectedAdmin: true, icon: "👥" },
+      { num: "22", type: "Adicional", concept: "Protocolo de Resultados y Premiación", cost: 0, detail: "Impresión de listados oficiales firmados por Juez Árbitro, filtros de control pre-premiación y atención de protestas.", proposal: "INCLUIDO $0.00. Impresión de clasificaciones por categoría firmadas por Jueces previo al estrado.", vis: "visualizar", selectedAdmin: true, icon: "🥇" }
+    ];
+
+    // CATALOGO DE CONSIDERACIONES LOGÍSTICAS DEL ORGANIZADOR
+    const organizerConsiderations = [
+      { id: "C1", concept: "Planta de Luz e Iluminación", spec: "Suministro eléctrico regulado de 110V a pie de meta para equipos centrales de cronometraje y sonido.", vis: "obligatorio" },
+      { id: "C2", concept: "Tránsito y Seguridad Pública", spec: "Resguardo y cierre de vialidades con patrullas y elementos de tránsito en todo el circuito de carrera.", vis: "obligatorio" },
+      { id: "C3", concept: "Vallado de Zona de Meta", spec: "Suministro e instalación de 100m de vallas metálicas para canal de meta y zona de juzgamiento.", vis: "visualizar" },
+      { id: "C4", concept: "Permisos y Licencias Municipales", spec: "Trámite y pagos ante autoridades locales para uso de vía pública, protección civil y ambulancia.", vis: "obligatorio" }
     ];
 
     let userSelections = {};
@@ -611,13 +673,17 @@
     let pendingBtnTarget = null;
     let isCalculatingEffect = false;
     let lastCalculatedTotalMetax = 0;
+    let slotMachineInterval = null;
 
     // Inicialización
     window.onload = function() {
       renderMod1();
       renderMod2();
+      renderConsiderationsAdmin();
       initClientSelections();
       renderMod3();
+      renderConsiderationsClient();
+      startSlotMachineEffect();
     };
 
     function switchTab(tabId, btnElement) {
@@ -627,7 +693,10 @@
       document.getElementById(tabId).classList.add('active');
       if (btnElement) btnElement.classList.add('active');
 
-      if(tabId === 'mod3') renderMod3();
+      if(tabId === 'mod3') {
+        renderMod3();
+        renderConsiderationsClient();
+      }
     }
 
     // Modal Admin
@@ -709,6 +778,7 @@
           <td style="color: #10b981; font-weight: 600;">$${outsourcing.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td>
           <td style="color: #f59e0b; font-weight: 600;">$${iva.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td>
           <td><input type="text" value="${item.detail}" onchange="catalogData[${index}].detail = this.value; renderMod3();"></td>
+          <td><input type="text" value="${item.proposal || ''}" onchange="catalogData[${index}].proposal = this.value; renderMod3();"></td>
           <td>
             <select onchange="catalogData[${index}].vis = this.value; renderMod3();">
               <option value="obligatorio" ${item.vis==='obligatorio'?'selected':''}>Obligatorio</option>
@@ -734,6 +804,43 @@
       document.getElementById('dash-m2-total').innerText = `$${costoTotalIva.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
     }
 
+    function renderConsiderationsAdmin() {
+      const tbody = document.getElementById('tbody-considerations');
+      tbody.innerHTML = '';
+      organizerConsiderations.forEach((item, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="text-align:center;">${item.id}</td>
+          <td><input type="text" value="${item.concept}" onchange="organizerConsiderations[${index}].concept = this.value; renderConsiderationsClient();"></td>
+          <td><input type="text" value="${item.spec}" onchange="organizerConsiderations[${index}].spec = this.value; renderConsiderationsClient();"></td>
+          <td>
+            <select onchange="organizerConsiderations[${index}].vis = this.value; renderConsiderationsClient();">
+              <option value="obligatorio" ${item.vis==='obligatorio'?'selected':''}>Obligatorio</option>
+              <option value="visualizar" ${item.vis==='visualizar'?'selected':''}>Visualizar</option>
+              <option value="ocultar" ${item.vis==='ocultar'?'selected':''}>Ocultar</option>
+            </select>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function addConsideration() {
+      const nextId = "C" + (organizerConsiderations.length + 1);
+      organizerConsiderations.push({
+        id: nextId,
+        concept: "Nuevo Requerimiento Logístico",
+        spec: "Descripción técnica del requerimiento",
+        vis: "visualizar"
+      });
+      renderConsiderationsAdmin();
+      renderConsiderationsClient();
+    }
+
+    function saveCatalogGeneral() {
+      alert("¡Éxito! Todos los servicios adicionales y consideraciones se han guardado permanentemente en el Catálogo General de Metax Pro.");
+    }
+
     function selectAllMod2(status) {
       catalogData.forEach(item => item.selectedAdmin = status);
       renderMod2();
@@ -745,12 +852,13 @@
       catalogData.push({
         num: nextNum,
         type: "Adicional Extra",
-        concept: "Nuevo Servicio",
+        concept: "Nuevo Servicio Extra",
         cost: 0,
-        detail: "Descripción del servicio adicional",
-        proposal: "Propuesta técnica adicional",
+        detail: "Detalle técnico del servicio adicional",
+        proposal: "Propuesta técnica recomendada",
         vis: "visualizar",
-        selectedAdmin: true
+        selectedAdmin: true,
+        icon: "⚡"
       });
       renderMod2();
       renderMod3();
@@ -814,10 +922,10 @@
             selectedAdicionalSum += costoMetaxItem;
           }
 
-          // Agregar al resumen de servicios cliente
+          // Agregar al resumen de servicios cliente con ICONO REPRESENTATIVO
           const li = document.createElement('li');
           li.style.cssText = 'padding: 8px 0; border-bottom: 1px dashed var(--panel-border); font-size: 0.85rem;';
-          li.innerHTML = `<strong style="color: #38bdf8;">${item.concept}:</strong> ${item.detail}`;
+          li.innerHTML = `<span class="icon-box">${item.icon || '⚙️'}</span> <strong style="color: #38bdf8;">${item.concept}:</strong> ${item.detail}`;
           summaryList.appendChild(li);
         }
 
@@ -829,11 +937,11 @@
           </td>
           <td>${item.num}</td>
           <td>
-            <strong>${item.concept}</strong><br>
+            <span class="icon-box">${item.icon || '⚙️'}</span><strong>${item.concept}</strong><br>
             ${isReq ? '<span class="badge-req">Obligatorio</span>' : '<span class="badge-opt">Opcional</span>'}
           </td>
           <td style="font-size:0.8rem; color: var(--text-muted);">${item.detail}</td>
-          <td style="font-size:0.8rem; color: var(--text-muted);">${item.proposal}</td>
+          <td style="font-size:0.8rem; color: var(--text-muted);">${item.proposal || ''}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -844,9 +952,6 @@
       const numCorredores = parseInt(document.getElementById('select-corredores').value) || 2500;
       const costoPorAtleta = currentTotalMetax / numCorredores;
 
-      if (!isCalculatingEffect) {
-        document.getElementById('stat-total').innerText = `$${currentTotalMetax.toLocaleString('es-MX', {minimumFractionDigits:2})}`;
-      }
       document.getElementById('stat-prorrateo').innerText = `$${costoPorAtleta.toLocaleString('es-MX', {minimumFractionDigits:2})} MXN`;
 
       // Dashboard Cliente
@@ -857,9 +962,40 @@
       updateChart(selectedBaseSum, selectedAdicionalSum);
     }
 
+    function renderConsiderationsClient() {
+      const tbody = document.getElementById('tbody-mod3-considerations');
+      tbody.innerHTML = '';
+
+      organizerConsiderations.forEach(item => {
+        if(item.vis === 'ocultar') return;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${item.id}</td>
+          <td><strong>${item.concept}</strong></td>
+          <td style="font-size:0.85rem; color: var(--text-muted);">${item.spec}</td>
+          <td><span class="badge-req" style="background:#0284c7; color:#fff;">A cargo de Organizador</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // EFECTO DE NÚMEROS CORRIENDO CONTINUO (000000) AL CARGAR LA PÁGINA
+    function startSlotMachineEffect() {
+      const statTotalEl = document.getElementById('stat-total');
+      slotMachineInterval = setInterval(() => {
+        if (!isCalculatingEffect) {
+          let randomDigits = Math.floor(100000 + Math.random() * 900000);
+          statTotalEl.innerText = randomDigits.toString();
+        }
+      }, 80);
+    }
+
     function triggerCalculationEffect() {
       if (isCalculatingEffect) return;
       isCalculatingEffect = true;
+
+      if (slotMachineInterval) clearInterval(slotMachineInterval);
 
       const statTotalEl = document.getElementById('stat-total');
       const pContainer = document.getElementById('p-container');
@@ -879,14 +1015,13 @@
         
         pFill.style.width = (progress * 100) + '%';
 
-        // Efecto de números aleatorios en movimiento
         let randomVal = Math.floor(Math.random() * (lastCalculatedTotalMetax * 1.5)) + 10000;
         statTotalEl.innerText = `$${randomVal.toLocaleString('es-MX', {minimumFractionDigits:2})}`;
 
         if (progress >= 1) {
           clearInterval(interval);
           pContainer.style.display = 'none';
-          statTotalEl.innerHTML = `<span style="font-size: 1.05rem; color: #38bdf8; cursor: pointer;" onclick="alert('Iniciando proceso de contrato formal...')">Da click solicita cotización formal y contrato</span>`;
+          statTotalEl.innerHTML = `<span style="font-size: 1.05rem; color: #38bdf8; cursor: pointer; text-decoration: underline;" onclick="alert('Iniciando proceso de cotización formal y contrato...')">Da click solicita cotización formal y contrato</span>`;
           btnCalc.disabled = false;
           isCalculatingEffect = false;
         }
