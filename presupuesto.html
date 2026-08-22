@@ -19,8 +19,19 @@
       --text-muted: #94a3b8;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-    body { background-color: var(--bg-dark); color: var(--text-main); padding: 20px; line-height: 1.5; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      padding: 20px;
+      line-height: 1.5;
+    }
 
     header {
       text-align: center;
@@ -28,8 +39,17 @@
       padding-bottom: 20px;
       border-bottom: 1px solid var(--panel-border);
     }
-    header h1 { font-size: 2.2rem; font-weight: 800; color: #38bdf8; }
-    header p { color: var(--text-muted); font-size: 1rem; }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: #38bdf8;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
 
     /* Contenedor Tabs */
     .nav-tabs {
@@ -39,6 +59,7 @@
       margin-bottom: 25px;
       flex-wrap: wrap;
     }
+
     .tab-btn {
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
@@ -49,15 +70,22 @@
       font-weight: 600;
       transition: all 0.3s ease;
     }
-    .tab-btn.active, .tab-btn:hover {
+
+    .tab-btn.active,
+    .tab-btn:hover {
       background: var(--primary);
       color: #fff;
       border-color: var(--primary);
     }
 
     /* Secciones */
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
 
     .card {
       background: var(--panel-bg);
@@ -65,8 +93,9 @@
       border-radius: 12px;
       padding: 24px;
       margin-bottom: 25px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
     }
+
     .card-title {
       font-size: 1.3rem;
       font-weight: 700;
@@ -75,14 +104,38 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
     }
 
     /* Tablas */
-    .table-responsive { overflow-x: auto; margin-top: 15px; }
-    table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.9rem; }
-    th, td { padding: 12px 14px; border-bottom: 1px solid var(--panel-border); }
-    th { background-color: rgba(255,255,255,0.05); color: #38bdf8; font-weight: 600; }
-    tr:hover { background-color: rgba(255,255,255,0.02); }
+    .table-responsive {
+      overflow-x: auto;
+      margin-top: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th,
+    td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--panel-border);
+    }
+
+    th {
+      background-color: rgba(255, 255, 255, 0.05);
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.02);
+    }
 
     /* Inputs y botones */
     .btn {
@@ -95,11 +148,39 @@
       font-weight: 600;
       transition: background 0.2s;
     }
-    .btn:hover { background: var(--primary-hover); }
-    .btn-accent { background: var(--accent); }
-    .btn-accent:hover { background: #059669; }
 
-    select, input[type="text"], input[type="number"] {
+    .btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-accent {
+      background: var(--accent);
+    }
+
+    .btn-accent:hover {
+      background: #059669;
+    }
+
+    .btn-sm {
+      padding: 6px 12px;
+      font-size: 0.8rem;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--panel-border);
+      color: var(--text-muted);
+    }
+
+    .btn-outline:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: #fff;
+    }
+
+    select,
+    input[type="text"],
+    input[type="number"],
+    input[type="password"] {
       background: #0f172a;
       border: 1px solid var(--panel-border);
       color: #fff;
@@ -110,29 +191,158 @@
 
     /* Modal Pass */
     .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       z-index: 1000;
     }
+
     .modal-box {
-      background: var(--panel-bg); padding: 30px; border-radius: 12px;
-      border: 1px solid var(--panel-border); text-align: center; max-width: 400px; width: 90%;
+      background: var(--panel-bg);
+      padding: 30px;
+      border-radius: 12px;
+      border: 1px solid var(--panel-border);
+      text-align: center;
+      max-width: 400px;
+      width: 90%;
     }
 
     /* Layout Módulo 3 */
-    .mod3-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
-    @media (max-width: 900px) { .mod3-grid { grid-template-columns: 1fr; } }
+    .mod3-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .mod3-grid {
+        grid-template-columns: 1fr;
+      }
+    }
 
     .stat-badge {
       background: rgba(2, 132, 199, 0.2);
       border: 1px solid var(--primary);
-      padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 15px;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      margin-bottom: 15px;
     }
-    .stat-badge .val { font-size: 1.8rem; font-weight: 800; color: #38bdf8; }
-    .stat-badge .lbl { font-size: 0.85rem; color: var(--text-muted); }
 
-    .badge-req { background: #991b1b; color: #fca5a5; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; }
-    .badge-opt { background: #065f46; color: #6ee7b7; padding: 2px 8px; border-radius: 4px; font-size: 0.75rem; }
+    .stat-badge .val {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #38bdf8;
+      min-height: 2.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .stat-badge .lbl {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .badge-req {
+      background: #991b1b;
+      color: #fca5a5;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+
+    .badge-opt {
+      background: #065f46;
+      color: #6ee7b7;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+
+    /* Dashboard Metax Admin */
+    .admin-dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .dash-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .dash-card .d-val {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-top: 5px;
+    }
+
+    /* Barra de progreso animación */
+    .progress-bar-container {
+      width: 100%;
+      background-color: #0f172a;
+      border-radius: 8px;
+      overflow: hidden;
+      height: 8px;
+      margin-top: 10px;
+      display: none;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background-color: #38bdf8;
+      width: 0%;
+      transition: width 0.1s linear;
+      box-shadow: 0 0 10px #38bdf8;
+    }
+
+    /* Dashboard Cliente */
+    .client-dash-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .client-dash-card {
+      background: rgba(2, 132, 199, 0.1);
+      border: 1px solid var(--primary);
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .client-dash-card .c-num {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #38bdf8;
+    }
+
+    .client-dash-card .c-lbl {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .legal-notice {
+      background: rgba(245, 158, 11, 0.1);
+      border-left: 4px solid var(--warning);
+      padding: 12px;
+      font-size: 0.8rem;
+      color: #fde68a;
+      border-radius: 4px;
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
@@ -143,13 +353,13 @@
   </header>
 
   <nav class="nav-tabs">
-    <button class="tab-btn active" onclick="switchTab('mod1')">1. Comparativa de Cotizaciones</button>
-    <button class="tab-btn" onclick="openAdminModal()">2. Cotización Final (Admin)</button>
-    <button class="tab-btn" onclick="switchTab('mod3')">3. Cotizador para Cliente</button>
+    <button class="tab-btn" onclick="requestAdminAccess('mod1', this)">1. Comparativa (Admin)</button>
+    <button class="tab-btn" onclick="requestAdminAccess('mod2', this)">2. Cotización Final (Admin)</button>
+    <button class="tab-btn active" onclick="switchTab('mod3', this)">3. Cotizador para Cliente</button>
   </nav>
 
-  <!-- MÓDULO 1: COMPARATIVA -->
-  <section id="mod1" class="tab-content active">
+  <!-- MÓDULO 1: COMPARATIVA (ADMIN) -->
+  <section id="mod1" class="tab-content">
     <div class="card">
       <div class="card-title">Carga y Comparativa de Cotizaciones (Proveedores)</div>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; margin-bottom: 20px;">
@@ -195,10 +405,11 @@
   <!-- MODAL DE AUTENTICACIÓN ADMIN -->
   <div id="admin-modal" class="modal-overlay" style="display:none;">
     <div class="modal-box">
-      <h3 style="margin-bottom: 15px; color:#38bdf8;">Acceso Administrador</h3>
-      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Ingrese la contraseña genérica de Metax Pro:</p>
+      <h3 style="margin-bottom: 15px; color:#38bdf8;">Acceso Restringido</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">Ingrese la contraseña de administrador Metax Pro:</p>
       <input type="password" id="admin-pass" placeholder="Contraseña" style="margin-bottom: 15px;">
       <button class="btn" style="width: 100%;" onclick="checkAdminAuth()">Acceder</button>
+      <button class="btn" style="width: 100%; background: transparent; color: var(--text-muted); margin-top: 5px;" onclick="closeAdminModal()">Cancelar</button>
       <p id="pass-error" style="color: #ef4444; font-size: 0.8rem; margin-top: 10px; display:none;">Contraseña incorrecta</p>
     </div>
   </div>
@@ -211,38 +422,76 @@
         <button class="btn btn-accent" onclick="addExtraService()">+ Agregar Servicio Adicional</button>
       </div>
 
-      <div style="display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;">
+      <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; align-items: center;">
         <button class="btn" onclick="importFromMod1()">Extraer Datos de Comparativa (Cotización 1)</button>
         <label class="btn" style="background:#475569; cursor:pointer;">
           Subir Excel Maestro
           <input type="file" accept=".xlsx, .csv" style="display:none;" onchange="alert('Excel Maestro importado exitosamente')">
         </label>
+        <div style="margin-left: auto; display: flex; gap: 8px;">
+          <button class="btn btn-sm btn-outline" onclick="selectAllMod2(true)">Seleccionar Todos</button>
+          <button class="btn btn-sm btn-outline" onclick="selectAllMod2(false)">Deseleccionar Todos</button>
+        </div>
+      </div>
+
+      <!-- DASHBOARD MODULO 2 -->
+      <div class="admin-dashboard-grid">
+        <div class="dash-card">
+          <div style="font-size: 0.8rem; color: var(--text-muted);">1. Costos Base (Cotización)</div>
+          <div class="d-val" id="dash-m2-base" style="color: #38bdf8;">$0.00</div>
+        </div>
+        <div class="dash-card">
+          <div style="font-size: 0.8rem; color: var(--text-muted);">2. Costo Metax (Base + 17% Outsourcing)</div>
+          <div class="d-val" id="dash-m2-metax" style="color: #10b981;">$0.00</div>
+        </div>
+        <div class="dash-card">
+          <div style="font-size: 0.8rem; color: var(--text-muted);">3. Costo Total (+ 16% IVA)</div>
+          <div class="d-val" id="dash-m2-total" style="color: #f59e0b;">$0.00</div>
+        </div>
       </div>
 
       <div class="table-responsive">
         <table>
           <thead>
             <tr>
+              <th style="width: 40px; text-align: center;">Sel.</th>
               <th>#</th>
               <th>Tipo</th>
               <th>Concepto</th>
               <th>Costo Base ($)</th>
+              <th>Comisión Outsourcing (17%)</th>
+              <th>IVA (16%)</th>
               <th>Detalle Técnico</th>
               <th>Visibilidad / Regla</th>
             </tr>
           </thead>
           <tbody id="tbody-mod2"></tbody>
+          <tfoot>
+            <tr style="font-weight: bold; background: rgba(2, 132, 199, 0.1);">
+              <td colspan="4" style="text-align: right;">SUMATORIA SERVICIOS SELECCIONADOS:</td>
+              <td id="m2-sum-base">$0.00</td>
+              <td id="m2-sum-outsourcing" style="color: #10b981;">$0.00</td>
+              <td id="m2-sum-iva" style="color: #f59e0b;">$0.00</td>
+              <td colspan="2"></td>
+            </tr>
+          </tfoot>
         </table>
       </div>
     </div>
   </section>
 
   <!-- MÓDULO 3: VISTA CLIENTE -->
-  <section id="mod3" class="tab-content">
+  <section id="mod3" class="tab-content active">
     <div class="mod3-grid">
       <div>
         <div class="card">
-          <div class="card-title">Selección de Servicios para su Evento</div>
+          <div class="card-title">
+            <span>Selección de Servicios para su Evento</span>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-sm btn-outline" onclick="selectAllMod3(true)">Seleccionar Todos</button>
+              <button class="btn btn-sm btn-outline" onclick="selectAllMod3(false)">Deseleccionar Todos</button>
+            </div>
+          </div>
           <div class="table-responsive">
             <table>
               <thead>
@@ -278,10 +527,13 @@
           <div class="stat-badge">
             <div class="lbl">Costo Total Estimado</div>
             <div class="val" id="stat-total">$0.00</div>
+            <div class="progress-bar-container" id="p-container">
+              <div class="progress-bar-fill" id="p-fill"></div>
+            </div>
           </div>
 
           <div class="stat-badge" style="border-color: var(--accent); background: rgba(16, 185, 129, 0.1);">
-            <div class="lbl">Prorrateo Estimado por Atleta</div>
+            <div class="lbl">Prorrateo Estimado por Atleta (Costo Metax)</div>
             <div class="val" id="stat-prorrateo" style="color: var(--accent);">$0.00</div>
           </div>
 
@@ -289,8 +541,37 @@
             <canvas id="chartPresupuesto" width="100%" height="200"></canvas>
           </div>
 
-          <button class="btn btn-accent" style="width:100%; margin-top:20px;" onclick="alert('Cotización enviada exitosamente')">Finalizar y Solicitar Contrato</button>
+          <button class="btn btn-accent" id="btn-calc" style="width:100%; margin-top:20px;" onclick="triggerCalculationEffect()">Calcular y Generar Cotización</button>
+
+          <div class="legal-notice">
+            * Los precios son vigentes a 3 días y pueden estar sujetos a cambios sin previo aviso.<br>
+            * Los costos expuestos no incluyen IVA. En caso de requerir factura se cobrará un 16% adicional al costo total.
+          </div>
         </div>
+      </div>
+    </div>
+
+    <!-- DASHBOARD RESUMEN CLIENTE -->
+    <div class="card">
+      <div class="card-title">Resumen Ejecutivo de Servicios Seleccionados</div>
+      <div class="client-dash-grid">
+        <div class="client-dash-card">
+          <div class="c-num" id="dash-c-base">0</div>
+          <div class="c-lbl">Servicios Base</div>
+        </div>
+        <div class="client-dash-card">
+          <div class="c-num" id="dash-c-adic">0</div>
+          <div class="c-lbl">Servicios Adicionales</div>
+        </div>
+        <div class="client-dash-card">
+          <div class="c-num" id="dash-c-atletas">2,500</div>
+          <div class="c-lbl">Atletas Pronosticados</div>
+        </div>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <h4 style="color: #38bdf8; margin-bottom: 10px;">Desglose de Servicios Seleccionados:</h4>
+        <ul id="client-services-summary" style="list-style: none; padding-left: 0;"></ul>
       </div>
     </div>
   </section>
@@ -298,33 +579,38 @@
   <script>
     // BASE DE DATOS INICIAL EXTRAÍDA DEL CATÁLOGO EN EXCEL
     const catalogData = [
-      { num: "1", type: "Base", concept: "Cronometraje Base", cost: 18000, detail: "Medición electrónica central de tiempos con tecnología RFID. Incluye antenas/alfombras en salida y meta, línea redundante de respaldo, decoders, software y personal técnico.", proposal: "2 líneas de lectura de 8m en salida/meta (principal y respaldo) y 4 personas de staff técnico. Los equipos MyLaps guardan lecturas localmente en memoria interna.", vis: "obligatorio" },
-      { num: "2", type: "Base", concept: "Chip + Consumibles", cost: 62500, detail: "Etiqueta RFID de un solo uso adherida al reverso del número. Incluye programación, asociación chip-corredor y pruebas previas.", proposal: "BibTag MYLAPS descartable ($25.00/u en escala de 2,500). Tasa de detección >99.8%. OFRECE REEMBOLSO de $14.00 por cada chip no utilizado/pegado.", vis: "obligatorio" },
-      { num: "3", type: "Base", concept: "Número de Competidor (Dorsal)", cost: 25000, detail: "Dorsal impreso e individualizado con número, categoría, gráfica del evento e integración del chip.", proposal: "Número Full Color 19x22 cm ($10.00/u) o Media Carta por $16,250.00 ($6.50/u). Incluye integración.", vis: "obligatorio" },
-      { num: "4", type: "Base", concept: "Puntos Parciales (Ruta)", cost: 6000, detail: "Líneas de lectura intermedias en ruta (5k, 10k, 21k, 30k) para cronometraje de tiempos parciales, ritmos y prevención de cortes.", proposal: "Puntos intermedios con tapetes MyLaps y personal dedicado. $6,000.00 por paquete de parciales. Conectividad celular autónoma.", vis: "visualizar" },
-      { num: "5", type: "Base", concept: "Jueceo de Atletismo", cost: 10500, detail: "Supervisión, juzgamiento de llegadas, validación de recorrido, atención de protestas y emisión de listados oficiales.", proposal: "Especifica 8 jueces (6 meta, 2 ruta) por $10,500.00; o 12 jueces por $14,850.00. Incluye honorarios y traslados.", vis: "visualizar" },
-      { num: "6", type: "Base", concept: "Resultados en Vivo (Live Tracking)", cost: 2000, detail: "Publicación y transmisión en tiempo real de los tiempos de paso y llegadas vía web para consulta de corredores y público.", proposal: "Publicación en web/QR. Búsqueda por nombre, dorsal, filtro por categoría y tiempo chip/oficial. Costo integrado ($2,000.00).", vis: "visualizar" },
-      { num: "6A", type: "Base", concept: "Resultados Preliminares", cost: 0, detail: "Listados iniciales emitidos el mismo día del evento, sujetos a revisión y periodo de protestas.", proposal: "Incluido $0.00. Publicación física en evento y digital vía código QR en sobres/dorsales de forma inmediata al cruzar la meta.", vis: "obligatorio" },
-      { num: "6B", type: "Base", concept: "Resultados Oficiales", cost: 0, detail: "Listas finales validadas por jueces tras depurar descalificaciones, no-iniciados (DNS) y protestas.", proposal: "Incluido $0.00. Lista oficial de premiación el día del evento y depuración final total en 72 horas.", vis: "obligatorio" },
-      { num: "7", type: "Base", concept: "Viáticos Completos (Personal + Jueces)", cost: 18450, detail: "Gastos de hospedaje, transporte, casetas, combustible y alimentación para personal técnico y cuerpo de jueces.", proposal: "INCLUIDO AL 100% ($10,800 staff + $7,650 jueces = $18,450.00). Especifica 2 noches de hospedaje, transporte QRO-GTO y alimentos.", vis: "obligatorio" },
-      { num: "8", type: "Adicional", concept: "Fotofinish / Identificación Visual", cost: 6000, detail: "Sistema de cámara de alta velocidad en meta (escaneo vertical) para desempates en llegadas cerradas.", proposal: "Cámara IdentiLynx frontal 4K integrada al sistema ($6,000.00). Captura continua y respaldo visual para jueces.", vis: "visualizar" },
-      { num: "9", type: "Adicional", concept: "Fotos por Reconocimiento Facial y Dorsal", cost: 20000, detail: "Galería fotográfica interactiva en línea con búsqueda por número de corredor o selfie (reconocimiento biométrico).", proposal: "Sistema de búsqueda biométrica ($8.00/u x 2,500 = $20,000.00). Permite marcos con patrocinadores y descarga social.", vis: "visualizar" },
-      { num: "10", type: "Adicional", concept: "APP de Seguimiento (Live App)", cost: 39000, detail: "Aplicación móvil para seguimiento individual de corredores por parte de familiares, alertas de paso y mapa interactivo.", proposal: "App avanzada ($39,000.00 para 2,500 corredores). Incluye seguimiento de hasta 20 atletas, guía turística y branding.", vis: "visualizar" },
-      { num: "12", type: "Adicional", concept: "Certificación Oficial de Ruta", cost: 18000, detail: "Medición de ruta con Contador Jones por agrimensor certificado WA/AIMS para aval de marcas y récords.", proposal: "$18,000.00 con viáticos incluidos. Medidor Clase A en bicicleta.", vis: "visualizar" },
-      { num: "13", type: "Adicional", concept: "Promociones y Difusión Comercial", cost: 0, detail: "Difusión del evento en plataformas masivas y redes sociales para impulsar inscripciones.", proposal: "Incluye cortesías técnicas y descuentos en puntos adicionales según paquete.", vis: "visualizar" },
-      { num: "14", type: "Adicional", concept: "Módulo 'Verifica tus Datos'", cost: 0, detail: "Estación con lectores RFID en la Expo/Entrega de kits para que el corredor valide que su chip corresponda a sus datos.", proposal: "INCLUIDO $0.00. Lectores RFID autónomos (sin necesidad de internet) y tablets con staff.", vis: "visualizar" },
-      { num: "15", type: "Adicional", concept: "Portal de Resultados / Certificados", cost: 0, detail: "Plataforma web para consulta de tiempos oficiales, desglose por parciales y descarga de certificados digitales Finisher.", proposal: "INCLUIDO $0.00. Alta en portal Everesp/Oclock, envío de mail personalizado y descarga gratuita ilimitada.", vis: "visualizar" },
-      { num: "16", type: "Adicional", concept: "Papelería y Consumibles Operativos", cost: 4500, detail: "Materiales de oficina para meta y kits: listas impresas, etiquetas, imperdibles, papelería de jueceo.", proposal: "Cotiza $1.80 por participante ($4,500.00 para 2,500). Incluye imprenta, diplomas físicos, etiquetas e imperdibles.", vis: "visualizar" },
-      { num: "17", type: "Adicional", concept: "Sobres / Integración de Kits", cost: 3600, detail: "Empacado, personalizado e integración del dorsal, chip e insumos del corredor en sobre transparente.", proposal: "Sobre celofán $1,200/millar ($3,600.00 para 2,500 u).", vis: "visualizar" },
-      { num: "18", type: "Adicional", concept: "Certificado / Constancia de Participación", cost: 0, detail: "Emisión e impresión digital de constancias de participación para cada atleta finalista.", proposal: "INCLUIDO $0.00 dentro del servicio de resultados digitales.", vis: "visualizar" },
-      { num: "19", type: "Adicional", concept: "Base de Datos y Respaldo de Resultados", cost: 0, detail: "Entrega de bases de datos completas de participantes, tiempos chip/gun, parciales y reportes estadísticos.", proposal: "INCLUIDO $0.00. Entrega archivos digitales finales, respaldo de lecturas y reporte estadístico detallado.", vis: "visualizar" },
-      { num: "20", type: "Adicional", concept: "Protocolo de Contingencia Técnica", cost: 3000, detail: "Planes de respaldo ante fallas de energía, pérdida de red celular/internet, falla de antenas o computadoras.", proposal: "Equipos autónomos con batería de 8h, antenas dobles de respaldo, comunicación Starlink + celular e impresión local.", vis: "visualizar" },
-      { num: "21", type: "Adicional", concept: "Personal de Operación Dedicado", cost: 1600, detail: "Staff técnico especializado para dirección, instalación, operación de software y gestión de incidencias.", proposal: "Desglosa staff: Coordinador, técnicos de cronometraje, operadores de resultados ($1,600 adicional).", vis: "visualizar" },
-      { num: "22", type: "Adicional", concept: "Protocolo de Resultados y Premiación", cost: 0, detail: "Impresión de listados oficiales firmados por Juez Árbitro, filtros de control pre-premiación y atención de protestas.", proposal: "INCLUIDO $0.00. Impresión de clasificaciones por categoría firmadas por Jueces previo al estrado.", vis: "visualizar" }
+      { num: "1", type: "Base", concept: "Cronometraje Base", cost: 18000, detail: "Medición electrónica central de tiempos con tecnología RFID. Incluye antenas/alfombras en salida y meta, línea redundante de respaldo, decoders, software y personal técnico.", proposal: "2 líneas de lectura de 8m en salida/meta (principal y respaldo) y 4 personas de staff técnico. Los equipos MyLaps guardan lecturas localmente en memoria interna.", vis: "obligatorio", selectedAdmin: true },
+      { num: "2", type: "Base", concept: "Chip + Consumibles", cost: 62500, detail: "Etiqueta RFID de un solo uso adherida al reverso del número. Incluye programación, asociación chip-corredor y pruebas previas.", proposal: "BibTag MYLAPS descartable ($25.00/u en escala de 2,500). Tasa de detección >99.8%. OFRECE REEMBOLSO de $14.00 por cada chip no utilizado/pegado.", vis: "obligatorio", selectedAdmin: true },
+      { num: "3", type: "Base", concept: "Número de Competidor (Dorsal)", cost: 25000, detail: "Dorsal impreso e individualizado con número, categoría, gráfica del evento e integración del chip.", proposal: "Número Full Color 19x22 cm ($10.00/u) o Media Carta por $16,250.00 ($6.50/u). Incluye integración.", vis: "obligatorio", selectedAdmin: true },
+      { num: "4", type: "Base", concept: "Puntos Parciales (Ruta)", cost: 6000, detail: "Líneas de lectura intermedias en ruta (5k, 10k, 21k, 30k) para cronometraje de tiempos parciales, ritmos y prevención de cortes.", proposal: "Puntos intermedios con tapetes MyLaps y personal dedicado. $6,000.00 por paquete de parciales. Conectividad celular autónoma.", vis: "visualizar", selectedAdmin: true },
+      { num: "5", type: "Base", concept: "Jueceo de Atletismo", cost: 10500, detail: "Supervisión, juzgamiento de llegadas, validación de recorrido, atención de protestas y emisión de listados oficiales.", proposal: "Especifica 8 jueces (6 meta, 2 ruta) por $10,500.00; o 12 jueces por $14,850.00. Incluye honorarios y traslados.", vis: "visualizar", selectedAdmin: true },
+      { num: "6", type: "Base", concept: "Resultados en Vivo (Live Tracking)", cost: 2000, detail: "Publicación y transmisión en tiempo real de los tiempos de paso y llegadas vía web para consulta de corredores y público.", proposal: "Publicación en web/QR. Búsqueda por nombre, dorsal, filtro por categoría y tiempo chip/oficial. Costo integrado ($2,000.00).", vis: "visualizar", selectedAdmin: true },
+      { num: "6A", type: "Base", concept: "Resultados Preliminares", cost: 0, detail: "Listados iniciales emitidos el mismo día del evento, sujetos a revisión y periodo de protestas.", proposal: "Incluido $0.00. Publicación física en evento y digital vía código QR en sobres/dorsales de forma inmediata al cruzar la meta.", vis: "obligatorio", selectedAdmin: true },
+      { num: "6B", type: "Base", concept: "Resultados Oficiales", cost: 0, detail: "Listas finales validadas por jueces tras depurar descalificaciones, no-iniciados (DNS) y protestas.", proposal: "Incluido $0.00. Lista oficial de premiación el día del evento y depuración final total en 72 horas.", vis: "obligatorio", selectedAdmin: true },
+      { num: "7", type: "Base", concept: "Viáticos Completos (Personal + Jueces)", cost: 18450, detail: "Gastos de hospedaje, transporte, casetas, combustible y alimentación para personal técnico y cuerpo de jueces.", proposal: "INCLUIDO AL 100% ($10,800 staff + $7,650 jueces = $18,450.00). Especifica 2 noches de hospedaje, transporte QRO-GTO y alimentos.", vis: "obligatorio", selectedAdmin: true },
+      { num: "8", type: "Adicional", concept: "Fotofinish / Identificación Visual", cost: 6000, detail: "Sistema de cámara de alta velocidad en meta (escaneo vertical) para desempates en llegadas cerradas.", proposal: "Cámara IdentiLynx frontal 4K integrada al sistema ($6,000.00). Captura continua y respaldo visual para jueces.", vis: "visualizar", selectedAdmin: true },
+      { num: "9", type: "Adicional", concept: "Fotos por Reconocimiento Facial y Dorsal", cost: 20000, detail: "Galería fotográfica interactiva en línea con búsqueda por número de corredor o selfie (reconocimiento biométrico).", proposal: "Sistema de búsqueda biométrica ($8.00/u x 2,500 = $20,000.00). Permite marcos con patrocinadores y descarga social.", vis: "visualizar", selectedAdmin: true },
+      { num: "10", type: "Adicional", concept: "APP de Seguimiento (Live App)", cost: 39000, detail: "Aplicación móvil para seguimiento individual de corredores por parte de familiares, alertas de paso y mapa interactivo.", proposal: "App avanzada ($39,000.00 para 2,500 corredores). Incluye seguimiento de hasta 20 atletas, guía turística y branding.", vis: "visualizar", selectedAdmin: true },
+      { num: "12", type: "Adicional", concept: "Certificación Oficial de Ruta", cost: 18000, detail: "Medición de ruta con Contador Jones por agrimensor certificado WA/AIMS para aval de marcas y récords.", proposal: "$18,000.00 con viáticos incluidos. Medidor Clase A en bicicleta.", vis: "visualizar", selectedAdmin: true },
+      { num: "13", type: "Adicional", concept: "Promociones y Difusión Comercial", cost: 0, detail: "Difusión del evento en plataformas masivas y redes sociales para impulsar inscripciones.", proposal: "Incluye cortesías técnicas y descuentos en puntos adicionales según paquete.", vis: "visualizar", selectedAdmin: true },
+      { num: "14", type: "Adicional", concept: "Módulo 'Verifica tus Datos'", cost: 0, detail: "Estación con lectores RFID en la Expo/Entrega de kits para que el corredor valide que su chip corresponda a sus datos.", proposal: "INCLUIDO $0.00. Lectores RFID autónomos (sin necesidad de internet) y tablets con staff.", vis: "visualizar", selectedAdmin: true },
+      { num: "15", type: "Adicional", concept: "Portal de Resultados / Certificados", cost: 0, detail: "Plataforma web para consulta de tiempos oficiales, desglose por parciales y descarga de certificados digitales Finisher.", proposal: "INCLUIDO $0.00. Alta en portal Everesp/Oclock, envío de mail personalizado y descarga gratuita ilimitada.", vis: "visualizar", selectedAdmin: true },
+      { num: "16", type: "Adicional", concept: "Papelería y Consumibles Operativos", cost: 4500, detail: "Materiales de oficina para meta y kits: listas impresas, etiquetas, imperdibles, papelería de jueceo.", proposal: "Cotiza $1.80 por participante ($4,500.00 para 2,500). Incluye imprenta, diplomas físicos, etiquetas e imperdibles.", vis: "visualizar", selectedAdmin: true },
+      { num: "17", type: "Adicional", concept: "Sobres / Integración de Kits", cost: 3600, detail: "Empacado, personalizado e integración del dorsal, chip e insumos del corredor en sobre transparente.", proposal: "Sobre celofán $1,200/millar ($3,600.00 para 2,500 u).", vis: "visualizar", selectedAdmin: true },
+      { num: "18", type: "Adicional", concept: "Certificado / Constancia de Participación", cost: 0, detail: "Emisión e impresión digital de constancias de participación para cada atleta finalista.", proposal: "INCLUIDO $0.00 dentro del servicio de resultados digitales.", vis: "visualizar", selectedAdmin: true },
+      { num: "19", type: "Adicional", concept: "Base de Datos y Respaldo de Resultados", cost: 0, detail: "Entrega de bases de datos completas de participantes, tiempos chip/gun, parciales y reportes estadísticos.", proposal: "INCLUIDO $0.00. Entrega archivos digitales finales, respaldo de lecturas y reporte estadístico detallado.", vis: "visualizar", selectedAdmin: true },
+      { num: "20", type: "Adicional", concept: "Protocolo de Contingencia Técnica", cost: 3000, detail: "Planes de respaldo ante fallas de energía, pérdida de red celular/internet, falla de antenas o computadoras.", proposal: "Equipos autónomos con batería de 8h, antenas dobles de respaldo, comunicación Starlink + celular e impresión local.", vis: "visualizar", selectedAdmin: true },
+      { num: "21", type: "Adicional", concept: "Personal de Operación Dedicado", cost: 1600, detail: "Staff técnico especializado para dirección, instalación, operación de software y gestión de incidencias.", proposal: "Desglosa staff: Coordinador, técnicos de cronometraje, operadores de resultados ($1,600 adicional).", vis: "visualizar", selectedAdmin: true },
+      { num: "22", type: "Adicional", concept: "Protocolo de Resultados y Premiación", cost: 0, detail: "Impresión de listados oficiales firmados por Juez Árbitro, filtros de control pre-premiación y atención de protestas.", proposal: "INCLUIDO $0.00. Impresión de clasificaciones por categoría firmadas por Jueces previo al estrado.", vis: "visualizar", selectedAdmin: true }
     ];
 
     let userSelections = {};
     let chartInstance = null;
+    let isAdminAuthenticated = false;
+    let pendingTabTarget = null;
+    let pendingBtnTarget = null;
+    let isCalculatingEffect = false;
+    let lastCalculatedTotalMetax = 0;
 
     // Inicialización
     window.onload = function() {
@@ -334,32 +620,41 @@
       renderMod3();
     };
 
-    function switchTab(tabId) {
+    function switchTab(tabId, btnElement) {
       document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
       document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
       
       document.getElementById(tabId).classList.add('active');
-      event.target.classList.add('active');
+      if (btnElement) btnElement.classList.add('active');
 
       if(tabId === 'mod3') renderMod3();
     }
 
     // Modal Admin
-    function openAdminModal() {
-      document.getElementById('admin-modal').style.display = 'flex';
+    function requestAdminAccess(tabId, btnElement) {
+      if (isAdminAuthenticated) {
+        switchTab(tabId, btnElement);
+      } else {
+        pendingTabTarget = tabId;
+        pendingBtnTarget = btnElement;
+        document.getElementById('admin-modal').style.display = 'flex';
+      }
+    }
+
+    function closeAdminModal() {
+      document.getElementById('admin-modal').style.display = 'none';
+      document.getElementById('admin-pass').value = '';
+      document.getElementById('pass-error').style.display = 'none';
     }
 
     function checkAdminAuth() {
       const pass = document.getElementById('admin-pass').value;
       if (pass === 'Metax Pro 260290') {
-        document.getElementById('admin-modal').style.display = 'none';
-        document.getElementById('admin-pass').value = '';
-        document.getElementById('pass-error').style.display = 'none';
-        
-        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        document.getElementById('mod2').classList.add('active');
-        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        isAdminAuthenticated = true;
+        closeAdminModal();
+        if (pendingTabTarget) {
+          switchTab(pendingTabTarget, pendingBtnTarget);
+        }
       } else {
         document.getElementById('pass-error').style.display = 'block';
       }
@@ -386,14 +681,34 @@
     function renderMod2() {
       const tbody = document.getElementById('tbody-mod2');
       tbody.innerHTML = '';
+
+      let sumBase = 0;
+      let sumOutsourcing = 0;
+      let sumIva = 0;
+
       catalogData.forEach((item, index) => {
+        const costBase = item.cost || 0;
+        const outsourcing = costBase * 0.17;
+        const iva = costBase * 0.16;
+
+        if (item.selectedAdmin) {
+          sumBase += costBase;
+          sumOutsourcing += outsourcing;
+          sumIva += iva;
+        }
+
         const tr = document.createElement('tr');
         tr.innerHTML = `
+          <td style="text-align:center;">
+            <input type="checkbox" ${item.selectedAdmin ? 'checked' : ''} onchange="catalogData[${index}].selectedAdmin = this.checked; renderMod2(); renderMod3();">
+          </td>
           <td>${item.num}</td>
           <td>${item.type}</td>
-          <td><input type="text" value="${item.concept}" onchange="catalogData[${index}].concept = this.value"></td>
-          <td><input type="number" value="${item.cost}" onchange="catalogData[${index}].cost = parseFloat(this.value)||0; renderMod3();"></td>
-          <td><input type="text" value="${item.detail}" onchange="catalogData[${index}].detail = this.value"></td>
+          <td><input type="text" value="${item.concept}" onchange="catalogData[${index}].concept = this.value; renderMod3();"></td>
+          <td><input type="number" value="${item.cost}" onchange="catalogData[${index}].cost = parseFloat(this.value)||0; renderMod2(); renderMod3();"></td>
+          <td style="color: #10b981; font-weight: 600;">$${outsourcing.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td>
+          <td style="color: #f59e0b; font-weight: 600;">$${iva.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td>
+          <td><input type="text" value="${item.detail}" onchange="catalogData[${index}].detail = this.value; renderMod3();"></td>
           <td>
             <select onchange="catalogData[${index}].vis = this.value; renderMod3();">
               <option value="obligatorio" ${item.vis==='obligatorio'?'selected':''}>Obligatorio</option>
@@ -404,6 +719,25 @@
         `;
         tbody.appendChild(tr);
       });
+
+      // Totales en footer de tabla
+      document.getElementById('m2-sum-base').innerText = `$${sumBase.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+      document.getElementById('m2-sum-outsourcing').innerText = `$${sumOutsourcing.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+      document.getElementById('m2-sum-iva').innerText = `$${sumIva.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+
+      // Actualizar Dashboard Módulo 2
+      const costoMetax = sumBase + sumOutsourcing;
+      const costoTotalIva = costoMetax + sumIva;
+
+      document.getElementById('dash-m2-base').innerText = `$${sumBase.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+      document.getElementById('dash-m2-metax').innerText = `$${costoMetax.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+      document.getElementById('dash-m2-total').innerText = `$${costoTotalIva.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+    }
+
+    function selectAllMod2(status) {
+      catalogData.forEach(item => item.selectedAdmin = status);
+      renderMod2();
+      renderMod3();
     }
 
     function addExtraService() {
@@ -415,7 +749,8 @@
         cost: 0,
         detail: "Descripción del servicio adicional",
         proposal: "Propuesta técnica adicional",
-        vis: "visualizar"
+        vis: "visualizar",
+        selectedAdmin: true
       });
       renderMod2();
       renderMod3();
@@ -432,13 +767,31 @@
       });
     }
 
+    function selectAllMod3(status) {
+      catalogData.forEach(item => {
+        if (item.vis !== 'ocultar') {
+          if (item.vis === 'obligatorio') {
+            userSelections[item.num] = true;
+          } else {
+            userSelections[item.num] = status;
+          }
+        }
+      });
+      renderMod3();
+    }
+
     function renderMod3() {
       const tbody = document.getElementById('tbody-mod3');
       tbody.innerHTML = '';
 
-      let currentTotal = 0;
-      let selectedBase = 0;
-      let selectedAdicional = 0;
+      let currentTotalMetax = 0;
+      let selectedBaseCount = 0;
+      let selectedAdicionalCount = 0;
+      let selectedBaseSum = 0;
+      let selectedAdicionalSum = 0;
+
+      const summaryList = document.getElementById('client-services-summary');
+      summaryList.innerHTML = '';
 
       catalogData.forEach(item => {
         if (item.vis === 'ocultar') return;
@@ -447,11 +800,25 @@
         if (isReq) userSelections[item.num] = true;
 
         const isChecked = userSelections[item.num] || false;
+        
+        // Costo Metax = Costo Base + 17% Outsourcing
+        const costoMetaxItem = (item.cost || 0) * 1.17;
 
         if (isChecked) {
-          currentTotal += item.cost;
-          if(item.type === 'Base') selectedBase += item.cost;
-          else selectedAdicional += item.cost;
+          currentTotalMetax += costoMetaxItem;
+          if(item.type === 'Base') {
+            selectedBaseCount++;
+            selectedBaseSum += costoMetaxItem;
+          } else {
+            selectedAdicionalCount++;
+            selectedAdicionalSum += costoMetaxItem;
+          }
+
+          // Agregar al resumen de servicios cliente
+          const li = document.createElement('li');
+          li.style.cssText = 'padding: 8px 0; border-bottom: 1px dashed var(--panel-border); font-size: 0.85rem;';
+          li.innerHTML = `<strong style="color: #38bdf8;">${item.concept}:</strong> ${item.detail}`;
+          summaryList.appendChild(li);
         }
 
         const tr = document.createElement('tr');
@@ -471,14 +838,59 @@
         tbody.appendChild(tr);
       });
 
+      lastCalculatedTotalMetax = currentTotalMetax;
+
       // Cálculos Prorrateo
       const numCorredores = parseInt(document.getElementById('select-corredores').value) || 2500;
-      const costoPorAtleta = currentTotal / numCorredores;
+      const costoPorAtleta = currentTotalMetax / numCorredores;
 
-      document.getElementById('stat-total').innerText = `$${currentTotal.toLocaleString('es-MX', {minimumFractionDigits:2})}`;
+      if (!isCalculatingEffect) {
+        document.getElementById('stat-total').innerText = `$${currentTotalMetax.toLocaleString('es-MX', {minimumFractionDigits:2})}`;
+      }
       document.getElementById('stat-prorrateo').innerText = `$${costoPorAtleta.toLocaleString('es-MX', {minimumFractionDigits:2})} MXN`;
 
-      updateChart(selectedBase, selectedAdicional);
+      // Dashboard Cliente
+      document.getElementById('dash-c-base').innerText = selectedBaseCount;
+      document.getElementById('dash-c-adic').innerText = selectedAdicionalCount;
+      document.getElementById('dash-c-atletas').innerText = numCorredores.toLocaleString('es-MX');
+
+      updateChart(selectedBaseSum, selectedAdicionalSum);
+    }
+
+    function triggerCalculationEffect() {
+      if (isCalculatingEffect) return;
+      isCalculatingEffect = true;
+
+      const statTotalEl = document.getElementById('stat-total');
+      const pContainer = document.getElementById('p-container');
+      const pFill = document.getElementById('p-fill');
+      const btnCalc = document.getElementById('btn-calc');
+
+      pContainer.style.display = 'block';
+      pFill.style.width = '0%';
+      btnCalc.disabled = true;
+
+      let startTime = Date.now();
+      const duration = 10000; // 10 segundos
+
+      const interval = setInterval(() => {
+        let elapsedTime = Date.now() - startTime;
+        let progress = Math.min(elapsedTime / duration, 1);
+        
+        pFill.style.width = (progress * 100) + '%';
+
+        // Efecto de números aleatorios en movimiento
+        let randomVal = Math.floor(Math.random() * (lastCalculatedTotalMetax * 1.5)) + 10000;
+        statTotalEl.innerText = `$${randomVal.toLocaleString('es-MX', {minimumFractionDigits:2})}`;
+
+        if (progress >= 1) {
+          clearInterval(interval);
+          pContainer.style.display = 'none';
+          statTotalEl.innerHTML = `<span style="font-size: 1.05rem; color: #38bdf8; cursor: pointer;" onclick="alert('Iniciando proceso de contrato formal...')">Da click solicita cotización formal y contrato</span>`;
+          btnCalc.disabled = false;
+          isCalculatingEffect = false;
+        }
+      }, 100);
     }
 
     function updateChart(baseSum, adicSum) {
