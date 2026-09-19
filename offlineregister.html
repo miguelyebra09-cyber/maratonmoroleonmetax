@@ -410,15 +410,21 @@
     <div class="navbar-brand">
         🏃 MetaX Admin | Moroleón 2027
     </div>
-   <!-- CAMBIO 1: Agrega los dos nuevos botones en la barra superior -->
-<ul class="navbar-menu">
-    <li><button class="nav-btn active" onclick="showSection('form')">📝 Registro Individual</button></li>
-    <li><button class="nav-btn" style="background-color: #25d366; color: white;" onclick="openWhatsAppModal()">📲 Extraer de WhatsApp</button></li>
-    <li><button class="nav-btn" style="background-color: #0284c7; color: white;" onclick="openDocModal()">🪪 Escanear Identificación</button></li>
-    <li><button class="nav-btn" onclick="openCsvModal()">📁 Subir CSV</button></li>
-    <li><button class="nav-btn" onclick="openRegistrosModal()">📋 Ver / Editar Registros</button></li>
-    <li><button class="nav-btn" onclick="openMetricasModal()">📊 Métricas</button></li>
-</ul>
+    <ul class="navbar-menu">
+        <li><button class="nav-btn active" onclick="showSection('form')">📝 Registro Individual</button></li>
+        <li><button class="nav-btn" style="background-color: #25d366; color: white;" onclick="openWhatsAppModal()">📲 Extraer de WhatsApp</button></li>
+        <li><button class="nav-btn" style="background-color: #0284c7; color: white;" onclick="openDocModal()">🪪 Escanear Identificación</button></li>
+        <li><button class="nav-btn" onclick="openCsvModal()">📁 Subir CSV</button></li>
+        <li><button class="nav-btn" onclick="openRegistrosModal()">📋 Ver / Editar Registros</button></li>
+        <li><button class="nav-btn" onclick="openMetricasModal()">📊 Métricas</button></li>
+        
+        <!-- BOTÓN NUEVO DE AUDITORÍA Y REVISIÓN -->
+        <li>
+            <a href="revision-registros.html" class="nav-btn" style="background-color: #d97706; color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                🔍 Auditoría y Revisión
+            </a>
+        </li>
+    </ul>
 </nav>
 
 <div class="container" id="formSection">
