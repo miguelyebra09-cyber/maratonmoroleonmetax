@@ -1090,28 +1090,69 @@
 <!-- =======================================================
      MODAL 2: ESCANEAR E EXTRAER DATOS DE IDENTIFICACIÓN
 ======================================================= -->
+<!-- MODAL 2: ESCANEAR IDENTIFICACIÓN (SOLO EXTRACCIÓN Y COPIADO) -->
 <div class="modal" id="docExtractModal">
-    <div class="modal-content">
-        <h3 style="color: var(--primary-blue); margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-            🪪 Escáner de Identificación Oficial
-        </h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
-            Sube una imagen de la credencial (INE / Identificación). El sistema extraerá automáticamente el Nombre, CURP, Fecha de Nacimiento y Estado.
+    <div class="modal-content modal-large">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3 style="color: var(--primary-blue); display: flex; align-items: center; gap: 8px;">
+                🪪 Lectura de Identificación Oficial (INE)
+            </h3>
+            <button class="btn-close" onclick="closeModal('docExtractModal')">✖ Cerrar</button>
+        </div>
+        
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
+            Sube o pega la imagen del INE. El sistema leerá la información y te la mostrará abajo para que puedas copiar cualquier campo manualmente.
         </p>
 
-        <input type="file" id="docFileInput" accept="image/*" onchange="processDocImage(event)" style="margin-bottom: 12px; width: 100%;">
+        <div style="display: grid; grid-template-columns: 240px 1fr; gap: 16px;">
+            <!-- Vista previa de la imagen -->
+            <div>
+                <input type="file" id="docFileInput" accept="image/*" onchange="processDocImage(event)" style="margin-bottom: 8px; width: 100%; font-size: 0.8rem;">
+                <div id="docPreviewBox" class="photo-preview-box" style="height: 220px;">
+                    La imagen aparecerá aquí.
+                </div>
+                <button class="btn-submit" id="btnScanDoc" style="margin-top: 8px; font-size: 0.85rem; padding: 10px; background-color: var(--primary-blue);" onclick="scanDocImage()">
+                    🔍 Leer Datos de Imagen
+                </button>
+            </div>
 
-        <div id="docPreviewBox" class="photo-preview-box" style="height: 160px; margin-bottom: 16px;">
-            La imagen de la identificación se mostrará aquí.
+            <!-- Campos Extraídos con Botón para Copiar -->
+            <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color);">
+                <h4 style="font-size: 0.85rem; color: var(--primary); margin-bottom: 10px;">Datos Detectados:</h4>
+                
+                <div class="form-grid" style="grid-template-columns: 1fr; gap: 8px;">
+                    
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <input type="text" id="ext_curp" placeholder="CURP" style="font-family: monospace; font-weight: bold; flex: 1;">
+                        <button class="btn-action" onclick="copyToClipboard('ext_curp')">📋 Copiar</button>
+                    </div>
+
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <input type="text" id="ext_nombre" placeholder="Nombre(s)" style="flex: 1;">
+                        <button class="btn-action" onclick="copyToClipboard('ext_nombre')">📋 Copiar</button>
+                    </div>
+
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <input type="text" id="ext_primerApellido" placeholder="Primer Apellido" style="flex: 1;">
+                        <button class="btn-action" onclick="copyToClipboard('ext_primerApellido')">📋 Copiar</button>
+                    </div>
+
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <input type="text" id="ext_segundoApellido" placeholder="Segundo Apellido" style="flex: 1;">
+                        <button class="btn-action" onclick="copyToClipboard('ext_segundoApellido')">📋 Copiar</button>
+                    </div>
+
+                    <div style="display: flex; gap: 6px; align-items: center;">
+                        <input type="text" id="ext_estado" placeholder="Estado / Entidad" style="flex: 1;">
+                        <button class="btn-action" onclick="copyToClipboard('ext_estado')">📋 Copiar</button>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
-        <div id="docStatus" style="font-size: 0.85rem; color: var(--primary-blue); font-weight: bold; margin-bottom: 12px;"></div>
-
-        <div style="display: flex; gap: 10px; justify-content: center;">
-            <button class="btn-submit" style="width: auto; padding: 10px 20px; margin-top: 0;" onclick="applyDocExtraction()">
-                📥 Inyectar Datos Extraídos
-            </button>
-            <button class="btn-close" onclick="closeModal('docExtractModal')">Cancelar</button>
+        <div style="margin-top: 16px; text-align: right;">
+            <button class="btn-close" onclick="closeModal('docExtractModal')">Cerrar Modal</button>
         </div>
     </div>
 </div>
@@ -1985,23 +2026,71 @@ async function applyWhatsAppExtraction() {
     }
 }
 
+let currentDocImageSrc = null;
+
 function processDocImage(event) {
-    const file = event.target.files[0];
+    const file = event.target ? event.target.files[0] : event;
     if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
-            document.getElementById('docPreviewBox').innerHTML = `<img src="${e.target.result}" style="max-height:150px; border-radius:6px;">`;
-            document.getElementById('docStatus').innerText = 'Imagen lista para lectura.';
+            currentDocImageSrc = e.target.result;
+            document.getElementById('docPreviewBox').innerHTML = `<img id="docPreviewImgEl" src="${e.target.result}" style="max-height:200px; max-width:100%; border-radius:6px; object-fit:contain;">`;
         };
         reader.readAsDataURL(file);
     }
 }
 
-function applyDocExtraction() {
-    alert('Documento procesado. Los datos leídos se han inyectado en el formulario.');
-    closeModal('docExtractModal');
+// Escanear la imagen usando Tesseract OCR
+async function scanDocImage() {
+    if (!currentDocImageSrc) {
+        alert('Por favor selecciona una imagen primero.');
+        return;
+    }
+
+    const btn = document.getElementById('btnScanDoc');
+    const origText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = '⏳ Leyendo INE (OCR)...';
+
+    try {
+        const result = await Tesseract.recognize(currentDocImageSrc, 'spa');
+        const text = result.data.text;
+
+        // Extraer CURP (Formatos de 18 caracteres alfanuméricos)
+        const curpMatch = text.match(/[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]{2}/i);
+        if (curpMatch) {
+            document.getElementById('ext_curp').value = curpMatch[0].toUpperCase();
+        }
+
+        // Búsquedas generales
+        const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+        
+        // Intentar colocar líneas relevantes en los campos para revisión manual
+        if (lines.length > 0) document.getElementById('ext_nombre').value = lines[0] || '';
+        if (lines.length > 1) document.getElementById('ext_primerApellido').value = lines[1] || '';
+        if (lines.length > 2) document.getElementById('ext_segundoApellido').value = lines[2] || '';
+
+    } catch (err) {
+        console.error('Error al leer la identificación:', err);
+        alert('No se pudo procesar la imagen. Intenta con una toma más clara o legible.');
+    } finally {
+        btn.disabled = false;
+        btn.innerText = origText;
+    }
 }
 
+// Función auxiliar para copiar el texto de un input específico
+function copyToClipboard(inputId) {
+    const el = document.getElementById(inputId);
+    if (el && el.value.trim() !== '') {
+        el.select();
+        navigator.clipboard.writeText(el.value).then(() => {
+            alert(`Copiado: "${el.value}"`);
+        });
+    } else {
+        alert('El campo está vacío.');
+    }
+}
 </script>
 
 </body>
