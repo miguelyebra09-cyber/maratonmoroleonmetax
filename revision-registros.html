@@ -556,6 +556,7 @@
     }
 
     // Generador de Notificación con tono coadyuvante y leyenda de deslinde legal
+    // Generador de Notificación Amigable, Ejecutivo y Normativo
     function generateNotification(id) {
         const item = cachedAuditData.find(d => d.raw.id == id);
         if (!item) return;
@@ -566,13 +567,17 @@
         const phoneLabel = document.getElementById('lblPhoneModal');
         if (phoneLabel) phoneLabel.innerText = currentSelectedPhone ? `+52 ${currentSelectedPhone}` : 'No Registrado';
 
-        let msg = `Estimado(a) atleta ${r.nombre || 'Corredor(a)'}:\n\n`;
-        msg += `Le saludamos con gusto. En nuestro compromiso de coadyuvar con el Comité Organizador del Maratón Internacional Moroleón 2027 para garantizar un registro correcto, seguro e impecable, le informamos sobre el estatus de su inscripción (Folio: ${r.folio_oficial || 'Pendiente'}):\n\n`;
+        const nombreAtleta = r.nombre || `${r.nombre_completo || 'Atleta'}`;
+        const folioOficial = r.folio_oficial || 'MM27OFF-RUN-MMO1023';
+
+        let msg = `¡Hola, ${nombreAtleta}! 👋🏃‍♂️\n\n`;
+        msg += `Nos entusiasma mucho que ya formes parte del selecto equipo de atletas que aceptaron el reto del *Maratón Internacional IRC Moroleón 2027*🏻🏽.\n\n`;
+        msg += `En esta alianza estratégica de *MetaX Pro* con el Comité Organizador del Maratón Internacional Moroleón 2027, y con la finalidad de garantizar un registro correcto, seguro e impecable, te informamos sobre el estatus de tu inscripción (Folio: *${folioOficial}*):\n\n`;
 
         if (item.isComplete) {
-            msg += `✅ ¡Su expediente se encuentra 100% COMPLETO y debidamente auditado! Agradecemos su apoyo y le deseamos el mayor de los éxitos en la competencia. 🏃‍♂️💨\n\n`;
+            msg += `🎉 ¡Enhorabuena! Tu expediente se encuentra *100% COMPLETO* y debidamente validado. Estamos listos para recibirte en la línea de salida. ¡Mucho éxito en tu preparación! 🥇🔥\n\n`;
         } else {
-            msg += `MetaX Pro le recomienda completar su expediente a la brevedad para asegurar su participación. Detectamos las siguientes observaciones o pendientes:\n\n`;
+            msg += `MetaX Pro te recomienda completar tu expediente a la brevedad para asegurar tu participación sin contratiempos. Detectamos las siguientes observaciones o pendientes:\n\n`;
 
             if (item.missingFields.length > 0) {
                 msg += `📌 DATOS O CAMPOS INCOMPLETOS / NULOS:\n`;
@@ -630,18 +635,16 @@
         });
     }
 
-    function openWhatsAppDirect() {
+   function openWhatsAppDirect() {
         if (!currentSelectedPhone || currentSelectedPhone.length < 10) {
             alert('El atleta no cuenta con un número de teléfono válido registrado.');
             return;
         }
         const text = encodeURIComponent(document.getElementById('txtMessagePreview').value);
         const cleanPhone = currentSelectedPhone.replace(/\D/g, '');
-        window.open(`https://wa.me/52${cleanPhone}?text=${text}`, '_blank');
-    }
-
-    function closeModal(id) {
-        document.getElementById(id).style.display = 'none';
+        
+        // Abre el API oficial de WhatsApp enrutando hacia el teléfono destino (+52)
+        window.open(`https://api.whatsapp.com/send?phone=52${cleanPhone}&text=${text}`, '_blank');
     }
 </script>
 
