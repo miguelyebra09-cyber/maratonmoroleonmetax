@@ -9,7 +9,9 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- Biblioteca PapaParse para lectura e importación de CSV -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-
+    <!-- Biblioteca OCR para extracción de texto en imágenes -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    
     <style>
         :root {
             --primary: #0f172a;
@@ -1871,16 +1873,79 @@ function processWaImage(event) {
     }
 }
 
-function applyWhatsAppExtraction() {
-    const rawText = document.getElementById('waRawText').value;
-    if (!rawText.trim()) {
-        alert('Por favor pega el texto del mensaje o selecciona una imagen.');
+let currentWaImageFile = null;
+
+// Escuchar cambios en la imagen cargada o pegada
+function processWaImage(event) {
+    const file = event.target ? event.target.files[0] : event;
+    if (file) {
+        currentWaImageFile = file;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('waImgPreview').innerHTML = `<img id="waPreviewImgEl" src="${e.target.result}" style="max-height:160px; border-radius:6px;">`;
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+// Soportar Ctrl+V directo
+window.addEventListener('paste', e => {
+    const modal = document.getElementById('whatsappExtractModal');
+    if (modal && modal.style.display === 'flex') {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let item of items) {
+            if (item.type.indexOf('image') === 0) {
+                const blob = item.getAsFile();
+                processWaImage(blob);
+            }
+        }
+    }
+});
+
+// Función principal de extracción e inyección
+async function applyWhatsAppExtraction() {
+    const isTabImgVisible = document.getElementById('waTabImg').style.display !== 'none';
+    let textToParse = '';
+
+    if (isTabImgVisible) {
+        const imgEl = document.getElementById('waPreviewImgEl');
+        if (!imgEl) {
+            alert('Por favor selecciona o pega una imagen primero.');
+            return;
+        }
+
+        const btnSubmit = document.querySelector('#whatsappExtractModal .btn-submit');
+        const originalBtnText = btnSubmit.innerText;
+        btnSubmit.disabled = true;
+        btnSubmit.innerText = '⏳ Escaneando imagen (OCR)...';
+
+        try {
+            // Ejecutar reconocimiento de texto OCR en español
+            const result = await Tesseract.recognize(imgEl.src, 'spa');
+            textToParse = result.data.text;
+        } catch (err) {
+            console.error('Error OCR:', err);
+            alert('No se pudo leer la imagen. Intenta pegar el texto directamente en la Opción B.');
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = originalBtnText;
+            return;
+        } finally {
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = originalBtnText;
+        }
+    } else {
+        textToParse = document.getElementById('waRawText').value;
+    }
+
+    if (!textToParse || !textToParse.trim()) {
+        alert('No se encontró información para procesar.');
         return;
     }
 
+    // Extractor Regex
     const getValue = (label) => {
         const regex = new RegExp(`${label}:?\\s*([^\\n•]+)`, 'i');
-        const match = rawText.match(regex);
+        const match = textToParse.match(regex);
         return match ? match[1].trim() : '';
     };
 
@@ -1901,16 +1966,23 @@ function applyWhatsAppExtraction() {
         alergias: getValue('Alergias conocidas')
     };
 
+    // Inyectar en los elementos HTML del formulario principal
+    let countInjected = 0;
     Object.keys(extracted).forEach(key => {
         const el = document.getElementById(key);
         if (el && extracted[key]) {
             el.value = extracted[key];
             if (key === 'curp') el.dispatchEvent(new Event('input'));
+            countInjected++;
         }
     });
 
-    alert('¡Datos trasladados con éxito al formulario de registro!');
-    closeModal('whatsappExtractModal');
+    if (countInjected > 0) {
+        alert('¡Datos extraídos e inyectados exitosamente en el formulario!');
+        closeModal('whatsappExtractModal');
+    } else {
+        alert('No se detectaron campos coincidentes. Asegúrate de que la imagen sea legible o prueba pegando el texto en la Opción B.');
+    }
 }
 
 function processDocImage(event) {
