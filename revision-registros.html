@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MetaX Admin - Auditoría y Revisión de Registros - Moroleón 2027</title>
+    <title>MetaX Admin - Auditoría e Integridad de Registros - Moroleón 2027</title>
     
     <!-- Carga del SDK de Supabase desde CDN -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -37,7 +37,6 @@
             padding-bottom: 30px;
         }
 
-        /* NAVBAR */
         .navbar {
             position: fixed;
             top: 0; left: 0; right: 0;
@@ -87,7 +86,7 @@
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1250px;
             margin: 0 auto;
             padding: 0 12px;
         }
@@ -114,7 +113,6 @@
             color: #94a3b8;
         }
 
-        /* METRICAS DE AUDITORÍA */
         .metrics-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
@@ -142,7 +140,6 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.03);
         }
 
-        /* TABLA AUDITORÍA */
         .table-responsive {
             width: 100%;
             overflow-x: auto;
@@ -168,7 +165,6 @@
             font-weight: 700;
         }
 
-        /* BADGES Y ALERTAS */
         .badge {
             display: inline-block;
             padding: 4px 8px;
@@ -187,7 +183,7 @@
             background-color: #fef2f2;
             color: #dc2626;
             border: 1px solid #fecaca;
-            padding: 2px 6px;
+            padding: 3px 6px;
             border-radius: 4px;
             font-size: 0.73rem;
             margin: 2px;
@@ -199,18 +195,45 @@
             background-color: #fffbe3;
             color: #b45309;
             border: 1px solid #fde68a;
-            padding: 2px 6px;
+            padding: 3px 6px;
             border-radius: 4px;
             font-size: 0.73rem;
             margin: 2px;
             font-weight: 600;
         }
 
+        .phone-highlight {
+            display: inline-block;
+            background-color: #dcfce7;
+            color: #15803d;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-family: monospace;
+            font-size: 0.85rem;
+            border: 1px solid #86efac;
+        }
+
+        .progress-bar-container {
+            background-color: #e2e8f0;
+            border-radius: 8px;
+            height: 10px;
+            width: 100%;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background-color: var(--success);
+            transition: width 0.3s ease;
+        }
+
         .btn-action {
             background-color: var(--accent-blue);
             color: white;
             border: none;
-            padding: 6px 12px;
+            padding: 8px 12px;
             border-radius: 6px;
             cursor: pointer;
             font-size: 0.78rem;
@@ -222,7 +245,6 @@
 
         .btn-action:hover { opacity: 0.9; }
 
-        /* MODAL */
         .modal {
             display: none;
             position: fixed;
@@ -236,7 +258,7 @@
             background: white;
             border-radius: 12px;
             padding: 24px;
-            max-width: 600px;
+            max-width: 650px;
             width: 90%;
         }
 
@@ -247,11 +269,11 @@
 
 <nav class="navbar">
     <div class="navbar-brand">
-        🔍 MetaX Admin | Moroleón 2027 Auditoría
+        🔍 MetaX Admin | Auditoría Moroleón 2027
     </div>
     <ul class="navbar-menu">
         <li><a href="offlineregister.html" class="nav-btn">📝 Volver al Registro</a></li>
-        <li><button class="nav-btn active">🔎 Auditoría y Revisión</button></li>
+        <li><button class="nav-btn active">🔎 Panel de Auditoría</button></li>
     </ul>
 </nav>
 
@@ -259,41 +281,41 @@
 
     <div class="header">
         <div>
-            <h1>Módulo de Auditoría y Revisión de Registros</h1>
-            <p>Diagnóstico de información faltante, comprobantes pendientes y notificación automatizada</p>
+            <h1>Módulo de Auditoría, Control e Integridad de Expedientes</h1>
+            <p>Monitoreo en tiempo real de registros incompletos, observaciones y deslinde oficial MetaX Pro</p>
         </div>
     </div>
 
     <!-- METRICAS DE AUDITORIA -->
     <div class="metrics-grid">
         <div class="metric-card">
-            <div class="metric-title">Total Auditados</div>
+            <div class="metric-title">Total Atletas</div>
             <div class="metric-value" id="audTotal">0</div>
         </div>
         <div class="metric-card">
-            <div class="metric-title">Expedientes Completos</div>
+            <div class="metric-title">Expedientes 100% OK</div>
             <div class="metric-value" id="audCompletos" style="color: var(--success);">0</div>
         </div>
         <div class="metric-card">
-            <div class="metric-title">Datos Faltantes</div>
+            <div class="metric-title">Datos Incompletos / "X"</div>
             <div class="metric-value" id="audIncompletos" style="color: var(--danger);">0</div>
         </div>
         <div class="metric-card">
-            <div class="metric-title">Documentos Pendientes</div>
+            <div class="metric-title">Doc. Pendiente (INE/Carta)</div>
             <div class="metric-value" id="audDocsPendientes" style="color: var(--warning);">0</div>
         </div>
     </div>
 
-    <!-- TABLA DE REVISIÓN -->
+    <!-- TABLA DE AUDITORÍA -->
     <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <input type="text" id="searchAudit" placeholder="Filtrar por Nombre, Folio o CURP..." style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); width: 300px;" onkeyup="filterAudit()">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+            <input type="text" id="searchAudit" placeholder="Buscar por Nombre, Folio, CURP o Teléfono..." style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); width: 320px;" onkeyup="filterAudit()">
             
             <select id="filterStatus" onchange="filterAudit()" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
-                <option value="ALL">Todos los Registros</option>
-                <option value="INCOMPLETE">Solo Incompletos / Faltantes</option>
-                <option value="DOCS_MISSING">Solo Documentación Pendiente</option>
-                <option value="COMPLETE">Solo Completos</option>
+                <option value="ALL">Mostrar Todos los Registros</option>
+                <option value="INCOMPLETE">Solo Datos Faltantes / Leyendas Nulas ("X")</option>
+                <option value="DOCS_MISSING">Solo Documentación Obligatoria Pendiente</option>
+                <option value="COMPLETE">Solo Expedientes 100% Validados</option>
             </select>
         </div>
 
@@ -301,15 +323,16 @@
             <table>
                 <thead>
                     <tr>
-                        <th>Folio / Atleta</th>
-                        <th>Estado Expediente</th>
-                        <th>Campos de Información Faltantes</th>
-                        <th>Documentación Pendiente</th>
+                        <th>Atleta / Folio</th>
+                        <th>Teléfono WhatsApp</th>
+                        <th>Nivel de Integridad</th>
+                        <th>Campos Faltantes o Nulos ("X")</th>
+                        <th>Documentación Obligatoria</th>
                         <th>Acción de Notificación</th>
                     </tr>
                 </thead>
                 <tbody id="auditTableBody">
-                    <tr><td colspan="5" style="text-align: center;">Cargando diagnóstico de registros...</td></tr>
+                    <tr><td colspan="6" style="text-align: center;">Ejecutando diagnóstico de integridad sobre base de datos...</td></tr>
                 </tbody>
             </table>
         </div>
@@ -317,19 +340,25 @@
 
 </div>
 
-<!-- MODAL PREVIEW DEL MENSAJE DE NOTIFICACIÓN -->
+<!-- MODAL PREVIEW DEL MENSAJE DE NOTIFICACIÓN DE COADYUVANCIA -->
 <div class="modal" id="msgModal">
     <div class="modal-content">
-        <h3 style="color: var(--primary); margin-bottom: 8px;">📧 Plantilla de Notificación Generada</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Copia este texto para enviárselo al usuario por Correo Electrónico o WhatsApp:</p>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+            <h3 style="color: var(--primary);">📲 Mensaje de Coadyuvancia y Notificación</h3>
+            <button class="btn-close" onclick="closeModal('msgModal')">✖</button>
+        </div>
 
-        <textarea id="txtMessagePreview" rows="10" style="width: 100%; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 0.85rem; border: 1px solid var(--border-color); margin-bottom: 16px;" readonly></textarea>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">
+            Teléfono del Atleta: <span class="phone-highlight" id="lblPhoneModal">+52 ---------</span>
+        </p>
 
-        <div style="display: flex; justify-content: space-between;">
-            <button class="btn-action" style="background-color: #25d366; font-size: 0.9rem;" onclick="openWhatsAppDirect()">
-                📲 Enviar por WhatsApp
+        <textarea id="txtMessagePreview" rows="14" style="width: 100%; padding: 10px; border-radius: 8px; font-family: monospace; font-size: 0.8rem; border: 1px solid var(--border-color); margin-bottom: 16px; background-color: #f8fafc;" readonly></textarea>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <button class="btn-action" style="background-color: #25d366; font-size: 0.9rem; padding: 10px 16px;" onclick="openWhatsAppDirect()">
+                📲 Abrir Chat de WhatsApp Directo
             </button>
-            <div>
+            <div style="display: flex; gap: 6px;">
                 <button class="btn-action" style="background-color: var(--primary-blue);" onclick="copyMessageText()">📋 Copiar Texto</button>
                 <button class="btn-close" onclick="closeModal('msgModal')">Cerrar</button>
             </div>
@@ -350,14 +379,14 @@
             dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         }
     } catch (err) {
-        console.error('Error al inicializar Supabase:', err);
+        console.error('Error al conectar Supabase:', err);
     }
 
     document.addEventListener('DOMContentLoaded', fetchAndAuditRegistros);
 
     async function fetchAndAuditRegistros() {
         const tbody = document.getElementById('auditTableBody');
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">Analizando integridad de expedientes...</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">Analizando registros en Supabase...</td></tr>';
 
         try {
             const { data, error } = await dbClient.from('corredores').select('*').order('created_at', { ascending: false });
@@ -369,40 +398,84 @@
 
         } catch (err) {
             console.error('Error al auditar:', err);
-            tbody.innerHTML = `<tr><td colspan="5" style="color:var(--danger); text-align:center;">Error: ${err.message}</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6" style="color:var(--danger); text-align:center;">Error de lectura: ${err.message}</td></tr>`;
         }
     }
 
-    // Regla de Auditoría Individual
+    // Auxiliar para detectar valores vacíos o con expresiones de "No mencionó" / "X"
+    function isInvalidValue(val) {
+        if (!val || val === null || val === undefined) return true;
+        const clean = String(val).trim().toUpperCase();
+        if (clean === '' || clean === 'X' || clean === '-' || clean === 'NO' || clean === 'N/A' || clean === 'NA') return true;
+        if (clean.includes('NO MENCION') || clean.includes('NO PROPORCION') || clean.includes('NO INDIC') || clean.includes('NO DEFINI') || clean.includes('-----------') || clean.includes('SIN ESPECIFICAR')) return true;
+        return false;
+    }
+
+    // Regla Estricta de Auditoría
     function performAudit(r) {
         const missingFields = [];
         const missingDocs = [];
 
-        // Validar Datos Personales e Información
-        if (!r.curp || r.curp.length < 18) missingFields.push('CURP');
-        if (!r.segundo_apellido || r.segundo_apellido.trim() === '') missingFields.push('Apellido Materno');
-        if (!r.distancia || r.distancia === 'No definió' || r.distancia === '-----------') missingFields.push('Distancia asignada');
-        if (!r.categoria || r.categoria === '-----------') missingFields.push('Categoría');
-        if (!r.talla_playera || r.talla_playera === '-----------') missingFields.push('Talla de playera');
-        if (!r.email || !r.email.includes('@')) missingFields.push('Correo electrónico');
-        if (!r.telefono || r.telefono.length < 10) missingFields.push('Teléfono celular');
+        // Total de puntos a evaluar para la barra de progreso (12 ítems clave)
+        let score = 0;
+        const totalItems = 12;
 
-        // Validar Salud y Emergencia
-        if (!r.tipo_sangre || r.tipo_sangre === '-----------' || r.tipo_sangre === 'No especifica') missingFields.push('Tipo de sangre');
-        if (!r.contacto_nombre || r.contacto_nombre.trim() === '') missingFields.push('Contacto de emergencia');
-        if (!r.contacto_telefono || r.contacto_telefono.length < 10) missingFields.push('Teléfono de emergencia');
+        // 1. CURP
+        if (isInvalidValue(r.curp) || r.curp.length < 18) missingFields.push('CURP Incompleta o con "X"');
+        else score++;
 
-        // Validar Documentos Subidos (Storage URLs)
-        if (!r.foto_url) missingDocs.push('Fotografía oficial');
-        if (!r.pago_url) missingDocs.push('Comprobante de Pago');
-        if (!r.doc1_url) missingDocs.push('Identificación Oficial / INE (Doc 1)');
+        // 2. Apellido Materno / Segundo Apellido
+        if (isInvalidValue(r.segundo_apellido)) missingFields.push('Segundo Apellido');
+        else score++;
 
+        // 3. Distancia Asignada
+        if (isInvalidValue(r.distancia)) missingFields.push('Distancia de Carrera');
+        else score++;
+
+        // 4. Categoría
+        if (isInvalidValue(r.categoria)) missingFields.push('Categoría');
+        else score++;
+
+        // 5. Talla de Playera
+        if (isInvalidValue(r.talla_playera)) missingFields.push('Talla de Playera');
+        else score++;
+
+        // 6. Correo Electrónico
+        if (isInvalidValue(r.email) || !r.email.includes('@')) missingFields.push('Correo Electrónico');
+        else score++;
+
+        // 7. Teléfono Celular
+        if (isInvalidValue(r.telefono) || r.telefono.length < 10) missingFields.push('Teléfono Celular');
+        else score++;
+
+        // 8. Tipo de Sangre
+        if (isInvalidValue(r.tipo_sangre)) missingFields.push('Tipo de Sangre');
+        else score++;
+
+        // 9. Contacto de Emergencia
+        if (isInvalidValue(r.contacto_nombre) || isInvalidValue(r.contacto_telefono)) missingFields.push('Datos de Emergencia');
+        else score++;
+
+        // 10. Fotografía Oficial
+        if (isInvalidValue(r.foto_url)) missingDocs.push('Fotografía Oficial');
+        else score++;
+
+        // 11. Identificación Oficial / INE (doc1_url) - OBLIGATORIO
+        if (isInvalidValue(r.doc1_url)) missingDocs.push('Identificación Oficial / INE (Doc 1)');
+        else score++;
+
+        // 12. Carta Responsiva (doc2_url) - OBLIGATORIO
+        if (isInvalidValue(r.doc2_url)) missingDocs.push('Carta Responsiva Firmada (Doc 2)');
+        else score++;
+
+        const percentage = Math.round((score / totalItems) * 100);
         const isComplete = missingFields.length === 0 && missingDocs.length === 0;
 
         return {
             raw: r,
             missingFields,
             missingDocs,
+            percentage,
             isComplete
         };
     }
@@ -428,41 +501,53 @@
     function renderAuditTable(data) {
         const tbody = document.getElementById('auditTableBody');
         if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center;">No hay registros para mostrar.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align: center;">No hay registros coincidentes.</td></tr>';
             return;
         }
 
         tbody.innerHTML = data.map(item => {
             const r = item.raw;
             const name = r.nombre_completo || `${r.nombre || ''} ${r.primer_apellido || ''} ${r.segundo_apellido || ''}`.trim();
-            
-            let statusBadge = '<span class="badge badge-success">✓ COMPLETO</span>';
+            const phone = r.telefono || 'Sin Teléfono';
+
+            let statusBadge = `<span class="badge badge-success">100% VALIDO</span>`;
             if (!item.isComplete) {
-                if (item.missingFields.length > 0) statusBadge = `<span class="badge badge-danger">🔴 Incompleto (${item.missingFields.length})</span>`;
+                if (item.missingFields.length > 0) statusBadge = `<span class="badge badge-danger">🔴 ${item.missingFields.length} Observaciones</span>`;
                 else if (item.missingDocs.length > 0) statusBadge = `<span class="badge badge-warning">⚠️ Doc Pendiente</span>`;
             }
 
             const fieldsHtml = item.missingFields.length > 0 
                 ? item.missingFields.map(f => `<span class="missing-tag">❌ ${f}</span>`).join(' ') 
-                : '<span style="color:var(--success); font-weight:bold;">Ninguno</span>';
+                : '<span style="color:var(--success); font-weight:bold;">S/O</span>';
 
             const docsHtml = item.missingDocs.length > 0 
                 ? item.missingDocs.map(d => `<span class="doc-missing-tag">📄 ${d}</span>`).join(' ') 
                 : '<span style="color:var(--success); font-weight:bold;">Documentación Completa</span>';
 
+            const barColor = item.percentage === 100 ? 'var(--success)' : (item.percentage >= 70 ? 'var(--warning)' : 'var(--danger)');
+
             return `
                 <tr>
                     <td>
                         <strong>${r.folio_oficial || 'Sin Folio'}</strong><br>
-                        <span style="font-size:0.9rem;">${name}</span><br>
+                        <span style="font-size:0.9rem; font-weight:bold;">${name}</span><br>
                         <small style="color:var(--text-muted);">${r.email || 'Sin correo'}</small>
                     </td>
-                    <td>${statusBadge}</td>
+                    <td>
+                        <span class="phone-highlight">📱 ${phone}</span>
+                    </td>
+                    <td style="min-width: 110px;">
+                        ${statusBadge}
+                        <div class="progress-bar-container">
+                            <div class="progress-bar-fill" style="width: ${item.percentage}%; background-color: ${barColor};"></div>
+                        </div>
+                        <small style="font-size:0.7rem; color:var(--text-muted); font-weight:bold;">${item.percentage}% Avanzado</small>
+                    </td>
                     <td>${fieldsHtml}</td>
                     <td>${docsHtml}</td>
                     <td>
                         <button class="btn-action" onclick="generateNotification('${r.id}')">
-                            📧 Generar Notificación
+                            📲 Generar Notificación
                         </button>
                     </td>
                 </tr>
@@ -470,6 +555,7 @@
         }).join('');
     }
 
+    // Generador de Notificación con tono coadyuvante y leyenda de deslinde legal
     function generateNotification(id) {
         const item = cachedAuditData.find(d => d.raw.id == id);
         if (!item) return;
@@ -477,28 +563,36 @@
         const r = item.raw;
         currentSelectedPhone = r.telefono || '';
 
-        let msg = `Hola, ${r.nombre || 'Atleta'}.\n\n`;
-        msg += `Te saludamos del Comité Organizador del Maratón Internacional Moroleón 2027 (Folio: ${r.folio_oficial || 'Pendiente'}).\n\n`;
+        const phoneLabel = document.getElementById('lblPhoneModal');
+        if (phoneLabel) phoneLabel.innerText = currentSelectedPhone ? `+52 ${currentSelectedPhone}` : 'No Registrado';
+
+        let msg = `Estimado(a) atleta ${r.nombre || 'Corredor(a)'}:\n\n`;
+        msg += `Le saludamos con gusto. En nuestro compromiso de coadyuvar con el Comité Organizador del Maratón Internacional Moroleón 2027 para garantizar un registro correcto, seguro e impecable, le informamos sobre el estatus de su inscripción (Folio: ${r.folio_oficial || 'Pendiente'}):\n\n`;
 
         if (item.isComplete) {
-            msg += `¡Tu expediente de inscripción está 100% COMPLETO y verificado! Nos vemos en la línea de salida. 🏃‍♂️💨\n`;
+            msg += `✅ ¡Su expediente se encuentra 100% COMPLETO y debidamente auditado! Agradecemos su apoyo y le deseamos el mayor de los éxitos en la competencia. 🏃‍♂️💨\n\n`;
         } else {
-            msg += `Hemos revisado tu registro y notamos que faltan algunos datos o documentos para completar formalmente tu expediente de inscripción:\n\n`;
+            msg += `MetaX Pro le recomienda completar su expediente a la brevedad para asegurar su participación. Detectamos las siguientes observaciones o pendientes:\n\n`;
 
             if (item.missingFields.length > 0) {
-                msg += `📌 DATOS FALTANTES:\n`;
+                msg += `📌 DATOS O CAMPOS INCOMPLETOS / NULOS:\n`;
                 item.missingFields.forEach(f => msg += ` • ${f}\n`);
                 msg += `\n`;
             }
 
             if (item.missingDocs.length > 0) {
-                msg += `📄 DOCUMENTOS PENDIENTES:\n`;
+                msg += `📄 DOCUMENTACIÓN OBLIGATORIA PENDIENTE:\n`;
                 item.missingDocs.forEach(d => msg += ` • ${d}\n`);
                 msg += `\n`;
             }
 
-            msg += `Por favor apóyanos respondiendo a este mensaje o enviando la información faltante para validar tu kit de corredor.\n\n¡Muchas gracias por tu apoyo!🏼🏼`;
+            msg += `Le recordamos que, de acuerdo con la convocatoria oficial del evento, contar con un expediente completo es fundamental, ya que la omisión de datos o documentos obligatorios puede ser causa de sanción o descalificación según lo resuelva o determine el Comité Organizador.\n\n`;
+            msg += `Favor de responder a este mensaje adjuntando la información o documentación faltante a la brevedad.\n\n`;
         }
+
+        msg += `--------------------------------------------------\n`;
+        msg += `⚠️ NOTA LEGAL Y DESLINDE DE RESPONSABILIDAD:\n`;
+        msg += `MetaX Pro no es responsable de la gestión de las inscripciones realizadas fuera de nuestro portal oficial https://maratonmoroleon.metaxpro.com/, por lo que cualquier duda o aclaración respecto a su registro favor de tratarlo directamente con el Comité Organizador. Asimismo, MetaX Pro se deslinda del uso de la documentación que sea proporcionada al Comité Organizador con fines de registro, así como del resguardo o custodia de la misma.`;
 
         document.getElementById('txtMessagePreview').value = msg;
         document.getElementById('msgModal').style.display = 'flex';
@@ -513,8 +607,9 @@
             const name = (r.nombre_completo || '').toLowerCase();
             const curp = (r.curp || '').toLowerCase();
             const folio = (r.folio_oficial || '').toLowerCase();
+            const phone = (r.telefono || '').toLowerCase();
 
-            const matchesQuery = name.includes(q) || curp.includes(q) || folio.includes(q);
+            const matchesQuery = name.includes(q) || curp.includes(q) || folio.includes(q) || phone.includes(q);
 
             let matchesStatus = true;
             if (st === 'INCOMPLETE') matchesStatus = item.missingFields.length > 0;
@@ -531,13 +626,13 @@
         const txt = document.getElementById('txtMessagePreview');
         txt.select();
         navigator.clipboard.writeText(txt.value).then(() => {
-            alert('¡Mensaje copiado al portapapeles!');
+            alert('¡Notificación copiada al portapapeles!');
         });
     }
 
     function openWhatsAppDirect() {
-        if (!currentSelectedPhone) {
-            alert('El atleta no tiene un número telefónico registrado.');
+        if (!currentSelectedPhone || currentSelectedPhone.length < 10) {
+            alert('El atleta no cuenta con un número de teléfono válido registrado.');
             return;
         }
         const text = encodeURIComponent(document.getElementById('txtMessagePreview').value);
