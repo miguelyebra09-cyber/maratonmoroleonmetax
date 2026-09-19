@@ -412,9 +412,11 @@
     }
 
     // Regla Estricta de Auditoría
+    // Regla Estricta de Auditoría
     function performAudit(r) {
         const missingFields = [];
         const missingDocs = [];
+        const attachedDocs = [];
 
         // Total de puntos a evaluar para la barra de progreso (12 ítems clave)
         let score = 0;
@@ -457,16 +459,28 @@
         else score++;
 
         // 10. Fotografía Oficial
-        if (isInvalidValue(r.foto_url)) missingDocs.push('Fotografía Oficial');
-        else score++;
+        if (isInvalidValue(r.foto_url)) {
+            missingDocs.push('Fotografía Oficial');
+        } else {
+            attachedDocs.push('Fotografía Oficial');
+            score++;
+        }
 
-        // 11. Identificación Oficial / INE (doc1_url) - OBLIGATORIO
-        if (isInvalidValue(r.doc1_url)) missingDocs.push('Identificación Oficial / INE (Doc 1)');
-        else score++;
+        // 11. Identificación Oficial / INE (doc1_url)
+        if (isInvalidValue(r.doc1_url)) {
+            missingDocs.push('Identificación Oficial / INE (Doc 1)');
+        } else {
+            attachedDocs.push('Identificación Oficial / INE (Doc 1)');
+            score++;
+        }
 
-        // 12. Carta Responsiva (doc2_url) - OBLIGATORIO
-        if (isInvalidValue(r.doc2_url)) missingDocs.push('Carta Responsiva Firmada (Doc 2)');
-        else score++;
+        // 12. Carta Responsiva (doc2_url)
+        if (isInvalidValue(r.doc2_url)) {
+            missingDocs.push('Carta Responsiva Firmada (Doc 2)');
+        } else {
+            attachedDocs.push('Carta Responsiva Firmada (Doc 2)');
+            score++;
+        }
 
         const percentage = Math.round((score / totalItems) * 100);
         const isComplete = missingFields.length === 0 && missingDocs.length === 0;
@@ -475,11 +489,11 @@
             raw: r,
             missingFields,
             missingDocs,
+            attachedDocs,
             percentage,
             isComplete
         };
     }
-
     function updateMetrics() {
         let total = cachedAuditData.length;
         let completos = 0;
@@ -520,9 +534,22 @@
                 ? item.missingFields.map(f => `<span class="missing-tag">❌ ${f}</span>`).join(' ') 
                 : '<span style="color:var(--success); font-weight:bold;">S/O</span>';
 
-            const docsHtml = item.missingDocs.length > 0 
-                ? item.missingDocs.map(d => `<span class="doc-missing-tag">📄 ${d}</span>`).join(' ') 
-                : '<span style="color:var(--success); font-weight:bold;">Documentación Completa</span>';
+               let docsHtml = '';
+
+            // Mostrar documentos SÍ adjuntos (en verde)
+            if (item.attachedDocs.length > 0) {
+                docsHtml += item.attachedDocs.map(d => `<span class="badge badge-success" style="font-size:0.7rem; margin:1px; display:inline-block;">✅ ${d}</span>`).join(' ');
+            }
+
+            // Mostrar documentos PENDIENTES (en amarillo/rojo)
+            if (item.missingDocs.length > 0) {
+                if (docsHtml !== '') docsHtml += '<br>';
+                docsHtml += item.missingDocs.map(d => `<span class="doc-missing-tag" style="font-size:0.7rem; margin:1px; display:inline-block;">❌ ${d}</span>`).join(' ');
+            }
+
+            if (item.attachedDocs.length === 0 && item.missingDocs.length === 0) {
+                docsHtml = '<span style="color:var(--success); font-weight:bold;">Documentación Completa</span>';
+            }
 
             const barColor = item.percentage === 100 ? 'var(--success)' : (item.percentage >= 70 ? 'var(--warning)' : 'var(--danger)');
 
@@ -582,6 +609,12 @@
             if (item.missingFields.length > 0) {
                 msg += `📌 DATOS O CAMPOS INCOMPLETOS / NULOS:\n`;
                 item.missingFields.forEach(f => msg += ` • ${f}\n`);
+                msg += `\n`;
+            }
+
+            if (item.attachedDocs.length > 0) {
+                msg += `✅ DOCUMENTACIÓN RECIBIDA Y VALIDADA:\n`;
+                item.attachedDocs.forEach(d => msg += ` • ${d}\n`);
                 msg += `\n`;
             }
 
