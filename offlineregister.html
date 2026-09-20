@@ -1145,9 +1145,13 @@
     
     
 <script>
+    
     // 1. Inicialización ultra-segura para evitar conflictos globales de identificadores
     const SUPABASE_URL = 'https://rpcevbxzpfgyobehgjth.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwY2V2Ynh6cGZneW9iZWhnanRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMDA3MDQsImV4cCI6MjEwMTg3NjcwNH0.hECuSvVKVehKZjZ9jMqwHM1xspD2l1kS3G9X1jfHIuk';
+
+    // AGREGAR AQUÍ LA URL DE TU SCRIPT DE GOOGLE:
+const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/library/d/1dOvrQZz2NfHhmAj9VEvouDZom7vmQhvVPn6CCjt9QolmvGbllsd5ernH/1';
     
     let dbClient = null;
     try {
@@ -1160,6 +1164,48 @@
         console.error('Error al inicializar el cliente de Supabase:', err);
     }
 
+    // =========================================================================
+  // PEGAR AQUÍ LA FUNCIÓN DE SUBIDA A GOOGLE DRIVE
+  // =========================================================================
+    
+async function uploadToGoogleDrive(file, folderName, customFileName) {
+  if (!file) return null;
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = async function(e) {
+      const base64Data = e.target.result.split(',')[1];
+      const payload = {
+        fileData: base64Data,
+        fileName: customFileName || file.name,
+        mimeType: file.type,
+        folderName: folderName
+      };
+
+      try {
+        const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        if (result.status === 'success') {
+          resolve(result.url);
+        } else {
+          reject(new Error(result.message || 'Error al subir a Drive'));
+        }
+      } catch (err) {
+        reject(err);
+      }
+    };
+    reader.onerror = error => reject(error);
+    reader.readAsDataURL(file);
+  });
+}
+
+    
     let cachedRegistros = [];
 
     // Auxiliares de Navegación y Modales
