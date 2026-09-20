@@ -520,40 +520,93 @@
         const containerData = document.getElementById('containerDataInputs');
         const containerDoc = document.getElementById('containerDocInputs');
 
-        containerData.innerHTML = '';
-        containerDoc.innerHTML = '';
+containerData.innerHTML = '';
+containerDoc.innerHTML = '';
 
-        let pendingData = 0, pendingDocs = 0;
+let pendingData = 0, pendingDocs = 0;
 
-        if (isInvalidValue(c.segundo_apellido)) {
-            pendingData++;
-            containerData.innerHTML += `<div class="form-group"><label>Segundo Apellido *</label><input type="text" id="inp_segundo_apellido" class="form-control" required></div>`;
-        }
-        if (isInvalidValue(c.email) || !c.email.includes('@')) {
-            pendingData++;
-            containerData.innerHTML += `<div class="form-group"><label>Correo Electrónico *</label><input type="email" id="inp_email" class="form-control" style="text-transform:none;" required></div>`;
-        }
+// 1. CURP
+if (isInvalidValue(c.curp) || String(c.curp).trim().length < 18) {
+    pendingData++;
+    containerData.innerHTML += `<div class="form-group"><label>CURP *</label><input type="text" id="inp_curp" class="form-control" style="text-transform:uppercase;" maxlength="18" value="${c.curp || ''}" required></div>`;
+}
 
-        if (isInvalidValue(c.foto_url)) {
-            pendingDocs++;
-            containerDoc.innerHTML += renderFileInput('f_foto', '📸 Fotografía Oficial', 'Fotografía clara de rostro.');
-        }
-        if (isInvalidValue(c.doc1_url)) {
-            pendingDocs++;
-            containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE)', 'Frente y reverso.');
-        }
-        if (isInvalidValue(c.doc2_url)) {
-            pendingDocs++;
-            containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Documento de deslinde.');
-        }
+// 2. Segundo Apellido
+if (isInvalidValue(c.segundo_apellido)) {
+    pendingData++;
+    containerData.innerHTML += `<div class="form-group"><label>Segundo Apellido *</label><input type="text" id="inp_segundo_apellido" class="form-control" value="${c.segundo_apellido || ''}" required></div>`;
+}
 
-        if (pendingData > 0) document.getElementById('cardDataInputs').classList.remove('hidden');
-        if (pendingDocs > 0) document.getElementById('cardDocInputs').classList.remove('hidden');
+// 3. Distancia
+if (isInvalidValue(c.distancia)) {
+    pendingData++;
+    containerData.innerHTML += `<div class="form-group"><label>Distancia *</label><input type="text" id="inp_distancia" class="form-control" value="${c.distancia || ''}" required></div>`;
+}
 
-        if (pendingData === 0 && pendingDocs === 0) {
-            document.getElementById('cardCompleted').classList.remove('hidden');
-        } else {
-            document.getElementById('btnSubmitContainer').classList.remove('hidden');
+// 4. Categoría
+if (isInvalidValue(c.categoria)) {
+    pendingData++;
+    containerData.innerHTML += `<div class="form-group"><label>Categoría *</label><input type="text" id="inp_categoria" class="form-control" value="${c.categoria || ''}" required></div>`;
+}
+
+// 5. Talla de Playera
+if (isInvalidValue(c.talla_playera)) {
+    pendingData++;
+    containerData.innerHTML += `<div class="form-group"><label>Talla de Playera *</label><input type="text" id="inp_talla_playera" class="form-control" value="${c.talla_playera || ''}" required></div>`;
+}
+
+// 6. Correo Electrónico
+if (isInvalidValue(c.email) || !c.email.includes('@')) {
+    pendingData++;
+    containerData.innerHTML += `<div class="form-group"><label>Correo Electrónico *</label><input type="email" id="inp_email" class="form-control" style="text-transform:none;" value="${c.email || ''}" required></div>`;
+}
+
+// 7. Teléfono Celular
+if (isInvalidValue(c.telefono) || String(c.telefono).trim().length < 10) {
+    pendingData++;
+    containerData.innerHTML += `<div class="form-group"><label>Teléfono Celular *</label><input type="tel" id="inp_telefono" class="form-control" maxlength="10" value="${c.telefono || ''}" required></div>`;
+}
+
+// 8. Tipo de Sangre
+if (isInvalidValue(c.tipo_sangre)) {
+    pendingData++;
+    containerData.innerHTML += `<div class="form-group"><label>Tipo de Sangre *</label><input type="text" id="inp_tipo_sangre" class="form-control" value="${c.tipo_sangre || ''}" required></div>`;
+}
+
+// 9. Contacto de Emergencia (Nombre y Teléfono)
+if (isInvalidValue(c.contacto_nombre) || isInvalidValue(c.contacto_telefono)) {
+    pendingData++;
+    containerData.innerHTML += `
+        <div class="form-group"><label>Contacto de Emergencia (Nombre) *</label><input type="text" id="inp_contacto_nombre" class="form-control" value="${c.contacto_nombre || ''}" required></div>
+        <div class="form-group"><label>Contacto de Emergencia (Teléfono) *</label><input type="tel" id="inp_contacto_telefono" class="form-control" value="${c.contacto_telefono || ''}" required></div>
+    `;
+}
+
+// 10. Fotografía Oficial
+if (isInvalidValue(c.foto_url)) {
+    pendingDocs++;
+    containerDoc.innerHTML += renderFileInput('f_foto', '📷 Fotografía Oficial', 'Fotografía clara de rostro.');
+}
+
+// 11. Identificación Oficial (INE)
+if (isInvalidValue(c.doc1_url)) {
+    pendingDocs++;
+    containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE)', 'Frente y reverso.');
+}
+
+// 12. Carta Responsiva
+if (isInvalidValue(c.doc2_url)) {
+    pendingDocs++;
+    containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Documento de deslinde.');
+}
+
+// Mostrar u ocultar las tarjetas según el conteo
+if (pendingData > 0) document.getElementById('cardDataInputs').classList.remove('hidden');
+else document.getElementById('cardDataInputs').classList.add('hidden');
+
+if (pendingDocs > 0) document.getElementById('cardDocInputs').classList.remove('hidden');
+else document.getElementById('cardDocInputs').classList.add('hidden');
+        
         }
     }
 
