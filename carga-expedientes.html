@@ -161,15 +161,22 @@
     <!-- PASO 2: VERIFICACIÓN DE DATOS PERSONALES Y CARGA DE PENDIENTES -->
     <div id="stepPortal" class="hidden">
 
-        <div class="card">
-            <div class="card-title">
-                <span>👤 Verificación de Datos Personales</span>
-                <button class="btn-warning" onclick="openSupportModal()">⚠️ Solicitar Corrección al Comité</button>
+<div class="card">
+    <div class="card-title">
+        <div>
+            <span>👤 Verificación de Datos Personales</span>
+            <!-- Folio visible justo debajo del título -->
+            <div style="font-size: 0.9rem; font-weight: bold; color: var(--text-muted, #555); margin-top: 4px;">
+                FOLIO DE CORREDOR: <span id="v_folio" style="color: #0d6efd;">---</span>
             </div>
-            
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
-                Por favor, verifica que tus datos registrados estén correctos. Si alguno presenta un error, notifícalo con el botón superior.
-            </p>
+        </div>
+        <button class="btn-warning" onclick="openSupportModal()">⚠️ Solicitar Corrección al Comité</button>
+    </div>
+
+    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; margin-top: 8px;">
+        Por favor, verifica que tus datos registrados estén correctos. Si alguno presenta un error, notifícalo con el botón superior.
+    </p>
+        
 
             <div class="data-grid">
                 <div class="data-item"><label>Nombre(s):</label><span id="v_nombre">---</span></div>
@@ -495,6 +502,7 @@
 
     function renderDatosPersonales() {
         const c = currentCorredor;
+        document.getElementById('v_folio').innerText = c.folio_oficial || c.id_corredor || '---';
         document.getElementById('v_nombre').innerText = c.nombre || '---';
         document.getElementById('v_paterno').innerText = c.primer_apellido || '---';
         document.getElementById('v_materno').innerText = c.segundo_apellido || '---';
