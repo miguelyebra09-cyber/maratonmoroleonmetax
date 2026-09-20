@@ -565,10 +565,11 @@
             return `
                 <tr>
                     <td>
-                        <strong>${r.folio_oficial || 'Sin Folio'}</strong><br>
-                        <span style="font-size:0.9rem; font-weight:bold;">${name}</span><br>
-                        <small style="color:var(--text-muted);">${r.email || 'Sin correo'}</small>
-                    </td>
+    <strong>${r.folio_oficial || 'Sin Folio'}</strong><br>
+    <span style="font-size:0.9rem; font-weight:bold;">${name}</span><br>
+    <small style="color:var(--text-muted);">${r.email || 'Sin correo'}</small><br>
+    <small style="color:var(--text-muted); font-family:monospace; font-weight:600;">CURP: ${r.curp || 'Sin CURP'}</small>
+</td>
                     <td>
                         <span class="phone-highlight">📱 ${phone}</span>
                     </td>
