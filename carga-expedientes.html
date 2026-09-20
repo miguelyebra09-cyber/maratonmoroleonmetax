@@ -47,6 +47,7 @@
         .btn-primary:hover { background-color: var(--accent-blue); }
         .btn-secondary { background-color: #64748b; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
         .btn-warning { background-color: var(--warning); color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
+        .btn-wa { background-color: #25d366; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
 
         .alert-box { padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 16px; font-weight: 500; }
         .alert-warning { background-color: #fffbeb; border: 1px solid #fef3c7; color: #b45309; }
@@ -63,7 +64,7 @@
 
         /* Modales */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15,23,42,0.7); display:flex; justify-content:center; align-items:center; z-index: 1000; padding:16px; }
-        .modal-card { background: white; border-radius: 12px; max-width: 900px; width:100%; padding: 24px; max-height: 90vh; overflow-y: auto; }
+        .modal-card { background: white; border-radius: 12px; max-width: 1100px; width:100%; padding: 24px; max-height: 92vh; overflow-y: auto; }
 
         /* Estilos del Panel Admin */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
@@ -74,11 +75,19 @@
         .charts-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 20px; }
         .chart-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; }
 
+        /* Tabla Estilo revision-registros.html */
         .admin-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 12px; }
-        .admin-table th, .admin-table td { padding: 8px 10px; border: 1px solid #e2e8f0; text-align: left; }
-        .admin-table th { background: #f8fafc; font-weight: 700; }
+        .admin-table th, .admin-table td { padding: 10px 12px; border: 1px solid #e2e8f0; text-align: left; vertical-align: top; }
+        .admin-table th { background: #f8fafc; font-weight: 700; color: var(--primary); }
 
-        /* Botón Discreto Admin */
+        .badge-tag { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 700; margin: 2px 0; }
+        .badge-danger { background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+        .badge-success { background-color: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
+        .badge-warning { background-color: #fffbeb; color: #d97706; border: 1px solid #fef3c7; }
+
+        .progress-bar-bg { background-color: #e2e8f0; border-radius: 4px; height: 8px; width: 100%; margin-top: 4px; overflow: hidden; }
+        .progress-bar-fill { background-color: var(--success); height: 100%; width: 0%; transition: width 0.3s; }
+
         .admin-trigger { position: fixed; bottom: 10px; right: 10px; opacity: 0.3; font-size: 0.75rem; background: #000; color: #fff; padding: 5px 10px; border-radius: 4px; border: none; cursor: pointer; }
         .admin-trigger:hover { opacity: 1; }
 
@@ -278,23 +287,23 @@
             </div>
         </div>
 
-        <!-- TABLA GENERAL DE ATLETAS -->
+        <!-- TABLA GENERAL DE ATLETAS (ESTILO REVISIÓN REGISTROS) -->
         <div class="card-title" style="margin-top: 20px;">
-            <span>📋 Listado General de Atletas</span>
-            <input type="text" id="searchAdmin" onkeyup="filterAdminTable()" class="form-control" placeholder="Buscar por Nombre o Folio..." style="max-width: 250px; text-transform: uppercase;">
+            <span>📋 Listado General y Estatus de Integridad</span>
+            <input type="text" id="searchAdmin" onkeyup="filterAdminTable()" class="form-control" placeholder="Buscar por Nombre o Folio..." style="max-width: 280px; text-transform: uppercase;">
         </div>
 
-        <div style="overflow-x: auto; max-height: 300px;">
+        <div style="overflow-x: auto; max-height: 380px;">
             <table class="admin-table">
                 <thead>
                     <tr>
-                        <th>Folio</th>
-                        <th>Atleta</th>
-                        <th>Accesos</th>
-                        <th>Foto</th>
-                        <th>INE</th>
-                        <th>Carta</th>
+                        <th style="min-width: 180px;">Atleta / Folio</th>
+                        <th>Teléfono WhatsApp</th>
+                        <th style="min-width: 130px;">Nivel de Integridad</th>
+                        <th style="min-width: 180px;">Campos Faltantes o Nulos ("X")</th>
+                        <th style="min-width: 190px;">Documentación Obligatoria</th>
                         <th>Comentarios Atleta</th>
+                        <th>Acción de Notificación</th>
                     </tr>
                 </thead>
                 <tbody id="tblAdminAuditoria">
@@ -595,7 +604,7 @@
         const p = document.getElementById('admPass').value.trim();
         const err = document.getElementById('admLoginErr');
 
-        if (u === 'admin_jmyp_2102' && p === '2610moro-mara') {
+        if (u === 'admin_jmip_2102' && p === '2610noro') {
             closeModal('modalAdminLogin');
             document.getElementById('modalAdminDashboard').classList.remove('hidden');
             loadAdminAuditoriaGeneral();
@@ -637,7 +646,8 @@
             if (hasIne) ineOk++;
             if (hasCarta) cartasOk++;
 
-            if (hasFoto && hasIne && hasCarta) completos++;
+            const camposPendientes = getCamposFaltantesList(c);
+            if (hasFoto && hasIne && hasCarta && camposPendientes.length === 0) completos++;
         });
 
         document.getElementById('stTotal').innerText = total;
@@ -680,6 +690,16 @@
         });
     }
 
+    function getCamposFaltantesList(c) {
+        const faltantes = [];
+        if (isInvalidValue(c.curp)) faltantes.push('CURP Incompleta o con "X"');
+        if (isInvalidValue(c.segundo_apellido)) faltantes.push('Segundo Apellido Faltante');
+        if (isInvalidValue(c.email) || !c.email.includes('@')) faltantes.push('Correo Electrónico');
+        if (isInvalidValue(c.distancia)) faltantes.push('Distancia de Carrera');
+        if (isInvalidValue(c.contacto_emergencia) || isInvalidValue(c.telefono_emergencia)) faltantes.push('Datos de Emergencia');
+        return faltantes;
+    }
+
     function renderAdminTable(data) {
         const tbody = document.getElementById('tblAdminAuditoria');
         tbody.innerHTML = '';
@@ -690,20 +710,63 @@
         }
 
         data.forEach(c => {
-            const hasFoto = !isInvalidValue(c.foto_url) ? '✅' : '❌';
-            const hasIne = !isInvalidValue(c.doc1_url) ? '✅' : '❌';
-            const hasCarta = !isInvalidValue(c.doc2_url) ? '✅' : '❌';
-            const acc = c.accesos_realizados || 0;
+            const camposFaltantes = getCamposFaltantesList(c);
+            const hasFoto = !isInvalidValue(c.foto_url);
+            const hasIne = !isInvalidValue(c.doc1_url);
+            const hasCarta = !isInvalidValue(c.doc2_url);
+
+            // Cálculo de Nivel de Integridad
+            const totalItems = 3 + 3; // 3 documentos + 3 campos críticos (CURP, Email, Emergencia)
+            let itemsOk = 0;
+            if (hasFoto) itemsOk++;
+            if (hasIne) itemsOk++;
+            if (hasCarta) itemsOk++;
+            if (!isInvalidValue(c.curp)) itemsOk++;
+            if (!isInvalidValue(c.email) && c.email.includes('@')) itemsOk++;
+            if (!isInvalidValue(c.contacto_emergencia)) itemsOk++;
+
+            const pct = Math.round((itemsOk / totalItems) * 100);
+            
+            let badgeIntegridad = `<span class="badge-tag badge-danger">${camposFaltantes.length + (!hasFoto + !hasIne + !hasCarta)} OBSERVACIONES</span>`;
+            if (pct === 100) badgeIntegridad = `<span class="badge-tag badge-success">100% VALIDO</span>`;
+
+            // HTML de Campos Faltantes
+            let htmlCampos = '<span class="badge-tag badge-success">S/O</span>';
+            if (camposFaltantes.length > 0) {
+                htmlCampos = camposFaltantes.map(f => `<span class="badge-tag badge-danger">❌ ${f}</span>`).join('<br>');
+            }
+
+            // HTML de Documentos
+            const htmlDocs = `
+                <span class="badge-tag ${hasFoto ? 'badge-success' : 'badge-danger'}">${hasFoto ? '✓' : '❌'} Fotograf\u00eda Oficial</span><br>
+                <span class="badge-tag ${hasIne ? 'badge-success' : 'badge-danger'}">${hasIne ? '✓' : '❌'} Identificaci\u00f3n Oficial / INE</span><br>
+                <span class="badge-tag ${hasCarta ? 'badge-success' : 'badge-danger'}">${hasCarta ? '✓' : '❌'} Carta Responsiva Firmada</span>
+            `;
+
+            const phone = c.telefono ? c.telefono.replace(/\D/g, '') : '';
 
             tbody.innerHTML += `
                 <tr>
-                    <td><strong>${c.folio_oficial || 'Sin Folio'}</strong></td>
-                    <td>${c.nombre || ''} ${c.primer_apellido || ''}</td>
-                    <td><span style="color:${acc >= 2 ? 'red' : 'green'}; font-weight:bold;">${acc} / 2</span></td>
-                    <td>${hasFoto}</td>
-                    <td>${hasIne}</td>
-                    <td>${hasCarta}</td>
+                    <td>
+                        <strong>${c.folio_oficial || 'Sin Folio'}</strong><br>
+                        <span style="font-size:0.85rem; font-weight:bold; color:var(--primary);">${c.nombre || ''} ${c.primer_apellido || ''} ${c.segundo_apellido || ''}</span><br>
+                        <small style="color:var(--text-muted);">${c.email || 'Sin Correo'}</small><br>
+                        <small style="color:var(--text-muted);">CURP: ${c.curp || 'X'}</small>
+                    </td>
+                    <td>
+                        ${phone ? `<span class="badge-tag badge-warning">📱 ${phone}</span>` : '<em>Sin Celular</em>'}
+                    </td>
+                    <td>
+                        ${badgeIntegridad}
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" style="width: ${pct}%;"></div></div>
+                        <small style="font-size:0.7rem; color:var(--text-muted);">${pct}% Avanzado</small>
+                    </td>
+                    <td>${htmlCampos}</td>
+                    <td>${htmlDocs}</td>
                     <td><small>${c.comentarios_atleta || '<em>Sin observaciones</em>'}</small></td>
+                    <td>
+                        ${phone ? `<button class="btn-wa" onclick="notificarAtleta('${phone}', '${c.folio_oficial}', '${c.nombre}')">📲 Generar Notificación</button>` : '<small>N/A</small>'}
+                    </td>
                 </tr>
             `;
         });
@@ -714,9 +777,15 @@
         const filtered = allCorredoresData.filter(c => 
             (c.folio_oficial && c.folio_oficial.toUpperCase().includes(q)) ||
             (c.nombre && c.nombre.toUpperCase().includes(q)) ||
-            (c.primer_apellido && c.primer_apellido.toUpperCase().includes(q))
+            (c.primer_apellido && c.primer_apellido.toUpperCase().includes(q)) ||
+            (c.curp && c.curp.toUpperCase().includes(q))
         );
         renderAdminTable(filtered);
+    }
+
+    function notificarAtleta(telefono, folio, nombre) {
+        const text = `Hola ${nombre}, te saludamos del Comité Organizador del Maratón Moroleón 2027. Te recordamos ingresar a tu portal de expediente con tu Folio (${folio}) para completar tus datos y documentos pendientes.`;
+        window.open(`https://api.whatsapp.com/send?phone=52${telefono}&text=${encodeURIComponent(text)}`, '_blank');
     }
 
     function openSupportModal() { document.getElementById('modalSupport').classList.remove('hidden'); }
