@@ -515,99 +515,154 @@
         document.getElementById('v_nacionalidad').innerText = c.nacionalidad || 'MEXICANA';
     }
 
-    function renderPendientesForm() {
-        const c = currentCorredor;
-        const containerData = document.getElementById('containerDataInputs');
-        const containerDoc = document.getElementById('containerDocInputs');
+    function renderPendientesForm(c) {
+    const containerData = document.getElementById('containerDataInputs');
+    const containerDoc = document.getElementById('containerDocInputs');
 
-containerData.innerHTML = '';
-containerDoc.innerHTML = '';
+    if (!containerData || !containerDoc) return;
 
-let pendingData = 0, pendingDocs = 0;
+    containerData.innerHTML = '';
+    containerDoc.innerHTML = '';
 
-// 1. CURP
-if (isInvalidValue(c.curp) || String(c.curp).trim().length < 18) {
-    pendingData++;
-    containerData.innerHTML += `<div class="form-group"><label>CURP *</label><input type="text" id="inp_curp" class="form-control" style="text-transform:uppercase;" maxlength="18" value="${c.curp || ''}" required></div>`;
-}
+    let pendingData = 0;
+    let pendingDocs = 0;
 
-// 2. Segundo Apellido
-if (isInvalidValue(c.segundo_apellido)) {
-    pendingData++;
-    containerData.innerHTML += `<div class="form-group"><label>Segundo Apellido *</label><input type="text" id="inp_segundo_apellido" class="form-control" value="${c.segundo_apellido || ''}" required></div>`;
-}
+    // Detectar valores de Contacto de Emergencia considerando distintos nombres de columna en BD
+    const contactoNombre = c.contacto_nombre || c.contacto_emergencia || c.emergencia_contacto || '';
+    const contactoTelefono = c.contacto_telefono || c.telefono_emergencia || c.emergencia_telefono || '';
 
-// 3. Distancia
-if (isInvalidValue(c.distancia)) {
-    pendingData++;
-    containerData.innerHTML += `<div class="form-group"><label>Distancia *</label><input type="text" id="inp_distancia" class="form-control" value="${c.distancia || ''}" required></div>`;
-}
+    // 1. CURP
+    if (isInvalidValue(c.curp) || String(c.curp).trim().length < 18) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>CURP *</label>
+                <input type="text" id="inp_curp" class="form-control" style="text-transform:uppercase;" maxlength="18" value="${c.curp || ''}" required>
+            </div>`;
+    }
 
-// 4. Categoría
-if (isInvalidValue(c.categoria)) {
-    pendingData++;
-    containerData.innerHTML += `<div class="form-group"><label>Categoría *</label><input type="text" id="inp_categoria" class="form-control" value="${c.categoria || ''}" required></div>`;
-}
+    // 2. Segundo Apellido
+    if (isInvalidValue(c.segundo_apellido)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Segundo Apellido *</label>
+                <input type="text" id="inp_segundo_apellido" class="form-control" value="${c.segundo_apellido || ''}" required>
+            </div>`;
+    }
 
-// 5. Talla de Playera
-if (isInvalidValue(c.talla_playera)) {
-    pendingData++;
-    containerData.innerHTML += `<div class="form-group"><label>Talla de Playera *</label><input type="text" id="inp_talla_playera" class="form-control" value="${c.talla_playera || ''}" required></div>`;
-}
+    // 3. Distancia Asignada (INCLUIDA)
+    if (isInvalidValue(c.distancia)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Distancia *</label>
+                <select id="inp_distancia" class="form-control" required>
+                    <option value="">-- Selecciona Distancia --</option>
+                    <option value="5K Recreativa" ${c.distancia === '5K Recreativa' ? 'selected' : ''}>5K Recreativa</option>
+                    <option value="10K" ${c.distancia === '10K' ? 'selected' : ''}>10K</option>
+                    <option value="21K" ${c.distancia === '21K' ? 'selected' : ''}>21K (Medio Maratón)</option>
+                    <option value="42K" ${c.distancia === '42K' ? 'selected' : ''}>42K (Maratón)</option>
+                </select>
+            </div>`;
+    }
 
-// 6. Correo Electrónico
-if (isInvalidValue(c.email) || !c.email.includes('@')) {
-    pendingData++;
-    containerData.innerHTML += `<div class="form-group"><label>Correo Electrónico *</label><input type="email" id="inp_email" class="form-control" style="text-transform:none;" value="${c.email || ''}" required></div>`;
-}
+    // 4. Categoría
+    if (isInvalidValue(c.categoria)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Categoría *</label>
+                <input type="text" id="inp_categoria" class="form-control" value="${c.categoria || ''}" required>
+            </div>`;
+    }
 
-// 7. Teléfono Celular
-if (isInvalidValue(c.telefono) || String(c.telefono).trim().length < 10) {
-    pendingData++;
-    containerData.innerHTML += `<div class="form-group"><label>Teléfono Celular *</label><input type="tel" id="inp_telefono" class="form-control" maxlength="10" value="${c.telefono || ''}" required></div>`;
-}
+    // 5. Talla de Playera
+    if (isInvalidValue(c.talla_playera)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Talla de Playera *</label>
+                <input type="text" id="inp_talla_playera" class="form-control" value="${c.talla_playera || ''}" required>
+            </div>`;
+    }
 
-// 8. Tipo de Sangre
-if (isInvalidValue(c.tipo_sangre)) {
-    pendingData++;
-    containerData.innerHTML += `<div class="form-group"><label>Tipo de Sangre *</label><input type="text" id="inp_tipo_sangre" class="form-control" value="${c.tipo_sangre || ''}" required></div>`;
-}
+    // 6. Correo Electrónico
+    if (isInvalidValue(c.email) || !String(c.email).includes('@')) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Correo Electrónico *</label>
+                <input type="email" id="inp_email" class="form-control" style="text-transform:none;" value="${c.email || ''}" required>
+            </div>`;
+    }
 
-// 9. Contacto de Emergencia (Nombre y Teléfono)
-if (isInvalidValue(c.contacto_nombre) || isInvalidValue(c.contacto_telefono)) {
-    pendingData++;
-    containerData.innerHTML += `
-        <div class="form-group"><label>Contacto de Emergencia (Nombre) *</label><input type="text" id="inp_contacto_nombre" class="form-control" value="${c.contacto_nombre || ''}" required></div>
-        <div class="form-group"><label>Contacto de Emergencia (Teléfono) *</label><input type="tel" id="inp_contacto_telefono" class="form-control" value="${c.contacto_telefono || ''}" required></div>
-    `;
-}
+    // 7. Teléfono Celular
+    if (isInvalidValue(c.telefono) || String(c.telefono).trim().length < 10) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Teléfono Celular *</label>
+                <input type="tel" id="inp_telefono" class="form-control" maxlength="10" value="${c.telefono || ''}" required>
+            </div>`;
+    }
 
-// 10. Fotografía Oficial
-if (isInvalidValue(c.foto_url)) {
-    pendingDocs++;
-    containerDoc.innerHTML += renderFileInput('f_foto', '📷 Fotografía Oficial', 'Fotografía clara de rostro.');
-}
+    // 8. Tipo de Sangre
+    if (isInvalidValue(c.tipo_sangre)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Tipo de Sangre *</label>
+                <input type="text" id="inp_tipo_sangre" class="form-control" value="${c.tipo_sangre || ''}" required>
+            </div>`;
+    }
 
-// 11. Identificación Oficial (INE)
-if (isInvalidValue(c.doc1_url)) {
-    pendingDocs++;
-    containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE)', 'Frente y reverso.');
-}
+    // 9. Contacto de Emergencia
+    if (isInvalidValue(contactoNombre) || isInvalidValue(contactoTelefono)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Contacto de Emergencia (Nombre) *</label>
+                <input type="text" id="inp_contacto_nombre" class="form-control" value="${contactoNombre}" required>
+            </div>
+            <div class="form-group">
+                <label>Contacto de Emergencia (Teléfono) *</label>
+                <input type="tel" id="inp_contacto_telefono" class="form-control" value="${contactoTelefono}" required>
+            </div>`;
+    }
 
-// 12. Carta Responsiva
-if (isInvalidValue(c.doc2_url)) {
-    pendingDocs++;
-    containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Documento de deslinde.');
-}
+    // 10. Fotografía Oficial
+    if (isInvalidValue(c.foto_url)) {
+        pendingDocs++;
+        containerDoc.innerHTML += renderFileInput('f_foto', '📷 Fotografía Oficial', 'Fotografía clara de rostro.');
+    }
 
-// Mostrar u ocultar las tarjetas según el conteo
-if (pendingData > 0) document.getElementById('cardDataInputs').classList.remove('hidden');
-else document.getElementById('cardDataInputs').classList.add('hidden');
+    // 11. Identificación Oficial (INE)
+    if (isInvalidValue(c.doc1_url)) {
+        pendingDocs++;
+        containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE)', 'Frente y reverso.');
+    }
 
-if (pendingDocs > 0) document.getElementById('cardDocInputs').classList.remove('hidden');
-else document.getElementById('cardDocInputs').classList.add('hidden');
-        
-        }
+    // 12. Carta Responsiva
+    if (isInvalidValue(c.doc2_url)) {
+        pendingDocs++;
+        containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Documento de deslinde.');
+    }
+
+    // Control de visibilidad de las tarjetas
+    if (pendingData > 0) document.getElementById('cardDataInputs').classList.remove('hidden');
+    else document.getElementById('cardDataInputs').classList.add('hidden');
+
+    if (pendingDocs > 0) document.getElementById('cardDocInputs').classList.remove('hidden');
+    else document.getElementById('cardDocInputs').classList.add('hidden');
+
+    if (pendingData === 0 && pendingDocs === 0) {
+        document.getElementById('cardCompleted').classList.remove('hidden');
+        document.getElementById('btnSubmitContainer').classList.add('hidden');
+    } else {
+        document.getElementById('cardCompleted').classList.add('hidden');
+        document.getElementById('btnSubmitContainer').classList.remove('hidden');
+    }
 
     function renderFileInput(id, title, desc) {
         return `
@@ -619,58 +674,135 @@ else document.getElementById('cardDocInputs').classList.add('hidden');
         `;
     }
 
-    async function handleExpedienteSubmit(e) {
-        e.preventDefault();
-        const btn = document.getElementById('btnSubmit');
-        btn.disabled = true;
-        btn.innerHTML = '<span class="loader"></span> Guardando...';
+   async function handleExpedienteSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('btnSubmit');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="loader"></span> Guardando...';
 
-        try {
-            const updates = {};
-            const modifLogs = [];
+    try {
+        const updates = {};
+        const modifLogs = [];
 
-            const comentarios = document.getElementById('inpAtletaComentarios').value.trim();
-            if (comentarios) {
-                updates.comentarios_atleta = comentarios;
-                modifLogs.push('Comentarios');
-            }
-
-            if (document.getElementById('inp_segundo_apellido')) {
-                updates.segundo_apellido = document.getElementById('inp_segundo_apellido').value.trim().toUpperCase();
-                modifLogs.push('Segundo Apellido');
-            }
-            if (document.getElementById('inp_email')) {
-                updates.email = document.getElementById('inp_email').value.trim();
-                modifLogs.push('Correo Electrónico');
-            }
-
-            if (document.getElementById('f_foto') && document.getElementById('f_foto').files[0]) {
-                updates.foto_url = await uploadBase64(document.getElementById('f_foto').files[0]);
-                modifLogs.push('Foto Oficial');
-            }
-            if (document.getElementById('f_doc1') && document.getElementById('f_doc1').files[0]) {
-                updates.doc1_url = await uploadBase64(document.getElementById('f_doc1').files[0]);
-                modifLogs.push('INE');
-            }
-            if (document.getElementById('f_doc2') && document.getElementById('f_doc2').files[0]) {
-                updates.doc2_url = await uploadBase64(document.getElementById('f_doc2').files[0]);
-                modifLogs.push('Carta Responsiva');
-            }
-
-            updates.ultima_modificacion = new Date().toISOString();
-            updates.historial_cambios = modifLogs.join(', ');
-
-            const { error } = await dbClient.from('corredores').update(updates).eq('id', currentCorredor.id);
-            if (error) throw error;
-
-            alert('¡Tus datos y archivos se han guardado correctamente!');
-            window.location.reload();
-        } catch(err) {
-            alert('Error al guardar: ' + err.message);
-        } finally {
-            btn.disabled = false;
+        // 1. Comentarios al comité
+        const elComentarios = document.getElementById('inpAtletaComentarios');
+        if (elComentarios && elComentarios.value.trim()) {
+            updates.comentarios_atleta = elComentarios.value.trim();
+            modifLogs.push('Comentarios');
         }
+
+        // 2. CURP
+        const elCurp = document.getElementById('inp_curp');
+        if (elCurp && elCurp.value.trim()) {
+            updates.curp = elCurp.value.trim().toUpperCase();
+            modifLogs.push('CURP');
+        }
+
+        // 3. Segundo Apellido
+        const elSegundoApellido = document.getElementById('inp_segundo_apellido');
+        if (elSegundoApellido && elSegundoApellido.value.trim()) {
+            updates.segundo_apellido = elSegundoApellido.value.trim().toUpperCase();
+            modifLogs.push('Segundo Apellido');
+        }
+
+        // 4. Distancia
+        const elDistancia = document.getElementById('inp_distancia');
+        if (elDistancia && elDistancia.value) {
+            updates.distancia = elDistancia.value;
+            modifLogs.push('Distancia');
+        }
+
+        // 5. Categoría
+        const elCategoria = document.getElementById('inp_categoria');
+        if (elCategoria && elCategoria.value.trim()) {
+            updates.categoria = elCategoria.value.trim();
+            modifLogs.push('Categoría');
+        }
+
+        // 6. Talla de Playera
+        const elTalla = document.getElementById('inp_talla_playera');
+        if (elTalla && elTalla.value.trim()) {
+            updates.talla_playera = elTalla.value.trim().toUpperCase();
+            modifLogs.push('Talla Playera');
+        }
+
+        // 7. Correo Electrónico
+        const elEmail = document.getElementById('inp_email');
+        if (elEmail && elEmail.value.trim()) {
+            updates.email = elEmail.value.trim();
+            modifLogs.push('Correo Electrónico');
+        }
+
+        // 8. Teléfono
+        const elTelefono = document.getElementById('inp_telefono');
+        if (elTelefono && elTelefono.value.trim()) {
+            updates.telefono = elTelefono.value.trim();
+            modifLogs.push('Teléfono');
+        }
+
+        // 9. Tipo de Sangre
+        const elSangre = document.getElementById('inp_tipo_sangre');
+        if (elSangre && elSangre.value.trim()) {
+            updates.tipo_sangre = elSangre.value.trim().toUpperCase();
+            modifLogs.push('Tipo Sangre');
+        }
+
+        // 10. Contacto de Emergencia (Nombre)
+        const elContactoNombre = document.getElementById('inp_contacto_nombre');
+        if (elContactoNombre && elContactoNombre.value.trim()) {
+            updates.contacto_nombre = elContactoNombre.value.trim();
+            updates.contacto_emergencia = elContactoNombre.value.trim(); // Respaldo por compatibilidad de campos
+            modifLogs.push('Contacto Nombre');
+        }
+
+        // 11. Contacto de Emergencia (Teléfono)
+        const elContactoTelefono = document.getElementById('inp_contacto_telefono');
+        if (elContactoTelefono && elContactoTelefono.value.trim()) {
+            updates.contacto_telefono = elContactoTelefono.value.trim();
+            updates.telefono_emergencia = elContactoTelefono.value.trim(); // Respaldo por compatibilidad de campos
+            modifLogs.push('Contacto Teléfono');
+        }
+
+        // 12. Fotografía Oficial
+        const elFoto = document.getElementById('f_foto');
+        if (elFoto && elFoto.files[0]) {
+            updates.foto_url = await uploadBase64(elFoto.files[0]);
+            modifLogs.push('Foto Oficial');
+        }
+
+        // 13. Identificación Oficial (INE)
+        const elDoc1 = document.getElementById('f_doc1');
+        if (elDoc1 && elDoc1.files[0]) {
+            updates.doc1_url = await uploadBase64(elDoc1.files[0]);
+            modifLogs.push('INE');
+        }
+
+        // 14. Carta Responsiva
+        const elDoc2 = document.getElementById('f_doc2');
+        if (elDoc2 && elDoc2.files[0]) {
+            updates.doc2_url = await uploadBase64(elDoc2.files[0]);
+            modifLogs.push('Carta Responsiva');
+        }
+
+        // Guardar marca de fecha e historial de cambios
+        updates.ultima_modificacion = new Date().toISOString();
+        if (modifLogs.length > 0) {
+            updates.historial_cambios = modifLogs.join(', ');
+        }
+
+        const { error } = await dbClient.from('corredores').update(updates).eq('id', currentCorredor.id);
+        if (error) throw error;
+
+        alert('¡Tus datos y archivos se han guardado correctamente!');
+        window.location.reload();
+
+    } catch(err) {
+        alert('Error al guardar: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = 'Guardar Información';
     }
+}
 
     function uploadBase64(file) {
         return new Promise((resolve) => {
