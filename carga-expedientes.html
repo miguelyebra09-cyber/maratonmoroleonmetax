@@ -161,22 +161,20 @@
     <!-- PASO 2: VERIFICACIÓN DE DATOS PERSONALES Y CARGA DE PENDIENTES -->
     <div id="stepPortal" class="hidden">
 
-<div class="card">
-    <div class="card-title">
-        <div>
-            <span>👤 Verificación de Datos Personales</span>
-            <!-- Folio visible justo debajo del título -->
-            <div style="font-size: 0.9rem; font-weight: bold; color: var(--text-muted, #555); margin-top: 4px;">
-                FOLIO DE CORREDOR: <span id="v_folio" style="color: #0d6efd;">---</span>
+        <div class="card">
+            <div class="card-title">
+                <div>
+                    <span>👤 Verificación de Datos Personales</span>
+                    <div style="font-size: 0.9rem; font-weight: bold; color: var(--text-muted, #555); margin-top: 4px;">
+                        FOLIO DE CORREDOR: <span id="v_folio" style="color: #0d6efd;">---</span>
+                    </div>
+                </div>
+                <button class="btn-warning" onclick="openSupportModal()">⚠️ Solicitar Corrección al Comité</button>
             </div>
-        </div>
-        <button class="btn-warning" onclick="openSupportModal()">⚠️ Solicitar Corrección al Comité</button>
-    </div>
 
-    <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; margin-top: 8px;">
-        Por favor, verifica que tus datos registrados estén correctos. Si alguno presenta un error, notifícalo con el botón superior.
-    </p>
-        
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px; margin-top: 8px;">
+                Por favor, verifica que tus datos registrados estén correctos. Si alguno presenta un error, notifícalo con el botón superior.
+            </p>
 
             <div class="data-grid">
                 <div class="data-item"><label>Nombre(s):</label><span id="v_nombre">---</span></div>
@@ -485,7 +483,6 @@
     async function startSession(corredor, metodoAuth) {
         currentCorredor = corredor;
         const newAccesos = (corredor.accesos_realizados || 0) + 1;
-        const now = new Date().toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'medium' });
 
         await dbClient.from('corredores').update({ 
             accesos_realizados: newAccesos,
@@ -497,7 +494,7 @@
         document.getElementById('stepPortal').classList.remove('hidden');
 
         renderDatosPersonales();
-        renderPendientesForm();
+        renderPendientesForm(corredor);
     }
 
     function renderDatosPersonales() {
@@ -515,155 +512,6 @@
         document.getElementById('v_nacionalidad').innerText = c.nacionalidad || 'MEXICANA';
     }
 
-    function renderPendientesForm(c) {
-    const containerData = document.getElementById('containerDataInputs');
-    const containerDoc = document.getElementById('containerDocInputs');
-
-    if (!containerData || !containerDoc) return;
-
-    containerData.innerHTML = '';
-    containerDoc.innerHTML = '';
-
-    let pendingData = 0;
-    let pendingDocs = 0;
-
-    // Detectar valores de Contacto de Emergencia considerando distintos nombres de columna en BD
-    const contactoNombre = c.contacto_nombre || c.contacto_emergencia || c.emergencia_contacto || '';
-    const contactoTelefono = c.contacto_telefono || c.telefono_emergencia || c.emergencia_telefono || '';
-
-    // 1. CURP
-    if (isInvalidValue(c.curp) || String(c.curp).trim().length < 18) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>CURP *</label>
-                <input type="text" id="inp_curp" class="form-control" style="text-transform:uppercase;" maxlength="18" value="${c.curp || ''}" required>
-            </div>`;
-    }
-
-    // 2. Segundo Apellido
-    if (isInvalidValue(c.segundo_apellido)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Segundo Apellido *</label>
-                <input type="text" id="inp_segundo_apellido" class="form-control" value="${c.segundo_apellido || ''}" required>
-            </div>`;
-    }
-
-    // 3. Distancia Asignada (INCLUIDA)
-    if (isInvalidValue(c.distancia)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Distancia *</label>
-                <select id="inp_distancia" class="form-control" required>
-                    <option value="">-- Selecciona Distancia --</option>
-                    <option value="5K Recreativa" ${c.distancia === '5K Recreativa' ? 'selected' : ''}>5K Recreativa</option>
-                    <option value="10K" ${c.distancia === '10K' ? 'selected' : ''}>10K</option>
-                    <option value="21K" ${c.distancia === '21K' ? 'selected' : ''}>21K (Medio Maratón)</option>
-                    <option value="42K" ${c.distancia === '42K' ? 'selected' : ''}>42K (Maratón)</option>
-                </select>
-            </div>`;
-    }
-
-    // 4. Categoría
-    if (isInvalidValue(c.categoria)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Categoría *</label>
-                <input type="text" id="inp_categoria" class="form-control" value="${c.categoria || ''}" required>
-            </div>`;
-    }
-
-    // 5. Talla de Playera
-    if (isInvalidValue(c.talla_playera)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Talla de Playera *</label>
-                <input type="text" id="inp_talla_playera" class="form-control" value="${c.talla_playera || ''}" required>
-            </div>`;
-    }
-
-    // 6. Correo Electrónico
-    if (isInvalidValue(c.email) || !String(c.email).includes('@')) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Correo Electrónico *</label>
-                <input type="email" id="inp_email" class="form-control" style="text-transform:none;" value="${c.email || ''}" required>
-            </div>`;
-    }
-
-    // 7. Teléfono Celular
-    if (isInvalidValue(c.telefono) || String(c.telefono).trim().length < 10) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Teléfono Celular *</label>
-                <input type="tel" id="inp_telefono" class="form-control" maxlength="10" value="${c.telefono || ''}" required>
-            </div>`;
-    }
-
-    // 8. Tipo de Sangre
-    if (isInvalidValue(c.tipo_sangre)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Tipo de Sangre *</label>
-                <input type="text" id="inp_tipo_sangre" class="form-control" value="${c.tipo_sangre || ''}" required>
-            </div>`;
-    }
-
-    // 9. Contacto de Emergencia
-    if (isInvalidValue(contactoNombre) || isInvalidValue(contactoTelefono)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Contacto de Emergencia (Nombre) *</label>
-                <input type="text" id="inp_contacto_nombre" class="form-control" value="${contactoNombre}" required>
-            </div>
-            <div class="form-group">
-                <label>Contacto de Emergencia (Teléfono) *</label>
-                <input type="tel" id="inp_contacto_telefono" class="form-control" value="${contactoTelefono}" required>
-            </div>`;
-    }
-
-    // 10. Fotografía Oficial
-    if (isInvalidValue(c.foto_url)) {
-        pendingDocs++;
-        containerDoc.innerHTML += renderFileInput('f_foto', '📷 Fotografía Oficial', 'Fotografía clara de rostro.');
-    }
-
-    // 11. Identificación Oficial (INE)
-    if (isInvalidValue(c.doc1_url)) {
-        pendingDocs++;
-        containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE)', 'Frente y reverso.');
-    }
-
-    // 12. Carta Responsiva
-    if (isInvalidValue(c.doc2_url)) {
-        pendingDocs++;
-        containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Documento de deslinde.');
-    }
-
-    // Control de visibilidad de las tarjetas
-    if (pendingData > 0) document.getElementById('cardDataInputs').classList.remove('hidden');
-    else document.getElementById('cardDataInputs').classList.add('hidden');
-
-    if (pendingDocs > 0) document.getElementById('cardDocInputs').classList.remove('hidden');
-    else document.getElementById('cardDocInputs').classList.add('hidden');
-
-    if (pendingData === 0 && pendingDocs === 0) {
-        document.getElementById('cardCompleted').classList.remove('hidden');
-        document.getElementById('btnSubmitContainer').classList.add('hidden');
-    } else {
-        document.getElementById('cardCompleted').classList.add('hidden');
-        document.getElementById('btnSubmitContainer').classList.remove('hidden');
-    }
-
     function renderFileInput(id, title, desc) {
         return `
             <div class="file-upload-item">
@@ -674,144 +522,265 @@
         `;
     }
 
-   async function handleExpedienteSubmit(e) {
-    e.preventDefault();
-    const btn = document.getElementById('btnSubmit');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="loader"></span> Guardando...';
+    function renderPendientesForm(c) {
+        const containerData = document.getElementById('containerDataInputs');
+        const containerDoc = document.getElementById('containerDocInputs');
 
-    try {
-        const updates = {};
-        const modifLogs = [];
+        if (!containerData || !containerDoc) return;
 
-        // 1. Comentarios al comité
-        const elComentarios = document.getElementById('inpAtletaComentarios');
-        if (elComentarios && elComentarios.value.trim()) {
-            updates.comentarios_atleta = elComentarios.value.trim();
-            modifLogs.push('Comentarios');
+        containerData.innerHTML = '';
+        containerDoc.innerHTML = '';
+
+        let pendingData = 0;
+        let pendingDocs = 0;
+
+        const contactoNombre = c.contacto_nombre || c.contacto_emergencia || c.emergencia_contacto || '';
+        const contactoTelefono = c.contacto_telefono || c.telefono_emergencia || c.emergencia_telefono || '';
+
+        if (isInvalidValue(c.curp) || String(c.curp).trim().length < 18) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>CURP *</label>
+                    <input type="text" id="inp_curp" class="form-control" style="text-transform:uppercase;" maxlength="18" value="${c.curp || ''}" required>
+                </div>`;
         }
 
-        // 2. CURP
-        const elCurp = document.getElementById('inp_curp');
-        if (elCurp && elCurp.value.trim()) {
-            updates.curp = elCurp.value.trim().toUpperCase();
-            modifLogs.push('CURP');
+        if (isInvalidValue(c.segundo_apellido)) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Segundo Apellido *</label>
+                    <input type="text" id="inp_segundo_apellido" class="form-control" value="${c.segundo_apellido || ''}" required>
+                </div>`;
         }
 
-        // 3. Segundo Apellido
-        const elSegundoApellido = document.getElementById('inp_segundo_apellido');
-        if (elSegundoApellido && elSegundoApellido.value.trim()) {
-            updates.segundo_apellido = elSegundoApellido.value.trim().toUpperCase();
-            modifLogs.push('Segundo Apellido');
+        if (isInvalidValue(c.distancia)) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Distancia *</label>
+                    <select id="inp_distancia" class="form-control" required>
+                        <option value="">-- Selecciona Distancia --</option>
+                        <option value="5K Recreativa" ${c.distancia === '5K Recreativa' ? 'selected' : ''}>5K Recreativa</option>
+                        <option value="10K" ${c.distancia === '10K' ? 'selected' : ''}>10K</option>
+                        <option value="21K" ${c.distancia === '21K' ? 'selected' : ''}>21K (Medio Maratón)</option>
+                        <option value="42K" ${c.distancia === '42K' ? 'selected' : ''}>42K (Maratón)</option>
+                    </select>
+                </div>`;
         }
 
-        // 4. Distancia
-        const elDistancia = document.getElementById('inp_distancia');
-        if (elDistancia && elDistancia.value) {
-            updates.distancia = elDistancia.value;
-            modifLogs.push('Distancia');
+        if (isInvalidValue(c.categoria)) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Categoría *</label>
+                    <input type="text" id="inp_categoria" class="form-control" value="${c.categoria || ''}" required>
+                </div>`;
         }
 
-        // 5. Categoría
-        const elCategoria = document.getElementById('inp_categoria');
-        if (elCategoria && elCategoria.value.trim()) {
-            updates.categoria = elCategoria.value.trim();
-            modifLogs.push('Categoría');
+        if (isInvalidValue(c.talla_playera)) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Talla de Playera *</label>
+                    <input type="text" id="inp_talla_playera" class="form-control" value="${c.talla_playera || ''}" required>
+                </div>`;
         }
 
-        // 6. Talla de Playera
-        const elTalla = document.getElementById('inp_talla_playera');
-        if (elTalla && elTalla.value.trim()) {
-            updates.talla_playera = elTalla.value.trim().toUpperCase();
-            modifLogs.push('Talla Playera');
+        if (isInvalidValue(c.email) || !String(c.email).includes('@')) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Correo Electrónico *</label>
+                    <input type="email" id="inp_email" class="form-control" style="text-transform:none;" value="${c.email || ''}" required>
+                </div>`;
         }
 
-        // 7. Correo Electrónico
-        const elEmail = document.getElementById('inp_email');
-        if (elEmail && elEmail.value.trim()) {
-            updates.email = elEmail.value.trim();
-            modifLogs.push('Correo Electrónico');
+        if (isInvalidValue(c.telefono) || String(c.telefono).trim().length < 10) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Teléfono Celular *</label>
+                    <input type="tel" id="inp_telefono" class="form-control" maxlength="10" value="${c.telefono || ''}" required>
+                </div>`;
         }
 
-        // 8. Teléfono
-        const elTelefono = document.getElementById('inp_telefono');
-        if (elTelefono && elTelefono.value.trim()) {
-            updates.telefono = elTelefono.value.trim();
-            modifLogs.push('Teléfono');
+        if (isInvalidValue(c.tipo_sangre)) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Tipo de Sangre *</label>
+                    <input type="text" id="inp_tipo_sangre" class="form-control" value="${c.tipo_sangre || ''}" required>
+                </div>`;
         }
 
-        // 9. Tipo de Sangre
-        const elSangre = document.getElementById('inp_tipo_sangre');
-        if (elSangre && elSangre.value.trim()) {
-            updates.tipo_sangre = elSangre.value.trim().toUpperCase();
-            modifLogs.push('Tipo Sangre');
+        if (isInvalidValue(contactoNombre) || isInvalidValue(contactoTelefono)) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Contacto de Emergencia (Nombre) *</label>
+                    <input type="text" id="inp_contacto_nombre" class="form-control" value="${contactoNombre}" required>
+                </div>
+                <div class="form-group">
+                    <label>Contacto de Emergencia (Teléfono) *</label>
+                    <input type="tel" id="inp_contacto_telefono" class="form-control" value="${contactoTelefono}" required>
+                </div>`;
         }
 
-        // 10. Contacto de Emergencia (Nombre)
-        const elContactoNombre = document.getElementById('inp_contacto_nombre');
-        if (elContactoNombre && elContactoNombre.value.trim()) {
-            updates.contacto_nombre = elContactoNombre.value.trim();
-            updates.contacto_emergencia = elContactoNombre.value.trim(); // Respaldo por compatibilidad de campos
-            modifLogs.push('Contacto Nombre');
+        if (isInvalidValue(c.foto_url)) {
+            pendingDocs++;
+            containerDoc.innerHTML += renderFileInput('f_foto', '📷 Fotografía Oficial', 'Fotografía clara de rostro.');
         }
 
-        // 11. Contacto de Emergencia (Teléfono)
-        const elContactoTelefono = document.getElementById('inp_contacto_telefono');
-        if (elContactoTelefono && elContactoTelefono.value.trim()) {
-            updates.contacto_telefono = elContactoTelefono.value.trim();
-            updates.telefono_emergencia = elContactoTelefono.value.trim(); // Respaldo por compatibilidad de campos
-            modifLogs.push('Contacto Teléfono');
+        if (isInvalidValue(c.doc1_url)) {
+            pendingDocs++;
+            containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE)', 'Frente y reverso.');
         }
 
-        // 12. Fotografía Oficial
-        const elFoto = document.getElementById('f_foto');
-        if (elFoto && elFoto.files[0]) {
-            updates.foto_url = await uploadBase64(elFoto.files[0]);
-            modifLogs.push('Foto Oficial');
+        if (isInvalidValue(c.doc2_url)) {
+            pendingDocs++;
+            containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Documento de deslinde.');
         }
 
-        // 13. Identificación Oficial (INE)
-        const elDoc1 = document.getElementById('f_doc1');
-        if (elDoc1 && elDoc1.files[0]) {
-            updates.doc1_url = await uploadBase64(elDoc1.files[0]);
-            modifLogs.push('INE');
+        if (pendingData > 0) document.getElementById('cardDataInputs').classList.remove('hidden');
+        else document.getElementById('cardDataInputs').classList.add('hidden');
+
+        if (pendingDocs > 0) document.getElementById('cardDocInputs').classList.remove('hidden');
+        else document.getElementById('cardDocInputs').classList.add('hidden');
+
+        if (pendingData === 0 && pendingDocs === 0) {
+            document.getElementById('cardCompleted').classList.remove('hidden');
+            document.getElementById('btnSubmitContainer').classList.add('hidden');
+        } else {
+            document.getElementById('cardCompleted').classList.add('hidden');
+            document.getElementById('btnSubmitContainer').classList.remove('hidden');
         }
-
-        // 14. Carta Responsiva
-        const elDoc2 = document.getElementById('f_doc2');
-        if (elDoc2 && elDoc2.files[0]) {
-            updates.doc2_url = await uploadBase64(elDoc2.files[0]);
-            modifLogs.push('Carta Responsiva');
-        }
-
-        // Guardar marca de fecha e historial de cambios
-        updates.ultima_modificacion = new Date().toISOString();
-        if (modifLogs.length > 0) {
-            updates.historial_cambios = modifLogs.join(', ');
-        }
-
-        const { error } = await dbClient.from('corredores').update(updates).eq('id', currentCorredor.id);
-        if (error) throw error;
-
-        alert('¡Tus datos y archivos se han guardado correctamente!');
-        window.location.reload();
-
-    } catch(err) {
-        alert('Error al guardar: ' + err.message);
-    } finally {
-        btn.disabled = false;
-        btn.innerHTML = 'Guardar Información';
     }
-}
+
+    async function handleExpedienteSubmit(e) {
+        e.preventDefault();
+        const btn = document.getElementById('btnSubmit');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loader"></span> Guardando...';
+
+        try {
+            const updates = {};
+            const modifLogs = [];
+
+            const elComentarios = document.getElementById('inpAtletaComentarios');
+            if (elComentarios && elComentarios.value.trim()) {
+                updates.comentarios_atleta = elComentarios.value.trim();
+                modifLogs.push('Comentarios');
+            }
+
+            const elCurp = document.getElementById('inp_curp');
+            if (elCurp && elCurp.value.trim()) {
+                updates.curp = elCurp.value.trim().toUpperCase();
+                modifLogs.push('CURP');
+            }
+
+            const elSegundoApellido = document.getElementById('inp_segundo_apellido');
+            if (elSegundoApellido && elSegundoApellido.value.trim()) {
+                updates.segundo_apellido = elSegundoApellido.value.trim().toUpperCase();
+                modifLogs.push('Segundo Apellido');
+            }
+
+            const elDistancia = document.getElementById('inp_distancia');
+            if (elDistancia && elDistancia.value) {
+                updates.distancia = elDistancia.value;
+                modifLogs.push('Distancia');
+            }
+
+            const elCategoria = document.getElementById('inp_categoria');
+            if (elCategoria && elCategoria.value.trim()) {
+                updates.categoria = elCategoria.value.trim();
+                modifLogs.push('Categoría');
+            }
+
+            const elTalla = document.getElementById('inp_talla_playera');
+            if (elTalla && elTalla.value.trim()) {
+                updates.talla_playera = elTalla.value.trim().toUpperCase();
+                modifLogs.push('Talla Playera');
+            }
+
+            const elEmail = document.getElementById('inp_email');
+            if (elEmail && elEmail.value.trim()) {
+                updates.email = elEmail.value.trim();
+                modifLogs.push('Correo Electrónico');
+            }
+
+            const elTelefono = document.getElementById('inp_telefono');
+            if (elTelefono && elTelefono.value.trim()) {
+                updates.telefono = elTelefono.value.trim();
+                modifLogs.push('Teléfono');
+            }
+
+            const elSangre = document.getElementById('inp_tipo_sangre');
+            if (elSangre && elSangre.value.trim()) {
+                updates.tipo_sangre = elSangre.value.trim().toUpperCase();
+                modifLogs.push('Tipo Sangre');
+            }
+
+            const elContactoNombre = document.getElementById('inp_contacto_nombre');
+            if (elContactoNombre && elContactoNombre.value.trim()) {
+                updates.contacto_nombre = elContactoNombre.value.trim();
+                updates.contacto_emergencia = elContactoNombre.value.trim();
+                modifLogs.push('Contacto Nombre');
+            }
+
+            const elContactoTelefono = document.getElementById('inp_contacto_telefono');
+            if (elContactoTelefono && elContactoTelefono.value.trim()) {
+                updates.contacto_telefono = elContactoTelefono.value.trim();
+                updates.telefono_emergencia = elContactoTelefono.value.trim();
+                modifLogs.push('Contacto Teléfono');
+            }
+
+            const elFoto = document.getElementById('f_foto');
+            if (elFoto && elFoto.files[0]) {
+                updates.foto_url = await uploadBase64(elFoto.files[0]);
+                modifLogs.push('Foto Oficial');
+            }
+
+            const elDoc1 = document.getElementById('f_doc1');
+            if (elDoc1 && elDoc1.files[0]) {
+                updates.doc1_url = await uploadBase64(elDoc1.files[0]);
+                modifLogs.push('INE');
+            }
+
+            const elDoc2 = document.getElementById('f_doc2');
+            if (elDoc2 && elDoc2.files[0]) {
+                updates.doc2_url = await uploadBase64(elDoc2.files[0]);
+                modifLogs.push('Carta Responsiva');
+            }
+
+            updates.ultima_modificacion = new Date().toISOString();
+            if (modifLogs.length > 0) {
+                updates.historial_cambios = modifLogs.join(', ');
+            }
+
+            const { error } = await dbClient.from('corredores').update(updates).eq('id', currentCorredor.id);
+            if (error) throw error;
+
+            alert('¡Tus datos y archivos se han guardado correctamente!');
+            window.location.reload();
+
+        } catch(err) {
+            alert('Error al guardar: ' + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = 'Guardar Información';
+        }
+    }
 
     function uploadBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = (error) => reject(error);
-        reader.readAsDataURL(file);
-    });
-}
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = (error) => reject(error);
+            reader.readAsDataURL(file);
+        });
+    }
 
     // FUNCIONES DEL PANEL ADMINISTRADOR
     function openAdminLogin() {
@@ -874,7 +843,6 @@
         document.getElementById('stLimitados').innerText = limitados;
         document.getElementById('stCompletos').innerText = completos;
 
-        // Render Gráficas
         const ctxDocs = document.getElementById('chartDocs').getContext('2d');
         if (chartDocsObj) chartDocsObj.destroy();
         chartDocsObj = new Chart(ctxDocs, {
@@ -934,7 +902,6 @@
             const hasIne = !isInvalidValue(c.doc1_url);
             const hasCarta = !isInvalidValue(c.doc2_url);
 
-            // Nivel de Integridad
             const totalItems = 3 + 3;
             let itemsOk = 0;
             if (hasFoto) itemsOk++;
@@ -949,20 +916,17 @@
             let badgeIntegridad = `<span class="badge-tag badge-danger">${camposFaltantes.length + (!hasFoto + !hasIne + !hasCarta)} OBSERVACIONES</span>`;
             if (pct === 100) badgeIntegridad = `<span class="badge-tag badge-success">100% VÁLIDO</span>`;
 
-            // HTML Campos Faltantes
             let htmlCampos = '<span class="badge-tag badge-success">S/O</span>';
             if (camposFaltantes.length > 0) {
                 htmlCampos = camposFaltantes.map(f => `<span class="badge-tag badge-danger">❌ ${f}</span>`).join('<br>');
             }
 
-            // HTML Documentos
             const htmlDocs = `
                 <span class="badge-tag ${hasFoto ? 'badge-success' : 'badge-danger'}">${hasFoto ? '✓' : '❌'} Fotograf\u00eda Oficial</span><br>
                 <span class="badge-tag ${hasIne ? 'badge-success' : 'badge-danger'}">${hasIne ? '✓' : '❌'} Identificaci\u00f3n Oficial / INE</span><br>
                 <span class="badge-tag ${hasCarta ? 'badge-success' : 'badge-danger'}">${hasCarta ? '✓' : '❌'} Carta Responsiva Firmada</span>
             `;
 
-            // HTML HUELLA DIGITAL / TRAZABILIDAD DE SISTEMA
             const accesos = c.accesos_realizados || 0;
             const fechaUltAcceso = c.ultimo_acceso ? new Date(c.ultimo_acceso).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }) : 'Sin registro';
             const metodoAcceso = c.metodo_ultimo_acceso || 'N/A';
@@ -1034,8 +998,6 @@
         window.open(`https://api.whatsapp.com/send?phone=524731372597&text=${encodeURIComponent(text)}`, '_blank');
         closeModal('modalSupport');
     }
-        }
-         
 </script>
 
 </body>
