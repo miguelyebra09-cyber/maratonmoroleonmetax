@@ -1468,12 +1468,45 @@ async function uploadToGoogleDrive(file, folderName, customFileName) {
 
                 const folio = `MM27OFF-RUN-MMO${offlineCounter}`;
                 
-                // Subir archivos al bucket de Supabase
-                const fotoUrl = await uploadFileToSupabase('fotoFile', 'foto', folio);
-                const pagoUrl = await uploadFileToSupabase('pagoFile', 'pago', folio);
-                const doc1Url = await uploadFileToSupabase('doc1File', 'doc1', folio);
-                const doc2Url = await uploadFileToSupabase('doc2File', 'doc2', folio);
+// ==========================================
+// Subir archivos a Google Drive
+// ==========================================
 
+// 1. Obtener los elementos input tipo file del HTML
+const inputFoto = document.getElementById('fotoFile');
+const inputPago = document.getElementById('pagoFile');
+const inputDoc1 = document.getElementById('doc1File');
+const inputDoc2 = document.getElementById('doc2File');
+
+// 2. Extraer el archivo de cada input (si existe)
+const fileFoto = inputFoto && inputFoto.files[0] ? inputFoto.files[0] : null;
+const filePago = inputPago && inputPago.files[0] ? inputPago.files[0] : null;
+const fileDoc1 = inputDoc1 && inputDoc1.files[0] ? inputDoc1.files[0] : null;
+const fileDoc2 = inputDoc2 && inputDoc2.files[0] ? inputDoc2.files[0] : null;
+
+// 3. Declarar las variables para almacenar las URLs de Drive
+let fotoUrl = '';
+let pagoUrl = '';
+let doc1Url = '';
+let doc2Url = '';
+
+// 4. Subir cada archivo a Google Drive
+if (fileFoto) {
+  fotoUrl = await uploadToGoogleDrive(fileFoto, 'Fotos_Atletas', `FOTO_${folio}_${fileFoto.name}`);
+}
+
+if (filePago) {
+  pagoUrl = await uploadToGoogleDrive(filePago, 'Pagos_Atletas', `PAGO_${folio}_${filePago.name}`);
+}
+
+if (fileDoc1) {
+  doc1Url = await uploadToGoogleDrive(fileDoc1, 'Documentos_Atletas', `DOC1_${folio}_${fileDoc1.name}`);
+}
+
+if (fileDoc2) {
+  doc2Url = await uploadToGoogleDrive(fileDoc2, 'Documentos_Atletas', `DOC2_${folio}_${fileDoc2.name}`);
+}
+                
                 const nombreComp = `${getSafeValue('nombre')} ${getSafeValue('primerApellido')} ${getSafeValue('segundoApellido')}`.trim();
                 const padecimientosSelected = Array.from(document.querySelectorAll('input[name="padecimientos"]:checked')).map(cb => cb.value);
 
