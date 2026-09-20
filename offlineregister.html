@@ -1174,31 +1174,30 @@ async function uploadToGoogleDrive(file, folderName, customFileName) {
     reader.onload = async () => {
       try {
         const base64Data = reader.result.split(',')[1];
-        
-        // Creamos la carga útil codificada
-        const formData = new URLSearchParams();
-        formData.append('fileData', base64Data);
-        formData.append('mimeType', file.type);
-        formData.append('fileName', customFileName || file.name);
-        formData.append('folderName', folderName);
 
-        // Petición optimizada para ignorar pre-flight de CORS
+        // Objeto JSON con los datos del archivo
+        const payload = {
+          fileData: base64Data,
+          mimeType: file.type || 'application/octet-stream',
+          fileName: customFileName || file.name,
+          folderName: folderName
+        };
+
+        // Petición POST usando 'text/plain' para esquivar bloqueos CORS
         const response = await fetch('https://script.google.com/macros/s/AKfycbwlzXJVU6I_b8AZtd9MVXjdfQ9qiLPIo1CnZMwccAnpwbmP4jgpjCuy2oS3TGM_RvDL/exec', {
           method: 'POST',
           headers: {
-            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8'
+            'Content-Type': 'text/plain;charset=utf-8'
           },
-          body: formData.toString()
+          body: JSON.stringify(payload)
         });
 
-        // Leemos como texto primero para evitar errores de parseo directo
-        const text = await response.text();
-        const resJson = JSON.parse(text);
+        const resJson = await response.json();
 
         if (resJson.status === 'success') {
           resolve(resJson.url);
         } else {
-          reject(resJson.message || 'Error al subir a Google Drive');
+          reject(resJson.message || 'Error al subir el archivo');
         }
       } catch (err) {
         reject(err);
@@ -1208,7 +1207,6 @@ async function uploadToGoogleDrive(file, folderName, customFileName) {
     reader.readAsDataURL(file);
   });
 }
-
     
     let cachedRegistros = [];
 
