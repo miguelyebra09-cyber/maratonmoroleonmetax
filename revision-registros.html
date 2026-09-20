@@ -308,16 +308,25 @@
 
     <!-- TABLA DE AUDITORÍA -->
     <div class="card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
-            <input type="text" id="searchAudit" placeholder="Buscar por Nombre, Folio, CURP o Teléfono..." style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); width: 320px;" onkeyup="filterAudit()">
-            
-            <select id="filterStatus" onchange="filterAudit()" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
-                <option value="ALL">Mostrar Todos los Registros</option>
-                <option value="INCOMPLETE">Solo Datos Faltantes / Leyendas Nulas ("X")</option>
-                <option value="DOCS_MISSING">Solo Documentación Obligatoria Pendiente</option>
-                <option value="COMPLETE">Solo Expedientes 100% Validados</option>
-            </select>
-        </div>
+   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+    <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
+        <input type="text" id="searchAudit" placeholder="Buscar por Nombre, Folio, CURP o Teléfono..." style="padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border-color); width: 300px;" onkeyup="filterAudit()">
+        
+        <select id="filterStatus" onchange="filterAudit()" style="padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);">
+            <option value="ALL">Mostrar Todos los Registros</option>
+            <option value="INCOMPLETE">Solo Datos Faltantes / Leyendas Nulas ("X")</option>
+            <option value="DOCS_MISSING">Solo Documentación Obligatoria Pendiente</option>
+            <option value="COMPLETE">Solo Expedientes 100% Validados</option>
+        </select>
+    </div>
+
+    <!-- Botones de Exportación -->
+    <div style="display: flex; gap: 8px;">
+        <button class="btn-action" style="background-color: #16a34a;" onclick="exportAuditToCSV()">
+            📊 Descargar Excel / CSV
+        </button>
+    </div>
+</div>
 
         <div class="table-responsive">
             <table>
@@ -679,6 +688,102 @@
         // Abre el API oficial de WhatsApp enrutando hacia el teléfono destino (+52)
         window.open(`https://api.whatsapp.com/send?phone=52${cleanPhone}&text=${text}`, '_blank');
     }
+
+// Funciones para abrir y cerrar modales
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+        modal.style.display = 'none';
+    }
+}
+
+// Cierre al hacer clic fuera del contenido del modal (Overlay)
+window.addEventListener('click', function(event) {
+    const msgModal = document.getElementById('msgModal');
+    if (event.target === msgModal) {
+        closeModal('msgModal');
+    }
+});
+
+// Función para exportar la lista de auditoría actual a CSV / Excel
+function exportAuditToCSV() {
+    if (!cachedAuditData || cachedAuditData.length === 0) {
+        alert('No hay datos disponibles para exportar.');
+        return;
+    }
+
+    // Encabezados del archivo
+    const headers = [
+        "Folio Oficial",
+        "Nombre Completo",
+        "CURP",
+        "Teléfono",
+        "Correo Electrónico",
+        "Distancia",
+        "Categoría",
+        "Talla Playera",
+        "% Integridad",
+        "Estatus Expediente",
+        "Campos Faltantes",
+        "Documentos Pendientes"
+    ];
+
+    // Construcción de las filas respetando el filtro o búsqueda actual
+    const q = document.getElementById('searchAudit').value.toLowerCase();
+    const st = document.getElementById('filterStatus').value;
+
+    const currentFiltered = cachedAuditData.filter(item => {
+        const r = item.raw;
+        const name = (r.nombre_completo || `${r.nombre || ''} ${r.primer_apellido || ''}`).toLowerCase();
+        const curp = (r.curp || '').toLowerCase();
+        const folio = (r.folio_oficial || '').toLowerCase();
+        const phone = (r.telefono || '').toLowerCase();
+
+        const matchesQuery = name.includes(q) || curp.includes(q) || folio.includes(q) || phone.includes(q);
+
+        let matchesStatus = true;
+        if (st === 'INCOMPLETE') matchesStatus = item.missingFields.length > 0;
+        if (st === 'DOCS_MISSING') matchesStatus = item.missingDocs.length > 0;
+        if (st === 'COMPLETE') matchesStatus = item.isComplete;
+
+        return matchesQuery && matchesStatus;
+    });
+
+    const rows = currentFiltered.map(item => {
+        const r = item.raw;
+        const nombre = r.nombre_completo || `${r.nombre || ''} ${r.primer_apellido || ''} ${r.segundo_apellido || ''}`.trim();
+        const estatus = item.isComplete ? 'COMPLETO 100%' : (item.missingFields.length > 0 ? 'DATOS INCOMPLETOS' : 'DOCS PENDIENTES');
+        
+        return [
+            `"${r.folio_oficial || ''}"`,
+            `"${nombre}"`,
+            `"${r.curp || ''}"`,
+            `"${r.telefono || ''}"`,
+            `"${r.email || ''}"`,
+            `"${r.distancia || ''}"`,
+            `"${r.categoria || ''}"`,
+            `"${r.talla_playera || ''}"`,
+            `"${item.percentage}%"`,
+            `"${estatus}"`,
+            `"${item.missingFields.join(' | ')}"`,
+            `"${item.missingDocs.join(' | ')}"`
+        ].join(',');
+    });
+
+    // Ensamblar CSV con BOM (\uFEFF) para forzar lectura correcta de acentos en Excel
+    const csvContent = "\uFEFF" + [headers.join(','), ...rows].join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Auditoria_Moroleon2027_${dateStr}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+    
 </script>
 
 </body>
