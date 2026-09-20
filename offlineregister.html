@@ -439,7 +439,7 @@
 
     <div class="folio-banner">
         <span>Folio Oficial a Generar:</span>
-        <div class="folio-number" id="nextFolioDisplay">MM27OFF-RUN-MMO1022</div>
+        <div class="folio-number" id="nextFolioDisplay">MM27OFF-RUN-MMO1026</div>
     </div>
 
     <form id="fullRegistrationForm">
@@ -587,82 +587,90 @@
         </div>
 
         <!-- SECCIÓN 3: PERFIL DEL CORREDOR, PLAYERA Y FOTOS -->
-        <div class="card">
-            <div class="card-header">
-                <div class="card-subtitle">Perfil del Corredor y Documentación</div>
-                <div class="card-title">Playera, fotografía y comprobantes</div>
+       <!-- SECCIÓN 3: PERFIL DEL CORREDOR, PLAYERA Y FOTOS -->
+<div class="card">
+    <div class="card-header">
+        <div class="card-subtitle">Perfil del Corredor y Documentación</div>
+        <div class="card-title">Playera, fotografía y comprobantes</div>
+    </div>
+    
+    <!-- Campos de selección principales -->
+    <div class="form-grid" style="margin-bottom: 20px;">
+        <div class="form-group">
+            <label>Talla de playera *</label>
+            <select id="tallaPlayera" required>
+                <option value="">-----------</option>
+                <option value="XS">Extra Chica (XS)</option>
+                <option value="S">Chica (S)</option>
+                <option value="M">Mediana (M)</option>
+                <option value="L">Grande (L)</option>
+                <option value="XL">Extra Grande (XL)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Perfil del corredor *</label>
+            <select id="perfilCorredor" required>
+                <option value="">Selecciona tu perfil</option>
+                <option value="No especifica">No Especifica</option>
+                <option value="Recreativo">Recreativo</option>
+                <option value="Amateur">Amateur</option>
+                <option value="Intermedio">Intermedio</option>
+                <option value="Semiprofesional">Semiprofesional</option>
+                <option value="Profesional">Profesional</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Rejilla de Subida de Archivos y Vistas Previas Emparejadas -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+        
+        <!-- Bloque 1: Fotografía Oficial -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="form-group">
+                <label>Fotografía oficial</label>
+                <input type="file" id="fotoFile" accept="image/*" onchange="previewImage(event)">
             </div>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Talla de playera *</label>
-                    <select id="tallaPlayera" required>
-                        <option value="">-----------</option>
-                        <option value="XS">Extra Chica (XS)</option>
-                        <option value="S">Chica (S)</option>
-                        <option value="M">Mediana (M)</option>
-                        <option value="L">Grande (L)</option>
-                        <option value="XL">Extra Grande (XL)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Perfil del corredor *</label>
-                    <select id="perfilCorredor" required>
-                        <option value="">Selecciona tu perfil</option>
-                        <option value="No especifica">No Especifica</option>
-                        <option value="Recreativo">Recreativo</option>
-                        <option value="Amateur">Amateur</option>
-                        <option value="Intermedio">Intermedio</option>
-                        <option value="Semiprofesional">Semiprofesional</option>
-                        <option value="Profesional">Profesional</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label>Fotografía oficial</label>
-                    <input type="file" id="fotoFile" accept="image/*" onchange="previewImage(event)">
-                </div>
-                <div class="form-group">
-                    <label>Vista previa de foto</label>
-                    <div class="photo-preview-box" id="photoPreview">
-                        La foto aparecerá aquí cuando esté seleccionada.
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Evidencia de Pago (Comprobante)</label>
-                    <input type="file" id="pagoFile" accept="image/*,application/pdf" onchange="previewPago(event)">
-                </div>
-                <div class="form-group">
-                    <label>Vista previa de Comprobante de Pago</label>
-                    <div class="photo-preview-box" id="pagoPreview">
-                        El comprobante aparecerá aquí.
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Identificación Oficial (INE / CURP / Otro - Doc 1)</label>
-                    <input type="file" id="doc1File" accept="image/*,application/pdf" onchange="previewDoc(event, 'doc1Preview')">
-                </div>
-                <div class="form-group">
-                    <label>Vista previa Documento 1</label>
-                    <div class="photo-preview-box" id="doc1Preview">
-                        Documento 1 aparecerá aquí.
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label>Carta Responsiva (Doc 2 - Opcional)</label>
-                    <input type="file" id="doc2File" accept="image/*,application/pdf" onchange="previewDoc(event, 'doc2Preview')">
-                </div>
-                <div class="form-group">
-                    <label>Vista previa Carta Responsiva </label>
-                    <div class="photo-preview-box" id="doc2Preview">
-                         Carta Responsiva DOC2 aparecerá aquí.
-                    </div>
-                </div>
+            <div class="photo-preview-box" id="photoPreview">
+                La foto aparecerá aquí cuando esté seleccionada.
             </div>
         </div>
 
+        <!-- Bloque 2: Comprobante de Pago -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="form-group">
+                <label>Evidencia de Pago (Comprobante)</label>
+                <input type="file" id="pagoFile" accept="image/*,application/pdf" onchange="previewPago(event)">
+            </div>
+            <div class="photo-preview-box" id="pagoPreview">
+                El comprobante aparecerá aquí.
+            </div>
+        </div>
+
+        <!-- Bloque 3: Identificación Oficial -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="form-group">
+                <label>Identificación Oficial (INE / CURP)</label>
+                <input type="file" id="doc1File" accept="image/*,application/pdf" onchange="previewDoc(event, 'doc1Preview')">
+            </div>
+            <div class="photo-preview-box" id="doc1Preview">
+                Documento 1 aparecerá aquí.
+            </div>
+        </div>
+
+        <!-- Bloque 4: Carta Responsiva -->
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="form-group">
+                <label>Carta Responsiva (Doc 2)</label>
+                <input type="file" id="doc2File" accept="image/*,application/pdf" onchange="previewDoc(event, 'doc2Preview')">
+            </div>
+            <div class="photo-preview-box" id="doc2Preview">
+                Carta Responsiva DOC2 aparecerá aquí.
+            </div>
+        </div>
+
+    </div>
+</div>
+        
         <!-- SECCIÓN 4: EXPEDIENTE MÉDICO Y SEGURIDAD -->
         <div class="card">
             <div class="card-header">
@@ -772,7 +780,7 @@
             </div>
         </div>
 
-        <button type="submit" class="btn-submit">Confirmar Pago en Efectivo y Generar Folio Oficial (MM27-OFF)</button>
+      <button type="submit" id="submitBtn" class="btn-submit">Confirmar Pago en Efectivo y Generar Folio Oficial (MM27OFF-RUN-MMO1026)</button>
     </form>
 
 </div>
@@ -1249,24 +1257,31 @@ async function uploadToGoogleDrive(file, folderName, customFileName) {
     const fechaRegEl = document.getElementById('fechaRegistro');
     if (fechaRegEl) fechaRegEl.value = formattedFecha;
 
-    // 3. Folio automático con localStorage seguro (Iniciado en 1022)
-    let offlineCounter = 1022;
-    try {
-        const storedCounter = localStorage.getItem('metaX_offline_counter');
-        if (storedCounter) {
-            offlineCounter = parseInt(storedCounter, 10) || 1022;
-        }
-    } catch (e) {
-        console.warn('localStorage no está accesible:', e);
+  // 3. Folio automático ajustado al registro 1026
+let offlineCounter = 1026;
+try {
+    const storedCounter = localStorage.getItem('metaX_offline_counter');
+    if (storedCounter) {
+        let val = parseInt(storedCounter, 10);
+        // Si el valor guardado en cache local es menor que 1026, forzar el inicio a 1026
+        offlineCounter = (isNaN(val) || val < 1026) ? 1026 : val;
     }
+} catch (e) {
+    console.warn('localStorage no está accesible:', e);
+}
 
-    function updateFolio() {
-        const folioDisplay = document.getElementById('nextFolioDisplay');
-        if (folioDisplay) {
-            folioDisplay.innerText = `MM27OFF-RUN-MMO${offlineCounter}`;
-        }
+function updateFolio() {
+    const folioCode = `MM27OFF-RUN-MMO${offlineCounter}`;
+    const folioDisplay = document.getElementById('nextFolioDisplay');
+    if (folioDisplay) {
+        folioDisplay.innerText = folioCode;
     }
-    updateFolio();
+    const submitBtn = document.getElementById('submitBtn');
+    if (submitBtn) {
+        submitBtn.innerText = `Confirmar Pago en Efectivo y Generar Folio Oficial (${folioCode})`;
+    }
+}
+updateFolio();
 
     // Catálogo RENAPO para Estados de Nacimiento
     const estadosCURP = {
@@ -1463,7 +1478,6 @@ async function uploadToGoogleDrive(file, folderName, customFileName) {
                 if (!dbClient) {
                     throw new Error('La biblioteca de Supabase no está disponible o no se inicializó correctamente.');
                 }
-
                 const folio = `MM27OFF-RUN-MMO${offlineCounter}`;
                 
 // ==========================================
