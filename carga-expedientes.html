@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MetaX Pro - Carga y Actualización de Expediente - Moroleón 2027</title>
+    <title>Portal de Expediente del Atleta | Moroleón 2027</title>
     
-    <!-- SDK de Supabase -->
+    <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
@@ -23,205 +23,111 @@
             --danger: #dc2626;
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            padding-bottom: 40px;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-main); padding-bottom: 60px; position: relative; min-height: 100vh; }
 
         .header-bar {
             background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            margin-bottom: 24px;
+            color: white; padding: 20px; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.15); margin-bottom: 24px;
         }
+        .header-bar h1 { font-size: 1.3rem; color: #38bdf8; margin-bottom: 4px; }
+        .header-bar p { font-size: 0.85rem; color: #94a3b8; }
 
-        .header-bar h1 {
-            font-size: 1.3rem;
-            color: #38bdf8;
-            margin-bottom: 4px;
-        }
+        .container { max-width: 720px; margin: 0 auto; padding: 0 16px; }
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .card-title { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 
-        .header-bar p {
-            font-size: 0.85rem;
-            color: #94a3b8;
-        }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 6px; color: var(--text-main); }
+        .form-control { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 0.9rem; text-transform: uppercase; }
+        .form-control:focus { outline: none; border-color: var(--primary-blue); box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15); }
 
-        .container {
-            max-width: 680px;
-            margin: 0 auto;
-            padding: 0 16px;
-        }
+        .btn-primary { width: 100%; background-color: var(--primary-blue); color: white; border: none; padding: 12px; border-radius: 8px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: background 0.2s; }
+        .btn-primary:hover { background-color: var(--accent-blue); }
+        .btn-secondary { background-color: #64748b; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
+        .btn-warning { background-color: var(--warning); color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
 
-        .card {
-            background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
+        .alert-box { padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 16px; font-weight: 500; }
+        .alert-warning { background-color: #fffbeb; border: 1px solid #fef3c7; color: #b45309; }
+        .alert-danger { background-color: #fef2f2; border: 1px solid #fecaca; color: #b91c1c; }
+        .alert-info { background-color: #f0f9ff; border: 1px solid #bae6fd; color: #0369a1; }
 
-        .card-title {
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
+        .data-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; background: #f8fafc; padding: 14px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 16px; }
+        .data-item { font-size: 0.85rem; }
+        .data-item label { font-size: 0.75rem; color: var(--text-muted); display: block; font-weight: bold; text-transform: uppercase; }
+        .data-item span { font-weight: 700; color: var(--primary); }
 
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 0.85rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: var(--text-main);
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-        }
-
-        .form-control:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
-        }
-
-        .btn-primary {
-            width: 100%;
-            background-color: var(--primary-blue);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--accent-blue);
-        }
-
-        .btn-success {
-            background-color: var(--success);
-        }
-
-        .btn-success:hover {
-            background-color: #15803d;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            font-weight: bold;
-        }
-
-        .badge-danger { background-color: #fee2e2; color: #b91c1c; }
-        .badge-success { background-color: #dcfce7; color: #15803d; }
-        .badge-warning { background-color: #fef3c7; color: #b45309; }
-
-        .pending-box {
-            background-color: #fef2f2;
-            border: 1px solid #fecaca;
-            border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 16px;
-        }
-
-        .complete-box {
-            background-color: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            border-radius: 8px;
-            padding: 14px;
-            margin-bottom: 16px;
-        }
-
-        .file-upload-item {
-            background-color: #f8fafc;
-            border: 1px dashed var(--border-color);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-        }
-
+        .file-upload-item { background-color: #f8fafc; border: 1px dashed var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
         .hidden { display: none !important; }
 
-        .loader {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary-blue);
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-            display: inline-block;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
+        /* Modal Generico */
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15,23,42,0.6); display:flex; justify-content:center; align-items:center; z-index: 1000; padding:16px; }
+        .modal-card { background: white; border-radius: 12px; max-width: 550px; width:100%; padding: 20px; max-height: 90vh; overflow-y: auto; }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
+        /* Botón Discreto de Admin */
+        .admin-trigger { position: fixed; bottom: 10px; right: 10px; opacity: 0.2; font-size: 0.75rem; background: #000; color: #fff; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; }
+        .admin-trigger:hover { opacity: 1; }
+
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary-blue); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
 <div class="header-bar">
-    <h1>Portal Oficial de Carga de Expedientes</h1>
+    <h1>Portal de Verificación y Carga de Expediente</h1>
     <p>Maratón Internacional IRC Moroleón 2027 | MetaX Pro</p>
 </div>
 
 <div class="container">
 
-    <!-- PASO 1: FORMULARIO DE ACCESO Y VALIDACIÓN -->
+    <!-- PASO 1: VALIDACIÓN ESCALONADA DE ACCESO -->
     <div class="card" id="stepAuth">
-        <div class="card-title">🔐 Autenticación de Atleta</div>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
-            Ingresa tu Folio Oficial y CURP para validar tu identidad y acceder a los pendientes de tu expediente.
-        </p>
+        <div class="card-title">
+            <span>🔐 Autenticación de Atleta</span>
+            <span style="font-size: 0.75rem; color: var(--text-muted);" id="lblTryAttempt">Intento 1 de 3</span>
+        </div>
+
+        <div id="authAlert" class="alert-box alert-info">
+            Ingresa tu Folio Oficial, CURP y los últimos 4 dígitos de tu celular registrado para acceder a tu expediente.
+        </div>
 
         <form id="formAuth" onsubmit="handleAuthentication(event)">
+            
             <div class="form-group">
                 <label>Folio Oficial *</label>
                 <input type="text" id="authFolio" class="form-control" placeholder="Ej. MM27OFF-RUN-MMO1026" required>
             </div>
 
-            <div class="form-group">
-                <label>CURP del Atleta *</label>
-                <input type="text" id="authCurp" class="form-control" maxlength="18" placeholder="Ej. ABCD123456HDFRXX01" required>
+            <!-- OPCCIÓN A: VALIDACIÓN POR CURP Y CELULAR -->
+            <div id="blockOptA">
+                <div class="form-group">
+                    <label>CURP del Atleta *</label>
+                    <input type="text" id="authCurp" class="form-control" maxlength="18" placeholder="Ej. ABCD123456HDFRXX01">
+                </div>
+                <div class="form-group">
+                    <label>Últimos 4 dígitos del Celular *</label>
+                    <input type="text" id="authPhone4" class="form-control" maxlength="4" placeholder="Ej. 2597" style="letter-spacing: 2px;">
+                </div>
             </div>
 
-            <div class="form-group">
-                <label>Filtro de Seguridad: Últimos 4 dígitos del Celular *</label>
-                <input type="text" id="authPhone4" class="form-control" maxlength="4" placeholder="Ej. 2597" style="letter-spacing: 2px; font-weight: bold;" required>
+            <!-- OPCCIÓN B: FALLBACK POR CORREO ELECTRÓNICO (Oculto inicialmente) -->
+            <div id="blockOptB" class="hidden">
+                <div class="form-group">
+                    <label>Correo Electrónico Registrado *</label>
+                    <input type="email" id="authEmail" class="form-control" placeholder="correo@ejemplo.com" style="text-transform: none;">
+                </div>
             </div>
 
-            <div id="authError" style="color: var(--danger); font-size: 0.85rem; margin-bottom: 12px; font-weight: bold; display: none;"></div>
+            <!-- OPCCIÓN C: FALLBACK POR NOMBRE COMPLETO (Oculto inicialmente) -->
+            <div id="blockOptC" class="hidden">
+                <div class="form-group">
+                    <label>Primer Nombre del Atleta *</label>
+                    <input type="text" id="authFirstName" class="form-control" placeholder="Ej. JUAN">
+                </div>
+            </div>
+
+            <div id="authError" class="alert-box alert-danger hidden"></div>
 
             <button type="submit" class="btn-primary" id="btnAuth">
                 Validar e Ingresar a mi Expediente
@@ -229,65 +135,65 @@
         </form>
     </div>
 
-    <!-- PASO 2: PANEL DE EXPEDIENTE DEL ATLETA (Oculto inicialmente) -->
-    <div id="stepUpload" class="hidden">
-        
-        <!-- Tarjeta Informativa del Atleta -->
+    <!-- PASO 2: VERIFICACIÓN DE DATOS PERSONALES Y CARGA DE PENDIENTES -->
+    <div id="stepPortal" class="hidden">
+
+        <!-- TARJETA 1: VERIFICACIÓN DE DATOS PERSONALES DEL ATLETA -->
         <div class="card">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
-                <div>
-                    <h2 style="font-size: 1.2rem; color: var(--primary);" id="lblAtletaNombre">---</h2>
-                    <p style="font-size: 0.85rem; color: var(--text-muted);">
-                        Folio: <strong id="lblAtletaFolio" style="color: var(--primary-blue);">---</strong>
-                    </p>
-                </div>
-                <div id="badgeStatusHeader"></div>
+            <div class="card-title">
+                <span>👤 Verificación de Datos Personales</span>
+                <button class="btn-warning" onclick="openSupportModal()">⚠️ Solicitar Corrección al Comité</button>
+            </div>
+            
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
+                Por favor, verifica que tus datos básicos inscritos estén correctos. Si alguno presenta error, utiliza el botón superior para notificar al Comité Organizador.
+            </p>
+
+            <div class="data-grid">
+                <div class="data-item"><label>Nombre(s):</label><span id="v_nombre">---</span></div>
+                <div class="data-item"><label>Primer Apellido:</label><span id="v_paterno">---</span></div>
+                <div class="data-item"><label>Segundo Apellido:</label><span id="v_materno">---</span></div>
+                <div class="data-item"><label>CURP:</label><span id="v_curp">---</span></div>
+                <div class="data-item"><label>Distancia:</label><span id="v_distancia">---</span></div>
+                <div class="data-item"><label>Categoría:</label><span id="v_categoria">---</span></div>
+                <div class="data-item"><label>Rama:</label><span id="v_rama">---</span></div>
+                <div class="data-item"><label>Talla Playera:</label><span id="v_talla">---</span></div>
+                <div class="data-item"><label>Club / Equipo:</label><span id="v_club">---</span></div>
+                <div class="data-item"><label>Ciudad / Estado:</label><span id="v_origen">---</span></div>
             </div>
         </div>
 
-        <!-- FORMULARIO DINÁMICO DE PENDIENTES -->
-        <form id="formUpload" onsubmit="handleExpedienteSubmit(event)">
+        <!-- TARJETA 2: CARGA DE EXPEDIENTES / PENDIENTES -->
+        <form id="formExpediente" onsubmit="handleExpedienteSubmit(event)">
             
-            <!-- SECCIÓN A: DATOS TEXTUALES PENDIENTES -->
-            <div class="card hidden" id="cardDataFields">
-                <div class="card-title">📝 Datos e Información Pendiente</div>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
-                    Por favor completa los campos que presentan inconsistencias o están marcados como faltantes:
-                </p>
-
-                <div id="dataInputsContainer"></div>
+            <div class="card hidden" id="cardDataInputs">
+                <div class="card-title">📝 Datos Faltantes por Completar</div>
+                <div id="containerDataInputs"></div>
             </div>
 
-            <!-- SECCIÓN B: DOCUMENTOS / FOTOS PENDIENTES -->
-            <div class="card hidden" id="cardDocFields">
-                <div class="card-title">📁 Carga de Documentación Faltante</div>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
-                    Adjunta únicamente los archivos que tienes pendientes. Formatos permitidos: JPG, PNG o PDF (Máx. 5MB por archivo).
-                </p>
-
-                <div id="docInputsContainer"></div>
+            <div class="card hidden" id="cardDocInputs">
+                <div class="card-title">📁 Documentación Obligatoria Pendiente</div>
+                <div id="containerDocInputs"></div>
             </div>
 
-            <!-- SECCIÓN C: RESUMEN DE DOCUMENTOS YA COMPLETADOS -->
-            <div class="card hidden" id="cardCompletedDocs">
-                <div class="card-title" style="color: var(--success);">✅ Documentación ya Aprobada</div>
-                <div id="completedListContainer"></div>
-            </div>
-
-            <!-- MENSAJE SI EL EXPEDIENTE YA ESTÁ 100% COMPLETO -->
-            <div class="card hidden" id="cardAllDone">
-                <div class="complete-box" style="text-align: center; padding: 20px;">
-                    <h3 style="color: var(--success); margin-bottom: 6px;">🎉 ¡Tu expediente está 100% completo!</h3>
-                    <p style="font-size: 0.85rem; color: #166534;">
-                        No tienes datos ni documentos pendientes por cargar. Estás formalmente preparado para el evento.
-                    </p>
+            <!-- OBSERVACIONES GENERALES / COMENTARIOS DEL ATLETA -->
+            <div class="card" id="cardComments">
+                <div class="card-title">💬 Observaciones o Comentarios para el Comité</div>
+                <div class="form-group">
+                    <label>Si tienes alguna aclaración sobre tu documentación o datos, escríbela aquí:</label>
+                    <textarea id="inpAtletaComentarios" class="form-control" rows="3" placeholder="Ej. Ya adjunté mi INE actualizada, favor de verificar..." style="text-transform: none;"></textarea>
                 </div>
             </div>
 
-            <!-- BOTÓN DE ENVÍO -->
-            <div id="submitBtnContainer" class="hidden">
-                <button type="submit" class="btn-primary btn-success" id="btnSubmitExpediente">
-                    💾 Guardar y Actualizar mi Expediente
+            <div class="card hidden" id="cardCompleted">
+                <div class="alert-box alert-warning" style="margin: 0; text-align: center;">
+                    🎉 <strong>¡Tu expediente está 100% Validado!</strong> No tienes archivos ni datos pendientes por cargar.
+                </div>
+            </div>
+
+            <div id="btnSubmitContainer" class="hidden">
+                <button type="submit" class="btn-primary" style="background-color: var(--success);" id="btnSubmit">
+                    💾 Guardar y Finalizar Carga de Expediente
                 </button>
             </div>
 
@@ -297,335 +203,389 @@
 
 </div>
 
+<!-- MODAL: SOLICITAR CORRECCIÓN AL COMITÉ -->
+<div id="modalSupport" class="modal-overlay hidden">
+    <div class="modal-card">
+        <h3 style="margin-bottom: 12px; color: var(--primary);">⚠️ Solicitar Modificación de Datos</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
+            Describe qué dato personal (Nombre, Categoría, Distancia o Talla) requiere corrección para que el Comité Organizador lo revise:
+        </p>
+        
+        <div class="form-group">
+            <label>Campo a corregir *</label>
+            <select id="suppCampo" class="form-control">
+                <option value="Nombre / Apellidos">Nombre o Apellidos</option>
+                <option value="CURP">CURP</option>
+                <option value="Distancia / Categoria">Distancia o Categoría</option>
+                <option value="Talla de Playera">Talla de Playera</option>
+                <option value="Otro">Otro Dato</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Detalle de la corrección *</label>
+            <textarea id="suppDetalle" class="form-control" rows="3" placeholder="Escribe el dato correcto..." style="text-transform: none;"></textarea>
+        </div>
+
+        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button class="btn-secondary" onclick="closeModal('modalSupport')">Cancelar</button>
+            <button class="btn-primary" style="width: auto;" onclick="sendSupportRequest()">Enviar por WhatsApp</button>
+        </div>
+    </div>
+</div>
+
+<!-- BOTÓN DISCRETO Y MODAL DE AUDITORÍA PARA ADMINISTRADOR -->
+<button class="admin-trigger" onclick="promptAdminAccess()">🔒 Adm</button>
+
+<div id="modalAdminAudit" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h3>🔍 Panel de Auditoría Interna (Admin)</h3>
+            <button class="btn-secondary" onclick="closeModal('modalAdminAudit')">✖</button>
+        </div>
+        
+        <div id="adminAuditContent" style="font-size: 0.85rem;">
+            <p style="color: var(--text-muted);">Cargando registros de auditoría...</p>
+        </div>
+    </div>
+</div>
+
 <script>
-    // Configuración de Supabase
+    // Configuración Supabase
     const SUPABASE_URL = 'https://rpcevbxzpfgyobehgjth.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwY2V2Ynh6cGZneW9iZWhnanRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMDA3MDQsImV4cCI6MjEwMTg3NjcwNH0.hECuSvVKVehKZjZ9jMqwHM1xspD2l1kS3G9X1jfHIuk';
     
-    // URL del Web App de Google Apps Script para subir directo a Google Drive
-    // Reemplazar con tu ejecutable desplegado de Apps Script si cuentas con él
-    const GOOGLE_DRIVE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxYOUR_SCRIPT_ID_HERE/exec';
-
     let dbClient = null;
     let currentCorredor = null;
+    let authStepLevel = 1; // 1: CURP+Celular, 2: Email, 3: Nombre
 
     try {
-        if (window.supabase && typeof window.supabase.createClient === 'function') {
-            dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        }
-    } catch (err) {
-        console.error('Error al inicializar Supabase:', err);
-    }
+        if (window.supabase) dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    } catch(e) { console.error(e); }
 
-    // Auto-detectar Folio desde la URL (Ej: carga-expedientes.html?folio=MM27OFF-RUN-MMO1026)
     document.addEventListener('DOMContentLoaded', () => {
         const urlParams = new URLSearchParams(window.location.search);
         const folioUrl = urlParams.get('folio');
-        if (folioUrl) {
-            document.getElementById('authFolio').value = folioUrl.trim().toUpperCase();
-        }
+        if (folioUrl) document.getElementById('authFolio').value = folioUrl.trim().toUpperCase();
     });
 
-    // Auxiliar para detectar valores vacíos o nulos ("X")
     function isInvalidValue(val) {
-        if (!val || val === null || val === undefined) return true;
+        if (!val || val === null) return true;
         const clean = String(val).trim().toUpperCase();
-        if (clean === '' || clean === 'X' || clean === '-' || clean === 'NO' || clean === 'N/A' || clean === 'NA') return true;
-        if (clean.includes('NO MENCION') || clean.includes('NO PROPORCION') || clean.includes('NO INDIC') || clean.includes('NO DEFINI') || clean.includes('-----------') || clean.includes('SIN ESPECIFICAR')) return true;
-        return false;
+        return (clean === '' || clean === 'X' || clean === '-' || clean === 'NO' || clean === 'N/A');
     }
 
-    // Paso 1: Autenticación e Identificación
+    // LÓGICA DE ESCALONAMIENTO Y AUTENTICACIÓN
     async function handleAuthentication(e) {
         e.preventDefault();
         const folio = document.getElementById('authFolio').value.trim().toUpperCase();
-        const curp = document.getElementById('authCurp').value.trim().toUpperCase();
-        const phone4 = document.getElementById('authPhone4').value.trim();
-
         const errDiv = document.getElementById('authError');
         const btn = document.getElementById('btnAuth');
-        
-        errDiv.style.display = 'none';
+
+        errDiv.classList.add('hidden');
         btn.disabled = true;
-        btn.innerHTML = '<span class="loader"></span> Validando expediente...';
+        btn.innerHTML = '<span class="loader"></span> Validando...';
 
         try {
-            // Consultar registro por Folio
-            const { data, error } = await dbClient
-                .from('corredores')
-                .select('*')
-                .eq('folio_oficial', folio)
-                .maybeSingle();
-
+            // Consultar registro
+            const { data, error } = await dbClient.from('corredores').select('*').eq('folio_oficial', folio).maybeSingle();
             if (error) throw error;
 
             if (!data) {
-                showAuthError('El número de Folio ingresado no existe en nuestra base de datos.');
+                showError('El Folio Oficial ingresado no se encuentra registrado.');
                 return;
             }
 
-            // Validar CURP
-            if ((data.curp || '').trim().toUpperCase() !== curp) {
-                showAuthError('La CURP ingresada no coincide con el Folio registrado.');
+            // Validar Límite de Accesos (Máximo 2)
+            const accesos = data.accesos_realizados || 0;
+            if (accesos >= 2) {
+                showError('🚨 Has alcanzado el límite máximo de 2 accesos permitidos a tu expediente. Contacta al Comité Organizador para asistencia.');
                 return;
             }
 
-            // Validar Filtro de Seguridad (Últimos 4 dígitos del teléfono)
-            const registeredPhone = (data.telefono || '').replace(/\D/g, '');
-            if (registeredPhone.length >= 4) {
-                const last4 = registeredPhone.slice(-4);
-                if (last4 !== phone4) {
-                    showAuthError('Los últimos 4 dígitos del celular no coinciden con el registro.');
+            // EVALUACIÓN NIVEL 1: CURP + CELULAR
+            if (authStepLevel === 1) {
+                const curpInput = document.getElementById('authCurp').value.trim().toUpperCase();
+                const phone4Input = document.getElementById('authPhone4').value.trim();
+
+                // ¿Tiene CURP registrada como X o Nula?
+                if (isInvalidValue(data.curp)) {
+                    authStepLevel = 2;
+                    document.getElementById('blockOptA').classList.add('hidden');
+                    document.getElementById('blockOptB').classList.remove('hidden');
+                    document.getElementById('lblTryAttempt').innerText = 'Intento 2 de 3';
+                    
+                    document.getElementById('authAlert').className = 'alert-box alert-warning';
+                    document.getElementById('authAlert').innerHTML = '⚠️ Confirmamos que tu CURP no fue capturada al inscribirte (o tiene "X"). Para validar tu identidad, ingresa tu **Correo Electrónico Registrado**.';
+                    btn.disabled = false;
+                    btn.innerText = 'Validar con Correo Electrónico';
+                    return;
+                }
+
+                // Coincidencia de CURP y Celular
+                const dbPhoneLast4 = (data.telefono || '').replace(/\D/g, '').slice(-4);
+                if (data.curp.trim().toUpperCase() === curpInput && dbPhoneLast4 === phone4Input) {
+                    await startSession(data);
+                    return;
+                } else {
+                    // Fallback a Nivel 2 si falla
+                    authStepLevel = 2;
+                    document.getElementById('blockOptA').classList.add('hidden');
+                    document.getElementById('blockOptB').classList.remove('hidden');
+                    document.getElementById('lblTryAttempt').innerText = 'Intento 2 de 3';
+                    document.getElementById('authAlert').className = 'alert-box alert-warning';
+                    document.getElementById('authAlert').innerText = 'La CURP o el teléfono no coincidieron. Favor de validar ingresando tu Correo Electrónico registrado.';
+                    btn.disabled = false;
+                    btn.innerText = 'Validar por Correo Electrónico';
                     return;
                 }
             }
 
-            // Autenticación exitosa
-            currentCorredor = data;
-            renderExpedientePortal();
+            // EVALUACIÓN NIVEL 2: CORREO ELECTRÓNICO
+            if (authStepLevel === 2) {
+                const emailInput = document.getElementById('authEmail').value.trim().toLowerCase();
+                
+                if (isInvalidValue(data.email) || data.email.trim().toLowerCase() !== emailInput) {
+                    // Fallback a Nivel 3
+                    authStepLevel = 3;
+                    document.getElementById('blockOptB').classList.add('hidden');
+                    document.getElementById('blockOptC').classList.remove('hidden');
+                    document.getElementById('lblTryAttempt').innerText = 'Intento 3 de 3';
+                    document.getElementById('authAlert').className = 'alert-box alert-warning';
+                    document.getElementById('authAlert').innerText = 'Correo no coincidente. Última alternativa: Ingresa tu Primer Nombre registrado.';
+                    btn.disabled = false;
+                    btn.innerText = 'Validar por Nombre';
+                    return;
+                } else {
+                    await startSession(data);
+                    return;
+                }
+            }
 
-        } catch (err) {
+            // EVALUACIÓN NIVEL 3: PRIMER NOMBRE
+            if (authStepLevel === 3) {
+                const nameInput = document.getElementById('authFirstName').value.trim().toUpperCase();
+                const firstName = (data.nombre || data.nombre_completo || '').split(' ')[0].toUpperCase();
+
+                if (firstName.includes(nameInput)) {
+                    await startSession(data);
+                    return;
+                } else {
+                    showError('No fue posible validar tu identidad. Por favor ponte en contacto con el soporte de MetaX Pro.');
+                }
+            }
+
+        } catch(err) {
             console.error(err);
-            showAuthError('Ocurrió un problema de conexión: ' + err.message);
+            showError('Error de servidor: ' + err.message);
         } finally {
             btn.disabled = false;
             btn.innerText = 'Validar e Ingresar a mi Expediente';
         }
     }
 
-    function showAuthError(msg) {
+    function showError(msg) {
         const errDiv = document.getElementById('authError');
         errDiv.innerText = msg;
-        errDiv.style.display = 'block';
+        errDiv.classList.remove('hidden');
     }
 
-    // Paso 2: Renderizado Dinámico de Pendientes
-    function renderExpedientePortal() {
-        document.getElementById('stepAuth').classList.add('hidden');
-        document.getElementById('stepUpload').classList.remove('hidden');
-
-        const c = currentCorredor;
-        const fullName = c.nombre_completo || `${c.nombre || ''} ${c.primer_apellido || ''} ${c.segundo_apellido || ''}`.trim();
+    // INICIAR SESIÓN Y SUMAR ACCESO
+    async function startSession(corredor) {
+        currentCorredor = corredor;
         
-        document.getElementById('lblAtletaNombre').innerText = fullName || 'Atleta Registrado';
-        document.getElementById('lblAtletaFolio').innerText = c.folio_oficial;
+        // Sumar acceso en Supabase
+        const newAccesos = (corredor.accesos_realizados || 0) + 1;
+        await dbClient.from('corredores').update({ 
+            accesos_realizados: newAccesos,
+            ultimo_acceso: new Date().toISOString()
+        }).eq('id', corredor.id);
 
-        const dataContainer = document.getElementById('dataInputsContainer');
-        const docContainer = document.getElementById('docInputsContainer');
-        const completedContainer = document.getElementById('completedListContainer');
+        document.getElementById('stepAuth').classList.add('hidden');
+        document.getElementById('stepPortal').classList.remove('hidden');
 
-        dataContainer.innerHTML = '';
-        docContainer.innerHTML = '';
-        completedContainer.innerHTML = '';
+        renderDatosPersonales();
+        renderPendientesForm();
+    }
 
-        let pendingDataCount = 0;
-        let pendingDocCount = 0;
-        let completedCount = 0;
+    // MOSTRAR DATOS PERSONALES
+    function renderDatosPersonales() {
+        const c = currentCorredor;
+        document.getElementById('v_nombre').innerText = c.nombre || '---';
+        document.getElementById('v_paterno').innerText = c.primer_apellido || '---';
+        document.getElementById('v_materno').innerText = c.segundo_apellido || '---';
+        document.getElementById('v_curp').innerText = c.curp || 'NO REGISTRADA ("X")';
+        document.getElementById('v_distancia').innerText = c.distancia || '---';
+        document.getElementById('v_categoria').innerText = c.categoria || '---';
+        document.getElementById('v_rama').innerText = c.rama || c.genero || '---';
+        document.getElementById('v_talla').innerText = c.talla_playera || '---';
+        document.getElementById('v_club').innerText = c.club_equipo || '---';
+        document.getElementById('v_origen').innerText = c.ciudad_estado || '---';
+    }
 
-        // Evaluar Campos Textuales
+    // FORMULARIO DINÁMICO DE PENDIENTES
+    function renderPendientesForm() {
+        const c = currentCorredor;
+        const containerData = document.getElementById('containerDataInputs');
+        const containerDoc = document.getElementById('containerDocInputs');
+
+        containerData.innerHTML = '';
+        containerDoc.innerHTML = '';
+
+        let pendingData = 0;
+        let pendingDocs = 0;
+
+        // Datos
         if (isInvalidValue(c.segundo_apellido)) {
-            pendingDataCount++;
-            dataContainer.innerHTML += `
-                <div class="form-group">
-                    <label>Segundo Apellido *</label>
-                    <input type="text" id="inp_segundo_apellido" class="form-control" required placeholder="Ingresa tu segundo apellido">
-                </div>`;
+            pendingData++;
+            containerData.innerHTML += `<div class="form-group"><label>Segundo Apellido *</label><input type="text" id="inp_segundo_apellido" class="form-control" required></div>`;
         }
-
         if (isInvalidValue(c.email) || !c.email.includes('@')) {
-            pendingDataCount++;
-            dataContainer.innerHTML += `
-                <div class="form-group">
-                    <label>Correo Electrónico *</label>
-                    <input type="email" id="inp_email" class="form-control" style="text-transform:none;" required placeholder="correo@ejemplo.com">
-                </div>`;
+            pendingData++;
+            containerData.innerHTML += `<div class="form-group"><label>Correo Electrónico *</label><input type="email" id="inp_email" class="form-control" style="text-transform:none;" required></div>`;
         }
-
         if (isInvalidValue(c.contacto_nombre) || isInvalidValue(c.contacto_telefono)) {
-            pendingDataCount++;
-            dataContainer.innerHTML += `
-                <div class="form-group">
-                    <label>Nombre del Contacto de Emergencia *</label>
-                    <input type="text" id="inp_contacto_nombre" class="form-control" required placeholder="Nombre completo de familiar o contacto">
-                </div>
-                <div class="form-group">
-                    <label>Teléfono de Emergencia (10 dígitos) *</label>
-                    <input type="tel" id="inp_contacto_telefono" class="form-control" maxlength="10" required placeholder="4771234567">
-                </div>`;
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group"><label>Nombre Contacto Emergencia *</label><input type="text" id="inp_contacto_nombre" class="form-control" required></div>
+                <div class="form-group"><label>Teléfono Contacto Emergencia *</label><input type="tel" id="inp_contacto_telefono" class="form-control" maxlength="10" required></div>
+            `;
         }
 
-        if (isInvalidValue(c.tipo_sangre)) {
-            pendingDataCount++;
-            dataContainer.innerHTML += `
-                <div class="form-group">
-                    <label>Tipo de Sangre *</label>
-                    <select id="inp_tipo_sangre" class="form-control" required>
-                        <option value="">Selecciona una opción</option>
-                        <option value="O+">O positive (O+)</option>
-                        <option value="O-">O negative (O-)</option>
-                        <option value="A+">A positive (A+)</option>
-                        <option value="A-">A negative (A-)</option>
-                        <option value="B+">B positive (B+)</option>
-                        <option value="B-">B negative (B-)</option>
-                        <option value="AB+">AB positive (AB+)</option>
-                        <option value="AB-">AB negative (AB-)</option>
-                    </select>
-                </div>`;
-        }
-
-        // Evaluar Documentos Faltantes vs Completados
-        // 1. Fotografía Oficial
+        // Documentos
         if (isInvalidValue(c.foto_url)) {
-            pendingDocCount++;
-            docContainer.innerHTML += renderFileInput('file_foto_url', '📸 Fotografía Oficial del Corredor', 'Fotografía tipo estudio o selfie clara para acreditación.');
-        } else {
-            completedCount++;
-            completedContainer.innerHTML += `<div style="font-size:0.85rem; color:#15803d; margin-bottom:4px;">✅ Fotografía Oficial (Cargada)</div>`;
+            pendingDocs++;
+            containerDoc.innerHTML += renderFileInput('f_foto', '📸 Fotografía Oficial', 'Fotografía tipo selfie o estudio clara.');
         }
-
-        // 2. Identificación Oficial (INE / Doc 1)
         if (isInvalidValue(c.doc1_url)) {
-            pendingDocCount++;
-            docContainer.innerHTML += renderFileInput('file_doc1_url', '🪪 Identificación Oficial (INE / PASAPORTE)', 'Frente y reverso legibles o documento en PDF.');
-        } else {
-            completedCount++;
-            completedContainer.innerHTML += `<div style="font-size:0.85rem; color:#15803d; margin-bottom:4px;">✅ Identificación Oficial / INE (Cargada)</div>`;
+            pendingDocs++;
+            containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE / Pasaporte)', 'Frente y reverso.');
         }
-
-        // 3. Carta Responsiva (Doc 2)
         if (isInvalidValue(c.doc2_url)) {
-            pendingDocCount++;
-            docContainer.innerHTML += renderFileInput('file_doc2_url', '📄 Carta Responsiva Firmada', 'Documento de deslinde firmado por el corredor.');
-        } else {
-            completedCount++;
-            completedContainer.innerHTML += `<div style="font-size:0.85rem; color:#15803d; margin-bottom:4px;">✅ Carta Responsiva Firmada (Cargada)</div>`;
+            pendingDocs++;
+            containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Formato de deslinde firmado.');
         }
 
-        // Visibilidad de Secciones
-        if (pendingDataCount > 0) document.getElementById('cardDataFields').classList.remove('hidden');
-        if (pendingDocCount > 0) document.getElementById('cardDocFields').classList.remove('hidden');
-        if (completedCount > 0) document.getElementById('cardCompletedDocs').classList.remove('hidden');
+        if (pendingData > 0) document.getElementById('cardDataInputs').classList.remove('hidden');
+        if (pendingDocs > 0) document.getElementById('cardDocInputs').classList.remove('hidden');
 
-        if (pendingDataCount === 0 && pendingDocCount === 0) {
-            document.getElementById('cardAllDone').classList.remove('hidden');
-            document.getElementById('badgeStatusHeader').innerHTML = `<span class="badge badge-success">EXPEDIENTE 100% VALIDO</span>`;
+        if (pendingData === 0 && pendingDocs === 0) {
+            document.getElementById('cardCompleted').classList.remove('hidden');
         } else {
-            document.getElementById('submitBtnContainer').classList.remove('hidden');
-            document.getElementById('badgeStatusHeader').innerHTML = `<span class="badge badge-danger">PENDIENTES POR ATENDER</span>`;
+            document.getElementById('btnSubmitContainer').classList.remove('hidden');
         }
     }
 
-    function renderFileInput(id, label, desc) {
+    function renderFileInput(id, title, desc) {
         return `
             <div class="file-upload-item">
-                <label style="font-weight:bold; font-size:0.85rem;">${label} *</label>
+                <label>${title} *</label>
                 <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">${desc}</p>
                 <input type="file" id="${id}" accept="image/*,application/pdf" class="form-control" style="background:white;" required>
             </div>
         `;
     }
 
-    // Paso 3: Envío de Expediente y Carga a Google Drive / Supabase
+    // GUARDAR CAMBIOS
     async function handleExpedienteSubmit(e) {
         e.preventDefault();
-
-        const btn = document.getElementById('btnSubmitExpediente');
+        const btn = document.getElementById('btnSubmit');
         btn.disabled = true;
-        btn.innerHTML = '<span class="loader"></span> Procesando y Subiendo Documentos a Google Drive...';
+        btn.innerHTML = '<span class="loader"></span> Guardando expediente...';
 
         try {
             const updates = {};
+            const comentarios = document.getElementById('inpAtletaComentarios').value.trim();
+            if (comentarios) updates.comentarios_atleta = comentarios;
 
-            // 1. Recoger datos de texto actualizados
             if (document.getElementById('inp_segundo_apellido')) updates.segundo_apellido = document.getElementById('inp_segundo_apellido').value.trim().toUpperCase();
             if (document.getElementById('inp_email')) updates.email = document.getElementById('inp_email').value.trim();
             if (document.getElementById('inp_contacto_nombre')) updates.contacto_nombre = document.getElementById('inp_contacto_nombre').value.trim().toUpperCase();
             if (document.getElementById('inp_contacto_telefono')) updates.contacto_telefono = document.getElementById('inp_contacto_telefono').value.trim();
-            if (document.getElementById('inp_tipo_sangre')) updates.tipo_sangre = document.getElementById('inp_tipo_sangre').value;
 
-            // 2. Subir Archivos a Google Drive / Supabase
-            const fotoInput = document.getElementById('file_foto_url');
-            if (fotoInput && fotoInput.files[0]) {
-                updates.foto_url = await uploadFileToDrive(fotoInput.files[0], `FOTO_${currentCorredor.folio_oficial}`);
+            // Subida de archivos
+            if (document.getElementById('f_foto') && document.getElementById('f_foto').files[0]) {
+                updates.foto_url = await uploadBase64(document.getElementById('f_foto').files[0]);
+            }
+            if (document.getElementById('f_doc1') && document.getElementById('f_doc1').files[0]) {
+                updates.doc1_url = await uploadBase64(document.getElementById('f_doc1').files[0]);
+            }
+            if (document.getElementById('f_doc2') && document.getElementById('f_doc2').files[0]) {
+                updates.doc2_url = await uploadBase64(document.getElementById('f_doc2').files[0]);
             }
 
-            const doc1Input = document.getElementById('file_doc1_url');
-            if (doc1Input && doc1Input.files[0]) {
-                updates.doc1_url = await uploadFileToDrive(doc1Input.files[0], `INE_${currentCorredor.folio_oficial}`);
-            }
-
-            const doc2Input = document.getElementById('file_doc2_url');
-            if (doc2Input && doc2Input.files[0]) {
-                updates.doc2_url = await uploadFileToDrive(doc2Input.files[0], `RESPONSIVA_${currentCorredor.folio_oficial}`);
-            }
-
-            // 3. Actualizar registro en Supabase
-            const { error } = await dbClient
-                .from('corredores')
-                .update(updates)
-                .eq('id', currentCorredor.id);
-
+            const { error } = await dbClient.from('corredores').update(updates).eq('id', currentCorredor.id);
             if (error) throw error;
 
-            alert('¡Tu expediente se ha actualizado correctamente!');
-            
-            // Recargar vista para reflejar que ya está 100% completo
-            const { data: updatedRecord } = await dbClient.from('corredores').select('*').eq('id', currentCorredor.id).single();
-            currentCorredor = updatedRecord;
-            
-            document.getElementById('cardDataFields').classList.add('hidden');
-            document.getElementById('cardDocFields').classList.add('hidden');
-            document.getElementById('submitBtnContainer').classList.add('hidden');
-            renderExpedientePortal();
+            alert('¡Tus datos y documentos han sido guardados exitosamente!');
+            window.location.reload();
 
-        } catch (err) {
-            console.error('Error al actualizar:', err);
-            alert('Ocurrió un error al guardar los datos: ' + err.message);
+        } catch(err) {
+            alert('Ocurrió un error al guardar: ' + err.message);
         } finally {
             btn.disabled = false;
-            btn.innerText = '💾 Guardar y Actualizar mi Expediente';
         }
     }
 
-    // Auxiliar para subir archivos hacia Google Drive vía Apps Script (o fallback Base64 / Storage)
-    async function uploadFileToDrive(file, fileNamePrefix) {
-        return new Promise((resolve, reject) => {
+    function uploadBase64(file) {
+        return new Promise((resolve) => {
             const reader = new FileReader();
             reader.readAsDataURL(file);
-            reader.onload = async () => {
-                const base64Data = reader.result.split(',')[1];
-                const fileExt = file.name.split('.').pop();
-                const finalFileName = `${fileNamePrefix}_${Date.now()}.${fileExt}`;
-
-                // Si se cuenta con la URL de Apps Script desplegada, enviamos el archivo
-                if (GOOGLE_DRIVE_WEB_APP_URL && !GOOGLE_DRIVE_WEB_APP_URL.includes('YOUR_SCRIPT_ID')) {
-                    try {
-                        const response = await fetch(GOOGLE_DRIVE_WEB_APP_URL, {
-                            method: 'POST',
-                            mode: 'cors',
-                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                            body: new URLSearchParams({
-                                'fileData': base64Data,
-                                'fileName': finalFileName,
-                                'mimeType': file.type,
-                                'folio': currentCorredor.folio_oficial
-                            })
-                        });
-                        const resJson = await response.json();
-                        if (resJson.result === 'success') {
-                            resolve(resJson.fileUrl); // Retorna URL directa de Google Drive
-                            return;
-                        }
-                    } catch (e) {
-                        console.warn('Google Drive WebApp no respondió, usando almacenamiento alternativo base64...', e);
-                    }
-                }
-
-                // Fallback de respaldo (Data URL) para pruebas sin servidor Apps Script
-                resolve(reader.result);
-            };
-            reader.onerror = error => reject(error);
+            reader.onload = () => resolve(reader.result);
         });
+    }
+
+    // SOLICITUD DE MODIFICACIÓN DE DATOS (SOPORTE)
+    function openSupportModal() { document.getElementById('modalSupport').classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    function sendSupportRequest() {
+        const campo = document.getElementById('suppCampo').value;
+        const detalle = document.getElementById('suppDetalle').value.trim();
+        
+        if (!detalle) { alert('Ingresa los detalles de la corrección.'); return; }
+
+        const text = `*SOLICITUD DE CORRECCIÓN DE DATOS - MOROLEÓN 2027*\n\n` +
+                     `*Folio:* ${currentCorredor.folio_oficial}\n` +
+                     `*Atleta:* ${currentCorredor.nombre} ${currentCorredor.primer_apellido}\n` +
+                     `*Campo a Corregir:* ${campo}\n` +
+                     `*Detalle:* ${detalle}`;
+
+        const url = `https://api.whatsapp.com/send?phone=524731372597&text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank');
+        closeModal('modalSupport');
+    }
+
+    // ADMIN AUDIT PANEL
+    function promptAdminAccess() {
+        const pin = prompt('Ingresa la clave de Administrador:');
+        if (pin === '2027') {
+            document.getElementById('modalAdminAudit').classList.remove('hidden');
+            loadAdminAuditData();
+        } else if (pin) {
+            alert('Clave incorrecta.');
+        }
+    }
+
+    async function loadAdminAuditData() {
+        const content = document.getElementById('adminAuditContent');
+        if (!currentCorredor) {
+            content.innerHTML = '<p style="color:var(--danger);">No hay sesión de corredor activa en pantalla.</p>';
+            return;
+        }
+
+        const { data } = await dbClient.from('corredores').select('*').eq('id', currentCorredor.id).single();
+        content.innerHTML = `
+            <p><strong>Atleta:</strong> ${data.nombre} ${data.primer_apellido}</p>
+            <p><strong>Folio:</strong> ${data.folio_oficial}</p>
+            <p><strong>Accesos consumidos:</strong> <span style="color:var(--danger); font-weight:bold;">${data.accesos_realizados || 0} de 2</span></p>
+            <p><strong>Último Acceso:</strong> ${data.ultimo_acceso ? new Date(data.ultimo_acceso).toLocaleString() : 'N/A'}</p>
+            <hr style="margin: 10px 0;">
+            <p><strong>Comentarios / Observaciones guardadas:</strong></p>
+            <div style="background:#f1f5f9; padding:8px; border-radius:6px; margin-top:4px;">
+                ${data.comentarios_atleta || '<em>Sin comentarios registrados.</em>'}
+            </div>
+        `;
     }
 </script>
 
