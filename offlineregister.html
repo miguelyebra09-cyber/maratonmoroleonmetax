@@ -1169,38 +1169,38 @@ const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwlzXJVU
   // =========================================================================
     
 async function uploadToGoogleDrive(file, folderName, customFileName) {
-  if (!file) return null;
-
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onload = async function(e) {
-      const base64Data = e.target.result.split(',')[1];
-      const payload = {
-        fileData: base64Data,
-        fileName: customFileName || file.name,
-        mimeType: file.type,
-        folderName: folderName
-      };
-
+    reader.onload = async () => {
       try {
-        const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+        const base64Data = reader.result.split(',')[1];
+        
+        // Usar URLSearchParams para evitar pre-flight de CORS en Google Script
+        const formData = new URLSearchParams();
+        formData.append('fileData', base64Data);
+        formData.append('mimeType', file.type);
+        formData.append('fileName', customFileName || file.name);
+        formData.append('folderName', folderName);
+
+        const response = await fetch('https://script.google.com/macros/s/AKfycbwlzXJVU6I_b8AZtd9MVXjdfQ9QilPIo1CnZMwccAnpwbmP4jgpjCuy2oS3TGM_RvDL/exec', {
           method: 'POST',
-          mode: 'cors',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          },
+          body: formData.toString()
         });
 
-        const result = await response.json();
-        if (result.status === 'success') {
-          resolve(result.url);
+        const resJson = await response.json();
+        if (resJson.status === 'success') {
+          resolve(resJson.url);
         } else {
-          reject(new Error(result.message || 'Error al subir a Drive'));
+          reject(resJson.message);
         }
       } catch (err) {
         reject(err);
       }
     };
-    reader.onerror = error => reject(error);
+    reader.onerror = (error) => reject(error);
     reader.readAsDataURL(file);
   });
 }
