@@ -1,1 +1,633 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaX Pro - Carga y Actualización de Expediente - Moroleón 2027</title>
+    
+    <!-- SDK de Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+    <style>
+        :root {
+            --primary: #0f172a;
+            --primary-blue: #0284c7;
+            --accent-blue: #2563eb;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --success: #16a34a;
+            --warning: #d97706;
+            --danger: #dc2626;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding-bottom: 40px;
+        }
+
+        .header-bar {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            margin-bottom: 24px;
+        }
+
+        .header-bar h1 {
+            font-size: 1.3rem;
+            color: #38bdf8;
+            margin-bottom: 4px;
+        }
+
+        .header-bar p {
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 0 16px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--text-main);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+        }
+
+        .btn-primary {
+            width: 100%;
+            background-color: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--accent-blue);
+        }
+
+        .btn-success {
+            background-color: var(--success);
+        }
+
+        .btn-success:hover {
+            background-color: #15803d;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .badge-danger { background-color: #fee2e2; color: #b91c1c; }
+        .badge-success { background-color: #dcfce7; color: #15803d; }
+        .badge-warning { background-color: #fef3c7; color: #b45309; }
+
+        .pending-box {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+
+        .complete-box {
+            background-color: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 16px;
+        }
+
+        .file-upload-item {
+            background-color: #f8fafc;
+            border: 1px dashed var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .hidden { display: none !important; }
+
+        .loader {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-blue);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header-bar">
+    <h1>Portal Oficial de Carga de Expedientes</h1>
+    <p>Maratón Internacional IRC Moroleón 2027 | MetaX Pro</p>
+</div>
+
+<div class="container">
+
+    <!-- PASO 1: FORMULARIO DE ACCESO Y VALIDACIÓN -->
+    <div class="card" id="stepAuth">
+        <div class="card-title">🔐 Autenticación de Atleta</div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 16px;">
+            Ingresa tu Folio Oficial y CURP para validar tu identidad y acceder a los pendientes de tu expediente.
+        </p>
+
+        <form id="formAuth" onsubmit="handleAuthentication(event)">
+            <div class="form-group">
+                <label>Folio Oficial *</label>
+                <input type="text" id="authFolio" class="form-control" placeholder="Ej. MM27OFF-RUN-MMO1026" required>
+            </div>
+
+            <div class="form-group">
+                <label>CURP del Atleta *</label>
+                <input type="text" id="authCurp" class="form-control" maxlength="18" placeholder="Ej. ABCD123456HDFRXX01" required>
+            </div>
+
+            <div class="form-group">
+                <label>Filtro de Seguridad: Últimos 4 dígitos del Celular *</label>
+                <input type="text" id="authPhone4" class="form-control" maxlength="4" placeholder="Ej. 2597" style="letter-spacing: 2px; font-weight: bold;" required>
+            </div>
+
+            <div id="authError" style="color: var(--danger); font-size: 0.85rem; margin-bottom: 12px; font-weight: bold; display: none;"></div>
+
+            <button type="submit" class="btn-primary" id="btnAuth">
+                Validar e Ingresar a mi Expediente
+            </button>
+        </form>
+    </div>
+
+    <!-- PASO 2: PANEL DE EXPEDIENTE DEL ATLETA (Oculto inicialmente) -->
+    <div id="stepUpload" class="hidden">
+        
+        <!-- Tarjeta Informativa del Atleta -->
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px;">
+                <div>
+                    <h2 style="font-size: 1.2rem; color: var(--primary);" id="lblAtletaNombre">---</h2>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">
+                        Folio: <strong id="lblAtletaFolio" style="color: var(--primary-blue);">---</strong>
+                    </p>
+                </div>
+                <div id="badgeStatusHeader"></div>
+            </div>
+        </div>
+
+        <!-- FORMULARIO DINÁMICO DE PENDIENTES -->
+        <form id="formUpload" onsubmit="handleExpedienteSubmit(event)">
+            
+            <!-- SECCIÓN A: DATOS TEXTUALES PENDIENTES -->
+            <div class="card hidden" id="cardDataFields">
+                <div class="card-title">📝 Datos e Información Pendiente</div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
+                    Por favor completa los campos que presentan inconsistencias o están marcados como faltantes:
+                </p>
+
+                <div id="dataInputsContainer"></div>
+            </div>
+
+            <!-- SECCIÓN B: DOCUMENTOS / FOTOS PENDIENTES -->
+            <div class="card hidden" id="cardDocFields">
+                <div class="card-title">📁 Carga de Documentación Faltante</div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
+                    Adjunta únicamente los archivos que tienes pendientes. Formatos permitidos: JPG, PNG o PDF (Máx. 5MB por archivo).
+                </p>
+
+                <div id="docInputsContainer"></div>
+            </div>
+
+            <!-- SECCIÓN C: RESUMEN DE DOCUMENTOS YA COMPLETADOS -->
+            <div class="card hidden" id="cardCompletedDocs">
+                <div class="card-title" style="color: var(--success);">✅ Documentación ya Aprobada</div>
+                <div id="completedListContainer"></div>
+            </div>
+
+            <!-- MENSAJE SI EL EXPEDIENTE YA ESTÁ 100% COMPLETO -->
+            <div class="card hidden" id="cardAllDone">
+                <div class="complete-box" style="text-align: center; padding: 20px;">
+                    <h3 style="color: var(--success); margin-bottom: 6px;">🎉 ¡Tu expediente está 100% completo!</h3>
+                    <p style="font-size: 0.85rem; color: #166534;">
+                        No tienes datos ni documentos pendientes por cargar. Estás formalmente preparado para el evento.
+                    </p>
+                </div>
+            </div>
+
+            <!-- BOTÓN DE ENVÍO -->
+            <div id="submitBtnContainer" class="hidden">
+                <button type="submit" class="btn-primary btn-success" id="btnSubmitExpediente">
+                    💾 Guardar y Actualizar mi Expediente
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+    // Configuración de Supabase
+    const SUPABASE_URL = 'https://rpcevbxzpfgyobehgjth.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwY2V2Ynh6cGZneW9iZWhnanRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMDA3MDQsImV4cCI6MjEwMTg3NjcwNH0.hECuSvVKVehKZjZ9jMqwHM1xspD2l1kS3G9X1jfHIuk';
+    
+    // URL del Web App de Google Apps Script para subir directo a Google Drive
+    // Reemplazar con tu ejecutable desplegado de Apps Script si cuentas con él
+    const GOOGLE_DRIVE_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxYOUR_SCRIPT_ID_HERE/exec';
+
+    let dbClient = null;
+    let currentCorredor = null;
+
+    try {
+        if (window.supabase && typeof window.supabase.createClient === 'function') {
+            dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        }
+    } catch (err) {
+        console.error('Error al inicializar Supabase:', err);
+    }
+
+    // Auto-detectar Folio desde la URL (Ej: carga-expedientes.html?folio=MM27OFF-RUN-MMO1026)
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const folioUrl = urlParams.get('folio');
+        if (folioUrl) {
+            document.getElementById('authFolio').value = folioUrl.trim().toUpperCase();
+        }
+    });
+
+    // Auxiliar para detectar valores vacíos o nulos ("X")
+    function isInvalidValue(val) {
+        if (!val || val === null || val === undefined) return true;
+        const clean = String(val).trim().toUpperCase();
+        if (clean === '' || clean === 'X' || clean === '-' || clean === 'NO' || clean === 'N/A' || clean === 'NA') return true;
+        if (clean.includes('NO MENCION') || clean.includes('NO PROPORCION') || clean.includes('NO INDIC') || clean.includes('NO DEFINI') || clean.includes('-----------') || clean.includes('SIN ESPECIFICAR')) return true;
+        return false;
+    }
+
+    // Paso 1: Autenticación e Identificación
+    async function handleAuthentication(e) {
+        e.preventDefault();
+        const folio = document.getElementById('authFolio').value.trim().toUpperCase();
+        const curp = document.getElementById('authCurp').value.trim().toUpperCase();
+        const phone4 = document.getElementById('authPhone4').value.trim();
+
+        const errDiv = document.getElementById('authError');
+        const btn = document.getElementById('btnAuth');
+        
+        errDiv.style.display = 'none';
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loader"></span> Validando expediente...';
+
+        try {
+            // Consultar registro por Folio
+            const { data, error } = await dbClient
+                .from('corredores')
+                .select('*')
+                .eq('folio_oficial', folio)
+                .maybeSingle();
+
+            if (error) throw error;
+
+            if (!data) {
+                showAuthError('El número de Folio ingresado no existe en nuestra base de datos.');
+                return;
+            }
+
+            // Validar CURP
+            if ((data.curp || '').trim().toUpperCase() !== curp) {
+                showAuthError('La CURP ingresada no coincide con el Folio registrado.');
+                return;
+            }
+
+            // Validar Filtro de Seguridad (Últimos 4 dígitos del teléfono)
+            const registeredPhone = (data.telefono || '').replace(/\D/g, '');
+            if (registeredPhone.length >= 4) {
+                const last4 = registeredPhone.slice(-4);
+                if (last4 !== phone4) {
+                    showAuthError('Los últimos 4 dígitos del celular no coinciden con el registro.');
+                    return;
+                }
+            }
+
+            // Autenticación exitosa
+            currentCorredor = data;
+            renderExpedientePortal();
+
+        } catch (err) {
+            console.error(err);
+            showAuthError('Ocurrió un problema de conexión: ' + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = 'Validar e Ingresar a mi Expediente';
+        }
+    }
+
+    function showAuthError(msg) {
+        const errDiv = document.getElementById('authError');
+        errDiv.innerText = msg;
+        errDiv.style.display = 'block';
+    }
+
+    // Paso 2: Renderizado Dinámico de Pendientes
+    function renderExpedientePortal() {
+        document.getElementById('stepAuth').classList.add('hidden');
+        document.getElementById('stepUpload').classList.remove('hidden');
+
+        const c = currentCorredor;
+        const fullName = c.nombre_completo || `${c.nombre || ''} ${c.primer_apellido || ''} ${c.segundo_apellido || ''}`.trim();
+        
+        document.getElementById('lblAtletaNombre').innerText = fullName || 'Atleta Registrado';
+        document.getElementById('lblAtletaFolio').innerText = c.folio_oficial;
+
+        const dataContainer = document.getElementById('dataInputsContainer');
+        const docContainer = document.getElementById('docInputsContainer');
+        const completedContainer = document.getElementById('completedListContainer');
+
+        dataContainer.innerHTML = '';
+        docContainer.innerHTML = '';
+        completedContainer.innerHTML = '';
+
+        let pendingDataCount = 0;
+        let pendingDocCount = 0;
+        let completedCount = 0;
+
+        // Evaluar Campos Textuales
+        if (isInvalidValue(c.segundo_apellido)) {
+            pendingDataCount++;
+            dataContainer.innerHTML += `
+                <div class="form-group">
+                    <label>Segundo Apellido *</label>
+                    <input type="text" id="inp_segundo_apellido" class="form-control" required placeholder="Ingresa tu segundo apellido">
+                </div>`;
+        }
+
+        if (isInvalidValue(c.email) || !c.email.includes('@')) {
+            pendingDataCount++;
+            dataContainer.innerHTML += `
+                <div class="form-group">
+                    <label>Correo Electrónico *</label>
+                    <input type="email" id="inp_email" class="form-control" style="text-transform:none;" required placeholder="correo@ejemplo.com">
+                </div>`;
+        }
+
+        if (isInvalidValue(c.contacto_nombre) || isInvalidValue(c.contacto_telefono)) {
+            pendingDataCount++;
+            dataContainer.innerHTML += `
+                <div class="form-group">
+                    <label>Nombre del Contacto de Emergencia *</label>
+                    <input type="text" id="inp_contacto_nombre" class="form-control" required placeholder="Nombre completo de familiar o contacto">
+                </div>
+                <div class="form-group">
+                    <label>Teléfono de Emergencia (10 dígitos) *</label>
+                    <input type="tel" id="inp_contacto_telefono" class="form-control" maxlength="10" required placeholder="4771234567">
+                </div>`;
+        }
+
+        if (isInvalidValue(c.tipo_sangre)) {
+            pendingDataCount++;
+            dataContainer.innerHTML += `
+                <div class="form-group">
+                    <label>Tipo de Sangre *</label>
+                    <select id="inp_tipo_sangre" class="form-control" required>
+                        <option value="">Selecciona una opción</option>
+                        <option value="O+">O positive (O+)</option>
+                        <option value="O-">O negative (O-)</option>
+                        <option value="A+">A positive (A+)</option>
+                        <option value="A-">A negative (A-)</option>
+                        <option value="B+">B positive (B+)</option>
+                        <option value="B-">B negative (B-)</option>
+                        <option value="AB+">AB positive (AB+)</option>
+                        <option value="AB-">AB negative (AB-)</option>
+                    </select>
+                </div>`;
+        }
+
+        // Evaluar Documentos Faltantes vs Completados
+        // 1. Fotografía Oficial
+        if (isInvalidValue(c.foto_url)) {
+            pendingDocCount++;
+            docContainer.innerHTML += renderFileInput('file_foto_url', '📸 Fotografía Oficial del Corredor', 'Fotografía tipo estudio o selfie clara para acreditación.');
+        } else {
+            completedCount++;
+            completedContainer.innerHTML += `<div style="font-size:0.85rem; color:#15803d; margin-bottom:4px;">✅ Fotografía Oficial (Cargada)</div>`;
+        }
+
+        // 2. Identificación Oficial (INE / Doc 1)
+        if (isInvalidValue(c.doc1_url)) {
+            pendingDocCount++;
+            docContainer.innerHTML += renderFileInput('file_doc1_url', '🪪 Identificación Oficial (INE / PASAPORTE)', 'Frente y reverso legibles o documento en PDF.');
+        } else {
+            completedCount++;
+            completedContainer.innerHTML += `<div style="font-size:0.85rem; color:#15803d; margin-bottom:4px;">✅ Identificación Oficial / INE (Cargada)</div>`;
+        }
+
+        // 3. Carta Responsiva (Doc 2)
+        if (isInvalidValue(c.doc2_url)) {
+            pendingDocCount++;
+            docContainer.innerHTML += renderFileInput('file_doc2_url', '📄 Carta Responsiva Firmada', 'Documento de deslinde firmado por el corredor.');
+        } else {
+            completedCount++;
+            completedContainer.innerHTML += `<div style="font-size:0.85rem; color:#15803d; margin-bottom:4px;">✅ Carta Responsiva Firmada (Cargada)</div>`;
+        }
+
+        // Visibilidad de Secciones
+        if (pendingDataCount > 0) document.getElementById('cardDataFields').classList.remove('hidden');
+        if (pendingDocCount > 0) document.getElementById('cardDocFields').classList.remove('hidden');
+        if (completedCount > 0) document.getElementById('cardCompletedDocs').classList.remove('hidden');
+
+        if (pendingDataCount === 0 && pendingDocCount === 0) {
+            document.getElementById('cardAllDone').classList.remove('hidden');
+            document.getElementById('badgeStatusHeader').innerHTML = `<span class="badge badge-success">EXPEDIENTE 100% VALIDO</span>`;
+        } else {
+            document.getElementById('submitBtnContainer').classList.remove('hidden');
+            document.getElementById('badgeStatusHeader').innerHTML = `<span class="badge badge-danger">PENDIENTES POR ATENDER</span>`;
+        }
+    }
+
+    function renderFileInput(id, label, desc) {
+        return `
+            <div class="file-upload-item">
+                <label style="font-weight:bold; font-size:0.85rem;">${label} *</label>
+                <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">${desc}</p>
+                <input type="file" id="${id}" accept="image/*,application/pdf" class="form-control" style="background:white;" required>
+            </div>
+        `;
+    }
+
+    // Paso 3: Envío de Expediente y Carga a Google Drive / Supabase
+    async function handleExpedienteSubmit(e) {
+        e.preventDefault();
+
+        const btn = document.getElementById('btnSubmitExpediente');
+        btn.disabled = true;
+        btn.innerHTML = '<span class="loader"></span> Procesando y Subiendo Documentos a Google Drive...';
+
+        try {
+            const updates = {};
+
+            // 1. Recoger datos de texto actualizados
+            if (document.getElementById('inp_segundo_apellido')) updates.segundo_apellido = document.getElementById('inp_segundo_apellido').value.trim().toUpperCase();
+            if (document.getElementById('inp_email')) updates.email = document.getElementById('inp_email').value.trim();
+            if (document.getElementById('inp_contacto_nombre')) updates.contacto_nombre = document.getElementById('inp_contacto_nombre').value.trim().toUpperCase();
+            if (document.getElementById('inp_contacto_telefono')) updates.contacto_telefono = document.getElementById('inp_contacto_telefono').value.trim();
+            if (document.getElementById('inp_tipo_sangre')) updates.tipo_sangre = document.getElementById('inp_tipo_sangre').value;
+
+            // 2. Subir Archivos a Google Drive / Supabase
+            const fotoInput = document.getElementById('file_foto_url');
+            if (fotoInput && fotoInput.files[0]) {
+                updates.foto_url = await uploadFileToDrive(fotoInput.files[0], `FOTO_${currentCorredor.folio_oficial}`);
+            }
+
+            const doc1Input = document.getElementById('file_doc1_url');
+            if (doc1Input && doc1Input.files[0]) {
+                updates.doc1_url = await uploadFileToDrive(doc1Input.files[0], `INE_${currentCorredor.folio_oficial}`);
+            }
+
+            const doc2Input = document.getElementById('file_doc2_url');
+            if (doc2Input && doc2Input.files[0]) {
+                updates.doc2_url = await uploadFileToDrive(doc2Input.files[0], `RESPONSIVA_${currentCorredor.folio_oficial}`);
+            }
+
+            // 3. Actualizar registro en Supabase
+            const { error } = await dbClient
+                .from('corredores')
+                .update(updates)
+                .eq('id', currentCorredor.id);
+
+            if (error) throw error;
+
+            alert('¡Tu expediente se ha actualizado correctamente!');
+            
+            // Recargar vista para reflejar que ya está 100% completo
+            const { data: updatedRecord } = await dbClient.from('corredores').select('*').eq('id', currentCorredor.id).single();
+            currentCorredor = updatedRecord;
+            
+            document.getElementById('cardDataFields').classList.add('hidden');
+            document.getElementById('cardDocFields').classList.add('hidden');
+            document.getElementById('submitBtnContainer').classList.add('hidden');
+            renderExpedientePortal();
+
+        } catch (err) {
+            console.error('Error al actualizar:', err);
+            alert('Ocurrió un error al guardar los datos: ' + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = '💾 Guardar y Actualizar mi Expediente';
+        }
+    }
+
+    // Auxiliar para subir archivos hacia Google Drive vía Apps Script (o fallback Base64 / Storage)
+    async function uploadFileToDrive(file, fileNamePrefix) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = async () => {
+                const base64Data = reader.result.split(',')[1];
+                const fileExt = file.name.split('.').pop();
+                const finalFileName = `${fileNamePrefix}_${Date.now()}.${fileExt}`;
+
+                // Si se cuenta con la URL de Apps Script desplegada, enviamos el archivo
+                if (GOOGLE_DRIVE_WEB_APP_URL && !GOOGLE_DRIVE_WEB_APP_URL.includes('YOUR_SCRIPT_ID')) {
+                    try {
+                        const response = await fetch(GOOGLE_DRIVE_WEB_APP_URL, {
+                            method: 'POST',
+                            mode: 'cors',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams({
+                                'fileData': base64Data,
+                                'fileName': finalFileName,
+                                'mimeType': file.type,
+                                'folio': currentCorredor.folio_oficial
+                            })
+                        });
+                        const resJson = await response.json();
+                        if (resJson.result === 'success') {
+                            resolve(resJson.fileUrl); // Retorna URL directa de Google Drive
+                            return;
+                        }
+                    } catch (e) {
+                        console.warn('Google Drive WebApp no respondió, usando almacenamiento alternativo base64...', e);
+                    }
+                }
+
+                // Fallback de respaldo (Data URL) para pruebas sin servidor Apps Script
+                resolve(reader.result);
+            };
+            reader.onerror = error => reject(error);
+        });
+    }
+</script>
+
+</body>
+</html>
