@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portal de Expediente del Atleta | Moroleón 2027</title>
     
-    <!-- Supabase SDK -->
+    <!-- Supabase SDK & Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
         :root {
@@ -60,15 +61,28 @@
         .file-upload-item { background-color: #f8fafc; border: 1px dashed var(--border-color); border-radius: 8px; padding: 12px; margin-bottom: 12px; }
         .hidden { display: none !important; }
 
-        /* Modal Generico */
-        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15,23,42,0.6); display:flex; justify-content:center; align-items:center; z-index: 1000; padding:16px; }
-        .modal-card { background: white; border-radius: 12px; max-width: 550px; width:100%; padding: 20px; max-height: 90vh; overflow-y: auto; }
+        /* Modales */
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15,23,42,0.7); display:flex; justify-content:center; align-items:center; z-index: 1000; padding:16px; }
+        .modal-card { background: white; border-radius: 12px; max-width: 900px; width:100%; padding: 24px; max-height: 90vh; overflow-y: auto; }
 
-        /* Botón Discreto de Admin */
-        .admin-trigger { position: fixed; bottom: 10px; right: 10px; opacity: 0.2; font-size: 0.75rem; background: #000; color: #fff; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; }
+        /* Estilos del Panel Admin */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .stat-card { background: #f1f5f9; padding: 14px; border-radius: 8px; border-left: 4px solid var(--primary-blue); text-align: center; }
+        .stat-card h4 { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        .stat-card .val { font-size: 1.5rem; font-weight: 800; color: var(--primary); margin-top: 4px; }
+
+        .charts-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .chart-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; }
+
+        .admin-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 12px; }
+        .admin-table th, .admin-table td { padding: 8px 10px; border: 1px solid #e2e8f0; text-align: left; }
+        .admin-table th { background: #f8fafc; font-weight: 700; }
+
+        /* Botón Discreto Admin */
+        .admin-trigger { position: fixed; bottom: 10px; right: 10px; opacity: 0.3; font-size: 0.75rem; background: #000; color: #fff; padding: 5px 10px; border-radius: 4px; border: none; cursor: pointer; }
         .admin-trigger:hover { opacity: 1; }
 
-        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary-blue); border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; }
+        .loader { border: 3px solid #f3f3f3; border-top: 3px solid var(--primary-blue); border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
@@ -99,7 +113,7 @@
                 <input type="text" id="authFolio" class="form-control" placeholder="Ej. MM27OFF-RUN-MMO1026" required>
             </div>
 
-            <!-- OPCCIÓN A: VALIDACIÓN POR CURP Y CELULAR -->
+            <!-- OPCIÓN A: CURP Y CELULAR -->
             <div id="blockOptA">
                 <div class="form-group">
                     <label>CURP del Atleta *</label>
@@ -107,11 +121,11 @@
                 </div>
                 <div class="form-group">
                     <label>Últimos 4 dígitos del Celular *</label>
-                    <input type="text" id="authPhone4" class="form-control" maxlength="4" placeholder="Ej. 2597" style="letter-spacing: 2px;">
+                    <input type="text" id="authPhone4" class="form-control" maxlength="4" placeholder="Ej. 2597">
                 </div>
             </div>
 
-            <!-- OPCCIÓN B: FALLBACK POR CORREO ELECTRÓNICO (Oculto inicialmente) -->
+            <!-- OPCIÓN B: CORREO ELECTRÓNICO -->
             <div id="blockOptB" class="hidden">
                 <div class="form-group">
                     <label>Correo Electrónico Registrado *</label>
@@ -119,7 +133,7 @@
                 </div>
             </div>
 
-            <!-- OPCCIÓN C: FALLBACK POR NOMBRE COMPLETO (Oculto inicialmente) -->
+            <!-- OPCIÓN C: PRIMER NOMBRE -->
             <div id="blockOptC" class="hidden">
                 <div class="form-group">
                     <label>Primer Nombre del Atleta *</label>
@@ -138,7 +152,6 @@
     <!-- PASO 2: VERIFICACIÓN DE DATOS PERSONALES Y CARGA DE PENDIENTES -->
     <div id="stepPortal" class="hidden">
 
-        <!-- TARJETA 1: VERIFICACIÓN DE DATOS PERSONALES DEL ATLETA -->
         <div class="card">
             <div class="card-title">
                 <span>👤 Verificación de Datos Personales</span>
@@ -146,7 +159,7 @@
             </div>
             
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 12px;">
-                Por favor, verifica que tus datos básicos inscritos estén correctos. Si alguno presenta error, utiliza el botón superior para notificar al Comité Organizador.
+                Por favor, verifica que tus datos registrados estén correctos. Si alguno presenta un error, notifícalo con el botón superior.
             </p>
 
             <div class="data-grid">
@@ -158,12 +171,11 @@
                 <div class="data-item"><label>Categoría:</label><span id="v_categoria">---</span></div>
                 <div class="data-item"><label>Rama:</label><span id="v_rama">---</span></div>
                 <div class="data-item"><label>Talla Playera:</label><span id="v_talla">---</span></div>
-                <div class="data-item"><label>Club / Equipo:</label><span id="v_club">---</span></div>
-                <div class="data-item"><label>Ciudad / Estado:</label><span id="v_origen">---</span></div>
+                <div class="data-item"><label>Estado de Origen:</label><span id="v_estado">---</span></div>
+                <div class="data-item"><label>Nacionalidad:</label><span id="v_nacionalidad">---</span></div>
             </div>
         </div>
 
-        <!-- TARJETA 2: CARGA DE EXPEDIENTES / PENDIENTES -->
         <form id="formExpediente" onsubmit="handleExpedienteSubmit(event)">
             
             <div class="card hidden" id="cardDataInputs">
@@ -176,7 +188,6 @@
                 <div id="containerDocInputs"></div>
             </div>
 
-            <!-- OBSERVACIONES GENERALES / COMENTARIOS DEL ATLETA -->
             <div class="card" id="cardComments">
                 <div class="card-title">💬 Observaciones o Comentarios para el Comité</div>
                 <div class="form-group">
@@ -203,30 +214,115 @@
 
 </div>
 
-<!-- MODAL: SOLICITAR CORRECCIÓN AL COMITÉ -->
-<div id="modalSupport" class="modal-overlay hidden">
-    <div class="modal-card">
-        <h3 style="margin-bottom: 12px; color: var(--primary);">⚠️ Solicitar Modificación de Datos</h3>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">
-            Describe qué dato personal (Nombre, Categoría, Distancia o Talla) requiere corrección para que el Comité Organizador lo revise:
-        </p>
+<!-- MODAL: LOGIN ADMINISTRADOR -->
+<div id="modalAdminLogin" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 400px;">
+        <h3 style="margin-bottom: 12px; color: var(--primary);">🔐 Acceso Administrador</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 14px;">Ingresa tus credenciales para acceder al Dashboard de Auditoría General.</p>
         
+        <div class="form-group">
+            <label>Usuario</label>
+            <input type="text" id="admUser" class="form-control" placeholder="admin_..." style="text-transform: none;">
+        </div>
+        <div class="form-group">
+            <label>Contraseña</label>
+            <input type="password" id="admPass" class="form-control" placeholder="••••••••" style="text-transform: none;">
+        </div>
+
+        <div id="admLoginErr" class="alert-box alert-danger hidden"></div>
+
+        <div style="display: flex; gap: 8px; justify-content: flex-end;">
+            <button class="btn-secondary" onclick="closeModal('modalAdminLogin')">Cancelar</button>
+            <button class="btn-primary" style="width: auto;" onclick="autenticarAdmin()">Ingresar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: AUDITORÍA GENERAL & DASHBOARD ADMIN -->
+<div id="modalAdminDashboard" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <h2>📊 Dashboard de Auditoría General de Expedientes</h2>
+            <button class="btn-secondary" onclick="closeModal('modalAdminDashboard')">✖ Cerrar</button>
+        </div>
+
+        <!-- TARJETAS DE ESTADÍSTICAS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h4>Total Atletas</h4>
+                <div class="val" id="stTotal">0</div>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--success);">
+                <h4>Ingresaron al Portal</h4>
+                <div class="val" id="stIngresaron">0</div>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--warning);">
+                <h4>Límite Alcanzado (2)</h4>
+                <div class="val" id="stLimitados">0</div>
+            </div>
+            <div class="stat-card" style="border-left-color: var(--accent-blue);">
+                <h4>Expedientes Completo</h4>
+                <div class="val" id="stCompletos">0</div>
+            </div>
+        </div>
+
+        <!-- GRÁFICAS -->
+        <div class="charts-container">
+            <div class="chart-box">
+                <h4 style="font-size:0.8rem; margin-bottom:8px; color:var(--text-muted);">ESTADO DE AUDITORÍA DE DOCUMENTOS</h4>
+                <canvas id="chartDocs" height="180"></canvas>
+            </div>
+            <div class="chart-box">
+                <h4 style="font-size:0.8rem; margin-bottom:8px; color:var(--text-muted);">ACCESOS DE ATLETAS AL SISTEMA</h4>
+                <canvas id="chartAccesos" height="180"></canvas>
+            </div>
+        </div>
+
+        <!-- TABLA GENERAL DE ATLETAS -->
+        <div class="card-title" style="margin-top: 20px;">
+            <span>📋 Listado General de Atletas</span>
+            <input type="text" id="searchAdmin" onkeyup="filterAdminTable()" class="form-control" placeholder="Buscar por Nombre o Folio..." style="max-width: 250px; text-transform: uppercase;">
+        </div>
+
+        <div style="overflow-x: auto; max-height: 300px;">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Folio</th>
+                        <th>Atleta</th>
+                        <th>Accesos</th>
+                        <th>Foto</th>
+                        <th>INE</th>
+                        <th>Carta</th>
+                        <th>Comentarios Atleta</th>
+                    </tr>
+                </thead>
+                <tbody id="tblAdminAuditoria">
+                    <tr><td colspan="7" style="text-align:center;">Cargando auditoría general...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL: SOLICITAR SOPORTE -->
+<div id="modalSupport" class="modal-overlay hidden">
+    <div class="modal-card" style="max-width: 500px;">
+        <h3 style="margin-bottom: 12px;">⚠️ Solicitar Corrección de Datos</h3>
         <div class="form-group">
             <label>Campo a corregir *</label>
             <select id="suppCampo" class="form-control">
                 <option value="Nombre / Apellidos">Nombre o Apellidos</option>
                 <option value="CURP">CURP</option>
-                <option value="Distancia / Categoria">Distancia o Categoría</option>
+                <option value="Estado / Nacionalidad">Estado / Nacionalidad</option>
+                <option value="Distancia / Categoría">Distancia o Categoría</option>
                 <option value="Talla de Playera">Talla de Playera</option>
-                <option value="Otro">Otro Dato</option>
             </select>
         </div>
-
         <div class="form-group">
             <label>Detalle de la corrección *</label>
-            <textarea id="suppDetalle" class="form-control" rows="3" placeholder="Escribe el dato correcto..." style="text-transform: none;"></textarea>
+            <textarea id="suppDetalle" class="form-control" rows="3" placeholder="Escribe la corrección requerida..." style="text-transform: none;"></textarea>
         </div>
-
         <div style="display: flex; gap: 8px; justify-content: flex-end;">
             <button class="btn-secondary" onclick="closeModal('modalSupport')">Cancelar</button>
             <button class="btn-primary" style="width: auto;" onclick="sendSupportRequest()">Enviar por WhatsApp</button>
@@ -234,30 +330,19 @@
     </div>
 </div>
 
-<!-- BOTÓN DISCRETO Y MODAL DE AUDITORÍA PARA ADMINISTRADOR -->
-<button class="admin-trigger" onclick="promptAdminAccess()">🔒 Adm</button>
-
-<div id="modalAdminAudit" class="modal-overlay hidden">
-    <div class="modal-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <h3>🔍 Panel de Auditoría Interna (Admin)</h3>
-            <button class="btn-secondary" onclick="closeModal('modalAdminAudit')">✖</button>
-        </div>
-        
-        <div id="adminAuditContent" style="font-size: 0.85rem;">
-            <p style="color: var(--text-muted);">Cargando registros de auditoría...</p>
-        </div>
-    </div>
-</div>
+<!-- BOTÓN ACCESO ADMIN -->
+<button class="admin-trigger" onclick="openAdminLogin()">🔒 Panel Admin</button>
 
 <script>
-    // Configuración Supabase
     const SUPABASE_URL = 'https://rpcevbxzpfgyobehgjth.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwY2V2Ynh6cGZneW9iZWhnanRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMDA3MDQsImV4cCI6MjEwMTg3NjcwNH0.hECuSvVKVehKZjZ9jMqwHM1xspD2l1kS3G9X1jfHIuk';
     
     let dbClient = null;
     let currentCorredor = null;
-    let authStepLevel = 1; // 1: CURP+Celular, 2: Email, 3: Nombre
+    let authStepLevel = 1;
+    let allCorredoresData = [];
+    let chartDocsObj = null;
+    let chartAccesosObj = null;
 
     try {
         if (window.supabase) dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -275,7 +360,7 @@
         return (clean === '' || clean === 'X' || clean === '-' || clean === 'NO' || clean === 'N/A');
     }
 
-    // LÓGICA DE ESCALONAMIENTO Y AUTENTICACIÓN
+    // AUTENTICACIÓN ESCALONADA DE ATLETA
     async function handleAuthentication(e) {
         e.preventDefault();
         const folio = document.getElementById('authFolio').value.trim().toUpperCase();
@@ -287,7 +372,6 @@
         btn.innerHTML = '<span class="loader"></span> Validando...';
 
         try {
-            // Consultar registro
             const { data, error } = await dbClient.from('corredores').select('*').eq('folio_oficial', folio).maybeSingle();
             if (error) throw error;
 
@@ -296,63 +380,56 @@
                 return;
             }
 
-            // Validar Límite de Accesos (Máximo 2)
             const accesos = data.accesos_realizados || 0;
             if (accesos >= 2) {
-                showError('🚨 Has alcanzado el límite máximo de 2 accesos permitidos a tu expediente. Contacta al Comité Organizador para asistencia.');
+                showError('🚨 Has alcanzado el límite máximo de 2 accesos permitidos. Contacta al Comité Organizador.');
                 return;
             }
 
-            // EVALUACIÓN NIVEL 1: CURP + CELULAR
+            // NIVEL 1: CURP Y CELULAR
             if (authStepLevel === 1) {
                 const curpInput = document.getElementById('authCurp').value.trim().toUpperCase();
                 const phone4Input = document.getElementById('authPhone4').value.trim();
 
-                // ¿Tiene CURP registrada como X o Nula?
                 if (isInvalidValue(data.curp)) {
                     authStepLevel = 2;
                     document.getElementById('blockOptA').classList.add('hidden');
                     document.getElementById('blockOptB').classList.remove('hidden');
                     document.getElementById('lblTryAttempt').innerText = 'Intento 2 de 3';
-                    
                     document.getElementById('authAlert').className = 'alert-box alert-warning';
-                    document.getElementById('authAlert').innerHTML = '⚠️ Confirmamos que tu CURP no fue capturada al inscribirte (o tiene "X"). Para validar tu identidad, ingresa tu **Correo Electrónico Registrado**.';
+                    document.getElementById('authAlert').innerHTML = '⚠️ Tu CURP no está registrada. Favor de ingresar tu **Correo Electrónico Registrado**.';
                     btn.disabled = false;
                     btn.innerText = 'Validar con Correo Electrónico';
                     return;
                 }
 
-                // Coincidencia de CURP y Celular
                 const dbPhoneLast4 = (data.telefono || '').replace(/\D/g, '').slice(-4);
                 if (data.curp.trim().toUpperCase() === curpInput && dbPhoneLast4 === phone4Input) {
                     await startSession(data);
                     return;
                 } else {
-                    // Fallback a Nivel 2 si falla
                     authStepLevel = 2;
                     document.getElementById('blockOptA').classList.add('hidden');
                     document.getElementById('blockOptB').classList.remove('hidden');
                     document.getElementById('lblTryAttempt').innerText = 'Intento 2 de 3';
                     document.getElementById('authAlert').className = 'alert-box alert-warning';
-                    document.getElementById('authAlert').innerText = 'La CURP o el teléfono no coincidieron. Favor de validar ingresando tu Correo Electrónico registrado.';
+                    document.getElementById('authAlert').innerText = 'Datos no coincidentes. Favor de ingresar tu Correo Electrónico registrado.';
                     btn.disabled = false;
                     btn.innerText = 'Validar por Correo Electrónico';
                     return;
                 }
             }
 
-            // EVALUACIÓN NIVEL 2: CORREO ELECTRÓNICO
+            // NIVEL 2: CORREO
             if (authStepLevel === 2) {
                 const emailInput = document.getElementById('authEmail').value.trim().toLowerCase();
-                
                 if (isInvalidValue(data.email) || data.email.trim().toLowerCase() !== emailInput) {
-                    // Fallback a Nivel 3
                     authStepLevel = 3;
                     document.getElementById('blockOptB').classList.add('hidden');
                     document.getElementById('blockOptC').classList.remove('hidden');
                     document.getElementById('lblTryAttempt').innerText = 'Intento 3 de 3';
                     document.getElementById('authAlert').className = 'alert-box alert-warning';
-                    document.getElementById('authAlert').innerText = 'Correo no coincidente. Última alternativa: Ingresa tu Primer Nombre registrado.';
+                    document.getElementById('authAlert').innerText = 'Correo no coincidente. Ingresa tu Primer Nombre registrado.';
                     btn.disabled = false;
                     btn.innerText = 'Validar por Nombre';
                     return;
@@ -362,7 +439,7 @@
                 }
             }
 
-            // EVALUACIÓN NIVEL 3: PRIMER NOMBRE
+            // NIVEL 3: PRIMER NOMBRE
             if (authStepLevel === 3) {
                 const nameInput = document.getElementById('authFirstName').value.trim().toUpperCase();
                 const firstName = (data.nombre || data.nombre_completo || '').split(' ')[0].toUpperCase();
@@ -371,12 +448,11 @@
                     await startSession(data);
                     return;
                 } else {
-                    showError('No fue posible validar tu identidad. Por favor ponte en contacto con el soporte de MetaX Pro.');
+                    showError('No fue posible validar tu identidad.');
                 }
             }
 
         } catch(err) {
-            console.error(err);
             showError('Error de servidor: ' + err.message);
         } finally {
             btn.disabled = false;
@@ -390,11 +466,8 @@
         errDiv.classList.remove('hidden');
     }
 
-    // INICIAR SESIÓN Y SUMAR ACCESO
     async function startSession(corredor) {
         currentCorredor = corredor;
-        
-        // Sumar acceso en Supabase
         const newAccesos = (corredor.accesos_realizados || 0) + 1;
         await dbClient.from('corredores').update({ 
             accesos_realizados: newAccesos,
@@ -408,7 +481,6 @@
         renderPendientesForm();
     }
 
-    // MOSTRAR DATOS PERSONALES
     function renderDatosPersonales() {
         const c = currentCorredor;
         document.getElementById('v_nombre').innerText = c.nombre || '---';
@@ -419,11 +491,10 @@
         document.getElementById('v_categoria').innerText = c.categoria || '---';
         document.getElementById('v_rama').innerText = c.rama || c.genero || '---';
         document.getElementById('v_talla').innerText = c.talla_playera || '---';
-        document.getElementById('v_club').innerText = c.club_equipo || '---';
-        document.getElementById('v_origen').innerText = c.ciudad_estado || '---';
+        document.getElementById('v_estado').innerText = c.estado || c.estado_origen || 'GUANAJUATO';
+        document.getElementById('v_nacionalidad').innerText = c.nacionalidad || 'MEXICANA';
     }
 
-    // FORMULARIO DINÁMICO DE PENDIENTES
     function renderPendientesForm() {
         const c = currentCorredor;
         const containerData = document.getElementById('containerDataInputs');
@@ -432,10 +503,8 @@
         containerData.innerHTML = '';
         containerDoc.innerHTML = '';
 
-        let pendingData = 0;
-        let pendingDocs = 0;
+        let pendingData = 0, pendingDocs = 0;
 
-        // Datos
         if (isInvalidValue(c.segundo_apellido)) {
             pendingData++;
             containerData.innerHTML += `<div class="form-group"><label>Segundo Apellido *</label><input type="text" id="inp_segundo_apellido" class="form-control" required></div>`;
@@ -444,26 +513,18 @@
             pendingData++;
             containerData.innerHTML += `<div class="form-group"><label>Correo Electrónico *</label><input type="email" id="inp_email" class="form-control" style="text-transform:none;" required></div>`;
         }
-        if (isInvalidValue(c.contacto_nombre) || isInvalidValue(c.contacto_telefono)) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group"><label>Nombre Contacto Emergencia *</label><input type="text" id="inp_contacto_nombre" class="form-control" required></div>
-                <div class="form-group"><label>Teléfono Contacto Emergencia *</label><input type="tel" id="inp_contacto_telefono" class="form-control" maxlength="10" required></div>
-            `;
-        }
 
-        // Documentos
         if (isInvalidValue(c.foto_url)) {
             pendingDocs++;
-            containerDoc.innerHTML += renderFileInput('f_foto', '📸 Fotografía Oficial', 'Fotografía tipo selfie o estudio clara.');
+            containerDoc.innerHTML += renderFileInput('f_foto', '📸 Fotografía Oficial', 'Fotografía clara de rostro.');
         }
         if (isInvalidValue(c.doc1_url)) {
             pendingDocs++;
-            containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE / Pasaporte)', 'Frente y reverso.');
+            containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE)', 'Frente y reverso.');
         }
         if (isInvalidValue(c.doc2_url)) {
             pendingDocs++;
-            containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Formato de deslinde firmado.');
+            containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Documento de deslinde.');
         }
 
         if (pendingData > 0) document.getElementById('cardDataInputs').classList.remove('hidden');
@@ -486,12 +547,11 @@
         `;
     }
 
-    // GUARDAR CAMBIOS
     async function handleExpedienteSubmit(e) {
         e.preventDefault();
         const btn = document.getElementById('btnSubmit');
         btn.disabled = true;
-        btn.innerHTML = '<span class="loader"></span> Guardando expediente...';
+        btn.innerHTML = '<span class="loader"></span> Guardando...';
 
         try {
             const updates = {};
@@ -500,28 +560,18 @@
 
             if (document.getElementById('inp_segundo_apellido')) updates.segundo_apellido = document.getElementById('inp_segundo_apellido').value.trim().toUpperCase();
             if (document.getElementById('inp_email')) updates.email = document.getElementById('inp_email').value.trim();
-            if (document.getElementById('inp_contacto_nombre')) updates.contacto_nombre = document.getElementById('inp_contacto_nombre').value.trim().toUpperCase();
-            if (document.getElementById('inp_contacto_telefono')) updates.contacto_telefono = document.getElementById('inp_contacto_telefono').value.trim();
 
-            // Subida de archivos
-            if (document.getElementById('f_foto') && document.getElementById('f_foto').files[0]) {
-                updates.foto_url = await uploadBase64(document.getElementById('f_foto').files[0]);
-            }
-            if (document.getElementById('f_doc1') && document.getElementById('f_doc1').files[0]) {
-                updates.doc1_url = await uploadBase64(document.getElementById('f_doc1').files[0]);
-            }
-            if (document.getElementById('f_doc2') && document.getElementById('f_doc2').files[0]) {
-                updates.doc2_url = await uploadBase64(document.getElementById('f_doc2').files[0]);
-            }
+            if (document.getElementById('f_foto') && document.getElementById('f_foto').files[0]) updates.foto_url = await uploadBase64(document.getElementById('f_foto').files[0]);
+            if (document.getElementById('f_doc1') && document.getElementById('f_doc1').files[0]) updates.doc1_url = await uploadBase64(document.getElementById('f_doc1').files[0]);
+            if (document.getElementById('f_doc2') && document.getElementById('f_doc2').files[0]) updates.doc2_url = await uploadBase64(document.getElementById('f_doc2').files[0]);
 
             const { error } = await dbClient.from('corredores').update(updates).eq('id', currentCorredor.id);
             if (error) throw error;
 
-            alert('¡Tus datos y documentos han sido guardados exitosamente!');
+            alert('¡Tus datos y archivos se han guardado correctamente!');
             window.location.reload();
-
         } catch(err) {
-            alert('Ocurrió un error al guardar: ' + err.message);
+            alert('Error al guardar: ' + err.message);
         } finally {
             btn.disabled = false;
         }
@@ -535,57 +585,156 @@
         });
     }
 
-    // SOLICITUD DE MODIFICACIÓN DE DATOS (SOPORTE)
+    // FUNCIONES DEL PANEL ADMINISTRADOR
+    function openAdminLogin() {
+        document.getElementById('modalAdminLogin').classList.remove('hidden');
+    }
+
+    function autenticarAdmin() {
+        const u = document.getElementById('admUser').value.trim();
+        const p = document.getElementById('admPass').value.trim();
+        const err = document.getElementById('admLoginErr');
+
+        if (u === 'admin_jmyp_2102' && p === '2610noro') {
+            closeModal('modalAdminLogin');
+            document.getElementById('modalAdminDashboard').classList.remove('hidden');
+            loadAdminAuditoriaGeneral();
+        } else {
+            err.innerText = 'Usuario o contraseña incorrectos.';
+            err.classList.remove('hidden');
+        }
+    }
+
+    async function loadAdminAuditoriaGeneral() {
+        const { data, error } = await dbClient.from('corredores').select('*');
+        if (error) { alert('Error al cargar datos general.'); return; }
+
+        allCorredoresData = data || [];
+        renderAdminDashboard();
+        renderAdminTable(allCorredoresData);
+    }
+
+    function renderAdminDashboard() {
+        const total = allCorredoresData.length;
+        let ingresaron = 0, limitados = 0, completos = 0;
+        let fotosOk = 0, ineOk = 0, cartasOk = 0;
+        let acc0 = 0, acc1 = 0, acc2 = 0;
+
+        allCorredoresData.forEach(c => {
+            const acc = c.accesos_realizados || 0;
+            if (acc > 0) ingresaron++;
+            if (acc >= 2) limitados++;
+
+            if (acc === 0) acc0++;
+            else if (acc === 1) acc1++;
+            else acc2++;
+
+            const hasFoto = !isInvalidValue(c.foto_url);
+            const hasIne = !isInvalidValue(c.doc1_url);
+            const hasCarta = !isInvalidValue(c.doc2_url);
+
+            if (hasFoto) fotosOk++;
+            if (hasIne) ineOk++;
+            if (hasCarta) cartasOk++;
+
+            if (hasFoto && hasIne && hasCarta) completos++;
+        });
+
+        document.getElementById('stTotal').innerText = total;
+        document.getElementById('stIngresaron').innerText = ingresaron;
+        document.getElementById('stLimitados').innerText = limitados;
+        document.getElementById('stCompletos').innerText = completos;
+
+        // Render Gráficas
+        const ctxDocs = document.getElementById('chartDocs').getContext('2d');
+        if (chartDocsObj) chartDocsObj.destroy();
+        chartDocsObj = new Chart(ctxDocs, {
+            type: 'bar',
+            data: {
+                labels: ['Fotografías', 'Identificaciones (INE)', 'Cartas Responsivas'],
+                datasets: [{
+                    label: 'Cargadas',
+                    data: [fotosOk, ineOk, cartasOk],
+                    backgroundColor: '#16a34a'
+                }, {
+                    label: 'Pendientes',
+                    data: [total - fotosOk, total - ineOk, total - cartasOk],
+                    backgroundColor: '#dc2626'
+                }]
+            },
+            options: { responsive: true, scales: { x: { stacked: true }, y: { stacked: true } } }
+        });
+
+        const ctxAccesos = document.getElementById('chartAccesos').getContext('2d');
+        if (chartAccesosObj) chartAccesosObj.destroy();
+        chartAccesosObj = new Chart(ctxAccesos, {
+            type: 'doughnut',
+            data: {
+                labels: ['0 Accesos', '1 Acceso', '2 Accesos (Límite)'],
+                datasets: [{
+                    data: [acc0, acc1, acc2],
+                    backgroundColor: ['#94a3b8', '#0284c7', '#d97706']
+                }]
+            },
+            options: { responsive: true }
+        });
+    }
+
+    function renderAdminTable(data) {
+        const tbody = document.getElementById('tblAdminAuditoria');
+        tbody.innerHTML = '';
+
+        if (data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No se encontraron atletas.</td></tr>';
+            return;
+        }
+
+        data.forEach(c => {
+            const hasFoto = !isInvalidValue(c.foto_url) ? '✅' : '❌';
+            const hasIne = !isInvalidValue(c.doc1_url) ? '✅' : '❌';
+            const hasCarta = !isInvalidValue(c.doc2_url) ? '✅' : '❌';
+            const acc = c.accesos_realizados || 0;
+
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${c.folio_oficial || 'Sin Folio'}</strong></td>
+                    <td>${c.nombre || ''} ${c.primer_apellido || ''}</td>
+                    <td><span style="color:${acc >= 2 ? 'red' : 'green'}; font-weight:bold;">${acc} / 2</span></td>
+                    <td>${hasFoto}</td>
+                    <td>${hasIne}</td>
+                    <td>${hasCarta}</td>
+                    <td><small>${c.comentarios_atleta || '<em>Sin observaciones</em>'}</small></td>
+                </tr>
+            `;
+        });
+    }
+
+    function filterAdminTable() {
+        const q = document.getElementById('searchAdmin').value.trim().toUpperCase();
+        const filtered = allCorredoresData.filter(c => 
+            (c.folio_oficial && c.folio_oficial.toUpperCase().includes(q)) ||
+            (c.nombre && c.nombre.toUpperCase().includes(q)) ||
+            (c.primer_apellido && c.primer_apellido.toUpperCase().includes(q))
+        );
+        renderAdminTable(filtered);
+    }
+
     function openSupportModal() { document.getElementById('modalSupport').classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
     function sendSupportRequest() {
         const campo = document.getElementById('suppCampo').value;
         const detalle = document.getElementById('suppDetalle').value.trim();
-        
-        if (!detalle) { alert('Ingresa los detalles de la corrección.'); return; }
+        if (!detalle) return alert('Escribe los detalles de la corrección.');
 
-        const text = `*SOLICITUD DE CORRECCIÓN DE DATOS - MOROLEÓN 2027*\n\n` +
+        const text = `*SOLICITUD DE CORRECCIÓN - MOROLEÓN 2027*\n\n` +
                      `*Folio:* ${currentCorredor.folio_oficial}\n` +
                      `*Atleta:* ${currentCorredor.nombre} ${currentCorredor.primer_apellido}\n` +
-                     `*Campo a Corregir:* ${campo}\n` +
+                     `*Campo:* ${campo}\n` +
                      `*Detalle:* ${detalle}`;
 
-        const url = `https://api.whatsapp.com/send?phone=524731372597&text=${encodeURIComponent(text)}`;
-        window.open(url, '_blank');
+        window.open(`https://api.whatsapp.com/send?phone=524731372597&text=${encodeURIComponent(text)}`, '_blank');
         closeModal('modalSupport');
-    }
-
-    // ADMIN AUDIT PANEL
-    function promptAdminAccess() {
-        const pin = prompt('Ingresa la clave de Administrador:');
-        if (pin === '2027') {
-            document.getElementById('modalAdminAudit').classList.remove('hidden');
-            loadAdminAuditData();
-        } else if (pin) {
-            alert('Clave incorrecta.');
-        }
-    }
-
-    async function loadAdminAuditData() {
-        const content = document.getElementById('adminAuditContent');
-        if (!currentCorredor) {
-            content.innerHTML = '<p style="color:var(--danger);">No hay sesión de corredor activa en pantalla.</p>';
-            return;
-        }
-
-        const { data } = await dbClient.from('corredores').select('*').eq('id', currentCorredor.id).single();
-        content.innerHTML = `
-            <p><strong>Atleta:</strong> ${data.nombre} ${data.primer_apellido}</p>
-            <p><strong>Folio:</strong> ${data.folio_oficial}</p>
-            <p><strong>Accesos consumidos:</strong> <span style="color:var(--danger); font-weight:bold;">${data.accesos_realizados || 0} de 2</span></p>
-            <p><strong>Último Acceso:</strong> ${data.ultimo_acceso ? new Date(data.ultimo_acceso).toLocaleString() : 'N/A'}</p>
-            <hr style="margin: 10px 0;">
-            <p><strong>Comentarios / Observaciones guardadas:</strong></p>
-            <div style="background:#f1f5f9; padding:8px; border-radius:6px; margin-top:4px;">
-                ${data.comentarios_atleta || '<em>Sin comentarios registrados.</em>'}
-            </div>
-        `;
     }
 </script>
 
