@@ -47,7 +47,6 @@
         .btn-primary:hover { background-color: var(--accent-blue); }
         .btn-secondary { background-color: #64748b; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
         .btn-warning { background-color: var(--warning); color: white; border: none; padding: 8px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; }
-        .btn-wa { background-color: #25d366; color: white; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; }
 
         .alert-box { padding: 12px 16px; border-radius: 8px; font-size: 0.85rem; margin-bottom: 16px; font-weight: 500; }
         .alert-warning { background-color: #fffbeb; border: 1px solid #fef3c7; color: #b45309; }
@@ -64,7 +63,7 @@
 
         /* Modales */
         .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15,23,42,0.7); display:flex; justify-content:center; align-items:center; z-index: 1000; padding:16px; }
-        .modal-card { background: white; border-radius: 12px; max-width: 1100px; width:100%; padding: 24px; max-height: 92vh; overflow-y: auto; }
+        .modal-card { background: white; border-radius: 12px; max-width: 1200px; width:100%; padding: 24px; max-height: 92vh; overflow-y: auto; }
 
         /* Estilos del Panel Admin */
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 20px; }
@@ -75,7 +74,7 @@
         .charts-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; margin-bottom: 20px; }
         .chart-box { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; }
 
-        /* Tabla Estilo revision-registros.html */
+        /* Tabla Estilo Auditoría */
         .admin-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 12px; }
         .admin-table th, .admin-table td { padding: 10px 12px; border: 1px solid #e2e8f0; text-align: left; vertical-align: top; }
         .admin-table th { background: #f8fafc; font-weight: 700; color: var(--primary); }
@@ -84,6 +83,7 @@
         .badge-danger { background-color: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
         .badge-success { background-color: #f0fdf4; color: #16a34a; border: 1px solid #bbf7d0; }
         .badge-warning { background-color: #fffbeb; color: #d97706; border: 1px solid #fef3c7; }
+        .badge-info { background-color: #f0f9ff; color: #0284c7; border: 1px solid #bae6fd; }
 
         .progress-bar-bg { background-color: #e2e8f0; border-radius: 4px; height: 8px; width: 100%; margin-top: 4px; overflow: hidden; }
         .progress-bar-fill { background-color: var(--success); height: 100%; width: 0%; transition: width 0.3s; }
@@ -270,7 +270,7 @@
                 <div class="val" id="stLimitados">0</div>
             </div>
             <div class="stat-card" style="border-left-color: var(--accent-blue);">
-                <h4>Expedientes Completo</h4>
+                <h4>Expedientes Completos</h4>
                 <div class="val" id="stCompletos">0</div>
             </div>
         </div>
@@ -287,7 +287,7 @@
             </div>
         </div>
 
-        <!-- TABLA GENERAL DE ATLETAS (ESTILO REVISIÓN REGISTROS) -->
+        <!-- TABLA GENERAL DE AUDITORÍA Y TRAZABILIDAD -->
         <div class="card-title" style="margin-top: 20px;">
             <span>📋 Listado General y Estatus de Integridad</span>
             <input type="text" id="searchAdmin" onkeyup="filterAdminTable()" class="form-control" placeholder="Buscar por Nombre o Folio..." style="max-width: 280px; text-transform: uppercase;">
@@ -303,7 +303,7 @@
                         <th style="min-width: 180px;">Campos Faltantes o Nulos ("X")</th>
                         <th style="min-width: 190px;">Documentación Obligatoria</th>
                         <th>Comentarios Atleta</th>
-                        <th>Acción de Notificación</th>
+                        <th style="min-width: 220px;">🐾 Huella del Sistema & Cambios</th>
                     </tr>
                 </thead>
                 <tbody id="tblAdminAuditoria">
@@ -369,7 +369,7 @@
         return (clean === '' || clean === 'X' || clean === '-' || clean === 'NO' || clean === 'N/A');
     }
 
-    // AUTENTICACIÓN ESCALONADA DE ATLETA
+    // AUTENTICACIÓN ESCALONADA DE ATLETA Y REGISTRO DE HUELLA DE SISTEMA
     async function handleAuthentication(e) {
         e.preventDefault();
         const folio = document.getElementById('authFolio').value.trim().toUpperCase();
@@ -414,7 +414,7 @@
 
                 const dbPhoneLast4 = (data.telefono || '').replace(/\D/g, '').slice(-4);
                 if (data.curp.trim().toUpperCase() === curpInput && dbPhoneLast4 === phone4Input) {
-                    await startSession(data);
+                    await startSession(data, 'CURP + CELULAR');
                     return;
                 } else {
                     authStepLevel = 2;
@@ -443,7 +443,7 @@
                     btn.innerText = 'Validar por Nombre';
                     return;
                 } else {
-                    await startSession(data);
+                    await startSession(data, 'CORREO');
                     return;
                 }
             }
@@ -454,7 +454,7 @@
                 const firstName = (data.nombre || data.nombre_completo || '').split(' ')[0].toUpperCase();
 
                 if (firstName.includes(nameInput)) {
-                    await startSession(data);
+                    await startSession(data, 'PRIMER NOMBRE');
                     return;
                 } else {
                     showError('No fue posible validar tu identidad.');
@@ -475,12 +475,15 @@
         errDiv.classList.remove('hidden');
     }
 
-    async function startSession(corredor) {
+    async function startSession(corredor, metodoAuth) {
         currentCorredor = corredor;
         const newAccesos = (corredor.accesos_realizados || 0) + 1;
+        const now = new Date().toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'medium' });
+
         await dbClient.from('corredores').update({ 
             accesos_realizados: newAccesos,
-            ultimo_acceso: new Date().toISOString()
+            ultimo_acceso: new Date().toISOString(),
+            metodo_ultimo_acceso: metodoAuth
         }).eq('id', corredor.id);
 
         document.getElementById('stepAuth').classList.add('hidden');
@@ -564,15 +567,38 @@
 
         try {
             const updates = {};
+            const modifLogs = [];
+
             const comentarios = document.getElementById('inpAtletaComentarios').value.trim();
-            if (comentarios) updates.comentarios_atleta = comentarios;
+            if (comentarios) {
+                updates.comentarios_atleta = comentarios;
+                modifLogs.push('Comentarios');
+            }
 
-            if (document.getElementById('inp_segundo_apellido')) updates.segundo_apellido = document.getElementById('inp_segundo_apellido').value.trim().toUpperCase();
-            if (document.getElementById('inp_email')) updates.email = document.getElementById('inp_email').value.trim();
+            if (document.getElementById('inp_segundo_apellido')) {
+                updates.segundo_apellido = document.getElementById('inp_segundo_apellido').value.trim().toUpperCase();
+                modifLogs.push('Segundo Apellido');
+            }
+            if (document.getElementById('inp_email')) {
+                updates.email = document.getElementById('inp_email').value.trim();
+                modifLogs.push('Correo Electrónico');
+            }
 
-            if (document.getElementById('f_foto') && document.getElementById('f_foto').files[0]) updates.foto_url = await uploadBase64(document.getElementById('f_foto').files[0]);
-            if (document.getElementById('f_doc1') && document.getElementById('f_doc1').files[0]) updates.doc1_url = await uploadBase64(document.getElementById('f_doc1').files[0]);
-            if (document.getElementById('f_doc2') && document.getElementById('f_doc2').files[0]) updates.doc2_url = await uploadBase64(document.getElementById('f_doc2').files[0]);
+            if (document.getElementById('f_foto') && document.getElementById('f_foto').files[0]) {
+                updates.foto_url = await uploadBase64(document.getElementById('f_foto').files[0]);
+                modifLogs.push('Foto Oficial');
+            }
+            if (document.getElementById('f_doc1') && document.getElementById('f_doc1').files[0]) {
+                updates.doc1_url = await uploadBase64(document.getElementById('f_doc1').files[0]);
+                modifLogs.push('INE');
+            }
+            if (document.getElementById('f_doc2') && document.getElementById('f_doc2').files[0]) {
+                updates.doc2_url = await uploadBase64(document.getElementById('f_doc2').files[0]);
+                modifLogs.push('Carta Responsiva');
+            }
+
+            updates.ultima_modificacion = new Date().toISOString();
+            updates.historial_cambios = modifLogs.join(', ');
 
             const { error } = await dbClient.from('corredores').update(updates).eq('id', currentCorredor.id);
             if (error) throw error;
@@ -715,8 +741,8 @@
             const hasIne = !isInvalidValue(c.doc1_url);
             const hasCarta = !isInvalidValue(c.doc2_url);
 
-            // Cálculo de Nivel de Integridad
-            const totalItems = 3 + 3; // 3 documentos + 3 campos críticos (CURP, Email, Emergencia)
+            // Nivel de Integridad
+            const totalItems = 3 + 3;
             let itemsOk = 0;
             if (hasFoto) itemsOk++;
             if (hasIne) itemsOk++;
@@ -728,19 +754,36 @@
             const pct = Math.round((itemsOk / totalItems) * 100);
             
             let badgeIntegridad = `<span class="badge-tag badge-danger">${camposFaltantes.length + (!hasFoto + !hasIne + !hasCarta)} OBSERVACIONES</span>`;
-            if (pct === 100) badgeIntegridad = `<span class="badge-tag badge-success">100% VALIDO</span>`;
+            if (pct === 100) badgeIntegridad = `<span class="badge-tag badge-success">100% VÁLIDO</span>`;
 
-            // HTML de Campos Faltantes
+            // HTML Campos Faltantes
             let htmlCampos = '<span class="badge-tag badge-success">S/O</span>';
             if (camposFaltantes.length > 0) {
                 htmlCampos = camposFaltantes.map(f => `<span class="badge-tag badge-danger">❌ ${f}</span>`).join('<br>');
             }
 
-            // HTML de Documentos
+            // HTML Documentos
             const htmlDocs = `
                 <span class="badge-tag ${hasFoto ? 'badge-success' : 'badge-danger'}">${hasFoto ? '✓' : '❌'} Fotograf\u00eda Oficial</span><br>
                 <span class="badge-tag ${hasIne ? 'badge-success' : 'badge-danger'}">${hasIne ? '✓' : '❌'} Identificaci\u00f3n Oficial / INE</span><br>
                 <span class="badge-tag ${hasCarta ? 'badge-success' : 'badge-danger'}">${hasCarta ? '✓' : '❌'} Carta Responsiva Firmada</span>
+            `;
+
+            // HTML HUELLA DIGITAL / TRAZABILIDAD DE SISTEMA
+            const accesos = c.accesos_realizados || 0;
+            const fechaUltAcceso = c.ultimo_acceso ? new Date(c.ultimo_acceso).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }) : 'Sin registro';
+            const metodoAcceso = c.metodo_ultimo_acceso || 'N/A';
+            const historialCambios = c.historial_cambios || 'Sin cambios realizados';
+            const fechaUltModif = c.ultima_modificacion ? new Date(c.ultima_modificacion).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }) : 'N/A';
+
+            const htmlHuella = `
+                <span class="badge-tag ${accesos > 0 ? 'badge-info' : 'badge-warning'}">🔢 Accesos: ${accesos} / 2</span><br>
+                <small style="color:var(--text-muted);"><strong>Último Ingreso:</strong> ${fechaUltAcceso}</small><br>
+                <small style="color:var(--text-muted);"><strong>Vía:</strong> ${metodoAcceso}</small><br>
+                <hr style="border:0; border-top:1px dashed #cbd5e1; margin: 4px 0;">
+                <small style="color:var(--primary); font-weight:bold;">📝 Cambios Guardados:</small><br>
+                <small style="color:var(--text-main);">${historialCambios}</small><br>
+                <small style="color:var(--text-muted);"><strong>Fecha Cambios:</strong> ${fechaUltModif}</small>
             `;
 
             const phone = c.telefono ? c.telefono.replace(/\D/g, '') : '';
@@ -764,9 +807,7 @@
                     <td>${htmlCampos}</td>
                     <td>${htmlDocs}</td>
                     <td><small>${c.comentarios_atleta || '<em>Sin observaciones</em>'}</small></td>
-                    <td>
-                        ${phone ? `<button class="btn-wa" onclick="notificarAtleta('${phone}', '${c.folio_oficial}', '${c.nombre}')">📲 Generar Notificación</button>` : '<small>N/A</small>'}
-                    </td>
+                    <td>${htmlHuella}</td>
                 </tr>
             `;
         });
@@ -783,11 +824,6 @@
         renderAdminTable(filtered);
     }
 
-    function notificarAtleta(telefono, folio, nombre) {
-        const text = `Hola ${nombre}, te saludamos del Comité Organizador del Maratón Moroleón 2027. Te recordamos ingresar a tu portal de expediente con tu Folio (${folio}) para completar tus datos y documentos pendientes.`;
-        window.open(`https://api.whatsapp.com/send?phone=52${telefono}&text=${encodeURIComponent(text)}`, '_blank');
-    }
-
     function openSupportModal() { document.getElementById('modalSupport').classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
@@ -802,7 +838,7 @@
                      `*Campo:* ${campo}\n` +
                      `*Detalle:* ${detalle}`;
 
-        window.open(`https://api.whatsapp.com/send?phone=524737374394&text=${encodeURIComponent(text)}`, '_blank');
+        window.open(`https://api.whatsapp.com/send?phone=524731372597&text=${encodeURIComponent(text)}`, '_blank');
         closeModal('modalSupport');
     }
 </script>
