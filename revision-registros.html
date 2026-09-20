@@ -608,12 +608,12 @@
 
         let msg = `¡Hola, ${nombreAtleta}! 👋🏃‍♂️\n\n`;
         msg += `Nos entusiasma mucho que ya formes parte del selecto equipo de atletas que aceptaron el reto del *Maratón Internacional IRC Moroleón 2027*🏻🏽.\n\n`;
-        msg += `En esta alianza estratégica de *MetaX Pro* con el Comité Organizador del Maratón Internacional Moroleón 2027, y con la finalidad de garantizar un registro correcto, seguro e impecable, te informamos sobre el estatus de tu inscripción (Folio: *${folioOficial}*):\n\n`;
+        msg += `En esta alianza estratégica de *MetaX Pro* con el Comité Organizador del Maratón Internacional IRC Moroleón 2027, y con la finalidad de garantizar un registro correcto, seguro e impecable, te informamos sobre el estatus de tu inscripción (Folio: *${folioOficial}*):\n\n`;
 
         if (item.isComplete) {
             msg += `🎉 ¡Enhorabuena! Tu expediente se encuentra *100% COMPLETO* y debidamente validado. Estamos listos para recibirte en la línea de salida. ¡Mucho éxito en tu preparación! 🥇🔥\n\n`;
         } else {
-            msg += `MetaX Pro te recomienda completar tu expediente a la brevedad para asegurar tu participación sin contratiempos. Detectamos las siguientes observaciones o pendientes:\n\n`;
+            msg += `MetaX Pro te recomienda completar tu expediente a la brevedad para asegurar tu participación sin contratiempos. Detectamos las siguientes observaciones o pendientes de la información proporcionada por el Comité Organizador del eventnto:\n\n`;
 
             if (item.missingFields.length > 0) {
                 msg += `📌 DATOS O CAMPOS INCOMPLETOS / NULOS:\n`;
@@ -639,7 +639,7 @@
 
         msg += `--------------------------------------------------\n`;
         msg += `⚠️ NOTA LEGAL Y DESLINDE DE RESPONSABILIDAD:\n`;
-        msg += `MetaX Pro no es responsable de la gestión de las inscripciones realizadas fuera de nuestro portal oficial https://maratonmoroleon.metaxpro.com/, por lo que cualquier duda o aclaración respecto a su registro favor de tratarlo directamente con el Comité Organizador. Asimismo, MetaX Pro se deslinda del uso de la documentación que sea proporcionada al Comité Organizador con fines de registro, así como del resguardo o custodia de la misma.`;
+        msg += `MetaX Pro no es responsable de la gestión de las inscripciones realizadas oofline es decir fuera de nuestro portal oficial https://maratonmoroleon.metaxpro.com/, por lo que cualquier duda o aclaración respecto a su registro favor de tratarlo directamente con el Comité Organizador. Asimismo, MetaX Pro se deslinda del uso de la documentación que sea proporcionada al Comité Organizador con fines de registro, así como del resguardo o custodia de la misma.`;
 
         document.getElementById('txtMessagePreview').value = msg;
         document.getElementById('msgModal').style.display = 'flex';
