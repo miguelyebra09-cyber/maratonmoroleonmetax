@@ -1026,6 +1026,23 @@ function renderPendientesForm(c) {
         window.open(`https://api.whatsapp.com/send?phone=524731372597&text=${encodeURIComponent(text)}`, '_blank');
         closeModal('modalSupport');
     }
+
+function isMissing(val) {
+    if (val === undefined || val === null) return true;
+    const clean = String(val).trim().toUpperCase();
+    return (
+        clean === '' || 
+        clean === 'X' || 
+        clean === '-' || 
+        clean === 'NO' || 
+        clean === 'N/A' || 
+        clean === 'NO DEFINIÓ' || 
+        clean === 'NO DEFINIO' || 
+        clean === 'NO DEFINIDO' || 
+        clean === 'PENDIENTE'
+    );
+}
+    
 </script>
 
 </body>
