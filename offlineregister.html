@@ -1743,11 +1743,11 @@
             <td>${r.categoria || '-'}</td>
             <td>${r.talla_playera || '-'}</td>
             <td>$${r.monto_cobrado || 0}</td>
-            <td style="display: flex; gap: 6px;">
-                <button class="btn-action" onclick="openEditModal('${r.id}')">✏️ Editar</button>
-                <button class="btn-ticket" onclick="descargarTicketPorId('${r.id}')">📥 Ticket</button>
-                <button class="btn-action" style="background-color: #8b5cf6;" onclick="openSubmodalCarnet('${r.id}')">👁️ Mostrar carnet</button>
-            </td>
+           <td style="display: flex; gap: 6px;">
+            <button class="btn-action" onclick="openEditModal('${r.id}')">✏️ Editar</button>
+            <button class="btn-ticket" onclick="descargarTicketPorId('${r.id}')">📥 Ticket</button>
+            <button class="btn-action" style="background-color: #8b5cf6;" onclick="openSubmodalCarnet('${r.id}')">👁️ Mostrar carnet</button>
+</td>
         </tr>
         `;
     }).join('');
