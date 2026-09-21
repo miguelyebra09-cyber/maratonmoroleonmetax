@@ -758,6 +758,8 @@
             </div>
         </div>
 
+
+        
         <!-- COBRO Y CONFIRMACIÓN -->
         <div class="card">
             <div class="card-header">
@@ -850,24 +852,59 @@
         </div>
 
 <!-- SUBMODAL: VISTA DE CARNET DINÁMICO DE PARTICIPANTE -->
+
+        <!-- MODAL: FICHA TÉCNICA Y CARNET DEL PARTICIPANTE -->
 <div class="modal" id="carnetVistaModal">
-    <div class="modal-content" style="max-width: 500px; text-align: left;">
+    <div class="modal-content" style="max-width: 650px; text-align: left; max-height: 90vh; overflow-y: auto;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
-            <h3 style="color: var(--primary);">🪪 Carnet del Atleta</h3>
+            <h3 style="color: var(--primary); margin: 0;">🪪 Ficha y Carnet Oficial del Atleta</h3>
             <button class="btn-close" onclick="closeModal('carnetVistaModal')">✖</button>
         </div>
         
-        <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
-            <div id="carnetFotoBox" style="width: 100px; height: 100px; border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #64748b; text-align: center;">
-                Sin Foto
+        <!-- ENCABEZADO Y FOTO DRIVE -->
+        <div style="display: flex; gap: 16px; align-items: center; background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 16px;">
+            <div id="carnetFotoBox" style="width: 110px; height: 120px; border-radius: 8px; border: 1px solid #cbd5e1; overflow: hidden; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #64748b; text-align: center; flex-shrink: 0;">
+                Cargando...
             </div>
-            <div>
-                <h4 id="carnetNombre" style="font-size: 1.1rem; color: var(--primary); margin-bottom: 4px;">-</h4>
-                <p style="font-size: 0.85rem; color: var(--text-muted);"><strong>Folio:</strong> <span id="carnetFolio">-</span></p>
-                <p style="font-size: 0.85rem; color: var(--text-muted);"><strong>CURP:</strong> <span id="carnetCurp">-</span></p>
-                <p style="font-size: 0.85rem; color: var(--text-muted);"><strong>Distancia:</strong> <span id="carnetDistancia">-</span></p>
+            <div style="flex: 1;">
+                <h3 id="carnetNombre" style="font-size: 1.25rem; color: var(--primary); margin: 0 0 4px 0;">-</h3>
+                <p style="margin: 2px 0; font-size: 0.85rem;"><strong>Folio Oficial:</strong> <span id="carnetFolio" style="color: #2563eb; font-weight: bold;">-</span></p>
+                <p style="margin: 2px 0; font-size: 0.85rem;"><strong>CURP:</strong> <span id="carnetCurp">-</span></p>
+                <p style="margin: 2px 0; font-size: 0.85rem;"><strong>Distancia:</strong> <span id="carnetDistancia">-</span> | <strong>Categoría:</strong> <span id="carnetCategoria">-</span></p>
+                <p style="margin: 2px 0; font-size: 0.85rem;"><strong>Rama:</strong> <span id="carnetRama">-</span> | <strong>Talla Playera:</strong> <span id="carnetTalla">-</span></p>
             </div>
         </div>
+
+        <!-- ESTATUS DE EXPEDIENTE -->
+        <div style="padding: 12px; margin-bottom: 16px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px;">
+            <div style="font-weight: bold; font-size: 0.9rem; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px;">ESTATUS DE EXPEDIENTE DE DOCUMENTOS</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.85rem;">
+                <div><span id="chkFoto"></span> 📸 Fotografía Oficial</div>
+                <div><span id="chkINE"></span> 🪪 Identificación (INE)</div>
+                <div><span id="chkPago"></span> 💳 Comprobante de Pago</div>
+                <div><span id="chkCarta"></span> 📄 Carta Responsiva</div>
+            </div>
+        </div>
+
+        <!-- DETALLES COMPLETOS DEL ATLETA -->
+        <div style="padding: 12px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 16px;">
+            <div style="font-weight: bold; font-size: 0.9rem; color: var(--primary); margin-bottom: 8px; border-bottom: 1px solid #f1f5f9; padding-bottom: 4px;">DATOS PERSONALES Y MÉDICOS</div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.85rem; line-height: 1.6;">
+                <p style="margin:0;"><strong>Correo:</strong> <span id="carnetEmail">-</span></p>
+                <p style="margin:0;"><strong>Teléfono:</strong> <span id="carnetTelefono">-</span></p>
+                <p style="margin:0;"><strong>Tipo de Sangre:</strong> <span id="carnetSangre">-</span></p>
+                <p style="margin:0;"><strong>Origen / Estado:</strong> <span id="carnetOrigen">-</span></p>
+                <p style="margin:0; grid-column: span 2;"><strong>Contacto Emergencia:</strong> <span id="carnetContacto">-</span></p>
+                <p style="margin:0; grid-column: span 2;"><strong>Alergias:</strong> <span id="carnetAlergias">-</span></p>
+                <p style="margin:0; grid-column: span 2;"><strong>Padecimientos / Notas:</strong> <span id="carnetPadecimientos">-</span></p>
+            </div>
+        </div>
+
+        <div style="text-align: right;">
+            <button class="btn-close" onclick="closeModal('carnetVistaModal')">Cerrar Carnet</button>
+        </div>
+    </div>
+</div>
 
         <div class="card" style="padding: 12px; margin-bottom: 12px; background: #f8fafc;">
             <div class="card-subtitle" style="margin-bottom: 8px;">Estatus de Expediente de Documentos</div>
@@ -1035,6 +1072,33 @@
                     <label>Comentarios</label>
                     <textarea id="edit_comentarios" rows="2"></textarea>
                 </div>
+
+                <!-- SECCIÓN EXPEDIENTE Y DOCUMENTOS VINCULADOS AL FOLIO -->
+<hr style="margin: 16px 0; border: 0; border-top: 1px solid var(--border-color);">
+<h4 style="color: var(--primary); margin-bottom: 12px;">📁 Expediente Digital del Participante</h4>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px;">
+    <div>
+        <label>📸 Fotografía Oficial:</label>
+        <input type="file" id="editFotoFile" accept="image/*" class="form-control" style="font-size: 0.8rem;">
+        <div id="editFotoPreview" style="margin-top: 5px; font-size: 0.8rem;"></div>
+    </div>
+    <div>
+        <label>🪪 Identificación Oficial (INE):</label>
+        <input type="file" id="editIneFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem;">
+        <div id="editInePreview" style="margin-top: 5px; font-size: 0.8rem;"></div>
+    </div>
+    <div>
+        <label>💳 Comprobante de Pago:</label>
+        <input type="file" id="editPagoFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem;">
+        <div id="editPagoPreview" style="margin-top: 5px; font-size: 0.8rem;"></div>
+    </div>
+    <div>
+        <label>📄 Carta Responsiva:</label>
+        <input type="file" id="editCartaFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem;">
+        <div id="editCartaPreview" style="margin-top: 5px; font-size: 0.8rem;"></div>
+    </div>
+</div>
             </div>
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px;">
                 <button type="button" class="btn-close" onclick="closeModal('editModal')">Cancelar</button>
@@ -1756,12 +1820,12 @@ if (fileDoc2) {
                 <td>${r.categoria || '-'}</td>
                 <td>${r.talla_playera || '-'}</td>
                 <td>$${r.monto_cobrado || 0}</td>
-               <td style="display: flex; gap: 6px;">
+<td style="display: flex; gap: 6px; align-items: center;">
     <button class="btn-action" onclick="openEditModal('${r.id}')">✏️ Editar</button>
-    <button class="btn-action" style="background-color: #f97316;" onclick="openCarnetFormModal('${r.id}')">🪪 Ver carnet</button>
     <button class="btn-ticket" onclick="descargarTicketPorId('${r.id}')">📥 Ticket</button>
     <button class="btn-action" style="background-color: #8b5cf6;" onclick="openSubmodalCarnet('${r.id}')">👁️ Mostrar carnet</button>
 </td>
+    
             </tr>
         `;
         }).join('');
@@ -2306,28 +2370,88 @@ function openCarnetFormModal(id) {
 }
 
 // B. Acción del Submodal "Mostrar Carnet" con Indicadores de Palomita Verde/Roja
+// Conversión de enlaces compartidos de Google Drive a URLs de imagen directas
+function getDriveDirectLink(url) {
+    if (!url) return '';
+    if (url.includes('drive.google.com') || url.includes('docs.google.com')) {
+        const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+        if (match && match[1]) {
+            return `https://lh3.googleusercontent.com/d/${match[1]}=s800`;
+        }
+    }
+    return url;
+}
+
+// A. Función para Editar Registro y cargar previews de Expedientes
+function openEditModal(id) {
+    const r = cachedRegistros.find(item => item.id == id);
+    if (!r) return;
+
+    // Carga de variables en el formulario de edición
+    document.getElementById('editId').value = r.id;
+    document.getElementById('editFolio').value = r.folio_oficial || '';
+    document.getElementById('editCurp').value = r.curp || '';
+    document.getElementById('editNombre').value = r.nombre || '';
+    document.getElementById('editPrimerApellido').value = r.primer_apellido || '';
+    document.getElementById('editSegundoApellido').value = r.segundo_apellido || '';
+    document.getElementById('editEmail').value = r.email || '';
+    document.getElementById('editTelefono').value = r.telefono || '';
+    document.getElementById('editDistancia').value = r.distancia || '';
+    document.getElementById('editCategoria').value = r.categoria || '';
+    document.getElementById('editRama').value = r.rama || '';
+    document.getElementById('editTallaPlayera').value = r.talla_playera || '';
+    document.getElementById('editTipoSangre').value = r.tipo_sangre || '';
+    document.getElementById('editContactoEmergencia').value = r.contacto_emergencia || '';
+    document.getElementById('editTelEmergencia').value = r.telefono_emergencia || '';
+    document.getElementById('editAlergias').value = r.alergias || '';
+    document.getElementById('editPadecimientos').value = r.padecimientos || '';
+
+    // Previsualización de expediente cargado anteriormente vinculado al folio
+    document.getElementById('editFotoPreview').innerHTML = r.foto_url ? `<a href="${r.foto_url}" target="_blank">📸 Ver foto actual</a>` : '<span style="color:#94a3b8;">Sin archivo</span>';
+    document.getElementById('editInePreview').innerHTML = r.doc1_url ? `<a href="${r.doc1_url}" target="_blank">📄 Ver INE actual</a>` : '<span style="color:#94a3b8;">Sin archivo</span>';
+    document.getElementById('editPagoPreview').innerHTML = r.pago_url ? `<a href="${r.pago_url}" target="_blank">💳 Ver Pago actual</a>` : '<span style="color:#94a3b8;">Sin archivo</span>';
+    document.getElementById('editCartaPreview').innerHTML = r.doc2_url ? `<a href="${r.doc2_url}" target="_blank">📄 Ver Responsiva actual</a>` : '<span style="color:#94a3b8;">Sin archivo</span>';
+
+    document.getElementById('editModal').style.display = 'flex';
+}
+
+// B. Función para Desplegar Ficha Carnet Completa
 function openSubmodalCarnet(id) {
     const r = cachedRegistros.find(item => item.id == id);
     if (!r) return;
 
-    document.getElementById('carnetNombre').innerText = r.nombre_completo || `${r.nombre} ${r.primer_apellido}`;
+    // Encabezado de Identificación
+    document.getElementById('carnetNombre').innerText = `${r.nombre || ''} ${r.primer_apellido || ''} ${r.segundo_apellido || ''}`.trim();
     document.getElementById('carnetFolio').innerText = r.folio_oficial || 'S/N';
     document.getElementById('carnetCurp').innerText = r.curp || '-';
     document.getElementById('carnetDistancia').innerText = r.distancia || '-';
+    document.getElementById('carnetCategoria').innerText = r.categoria || 'General';
+    document.getElementById('carnetRama').innerText = r.rama || '-';
+    document.getElementById('carnetTalla').innerText = r.talla_playera || '-';
 
-    // Cargar imagen o marca por defecto
+    // Datos de Contacto y Salud
+    document.getElementById('carnetEmail').innerText = r.email || '-';
+    document.getElementById('carnetTelefono').innerText = r.telefono || '-';
+    document.getElementById('carnetSangre').innerText = r.tipo_sangre || 'No especificado';
+    document.getElementById('carnetOrigen').innerText = `${r.estado_residencia || r.entidad_nacimiento || 'México'}`;
+    document.getElementById('carnetContacto').innerText = `${r.contacto_emergencia || 'N/R'} (${r.telefono_emergencia || 'S/N'})`;
+    document.getElementById('carnetAlergias').innerText = r.alergias || 'Ninguna';
+    document.getElementById('carnetPadecimientos').innerText = r.padecimientos || 'Ninguno';
+
+    // Renderizado de Imagen desde Google Drive
     const fotoBox = document.getElementById('carnetFotoBox');
     if (r.foto_url) {
-        fotoBox.innerHTML = `<img src="${r.foto_url}" style="width:100%; height:100%; object-fit:cover;">`;
+        const directFotoUrl = getDriveDirectLink(r.foto_url);
+        fotoBox.innerHTML = `<img src="${directFotoUrl}" alt="Foto Atleta" style="width:100%; height:100%; object-fit:cover;" onerror="this.onerror=null; this.src=''; this.parentElement.innerText='Error al cargar imagen';">`;
     } else {
         fotoBox.innerHTML = 'Sin Foto';
     }
 
-    // Evaluar estado de documentos subidos (Palomita verde / roja)
-    document.getElementById('chkFoto').innerHTML = r.foto_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
-    document.getElementById('chkINE').innerHTML = r.doc1_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
-    document.getElementById('chkPago').innerHTML = r.pago_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
-    document.getElementById('chkCarta').innerHTML = r.doc2_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
+    // Evaluación de Estatus de Documentación
+    document.getElementById('chkFoto').innerHTML = r.foto_url ? '<b style="color:#16a34a;">✅</b>' : '<b style="color:#dc2626;">❌</b>';
+    document.getElementById('chkINE').innerHTML = r.doc1_url ? '<b style="color:#16a34a;">✅</b>' : '<b style="color:#dc2626;">❌</b>';
+    document.getElementById('chkPago').innerHTML = r.pago_url ? '<b style="color:#16a34a;">✅</b>' : '<b style="color:#dc2626;">❌</b>';
+    document.getElementById('chkCarta').innerHTML = r.doc2_url ? '<b style="color:#16a34a;">✅</b>' : '<b style="color:#dc2626;">❌</b>';
 
     document.getElementById('carnetVistaModal').style.display = 'flex';
 }
