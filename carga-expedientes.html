@@ -563,21 +563,22 @@ const GOOGLE_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz9z7D
 
             // NIVEL 2: CORREO
             if (authStepLevel === 2) {
-                const emailInput = document.getElementById('authEmail').value.trim().toLowerCase();
-               if (isMissing(data.email)) || data.email.trim().toLowerCase() !== emailInput) {
-                    authStepLevel = 3;
-                    document.getElementById('blockOptB').classList.add('hidden');
-                    document.getElementById('blockOptC').classList.remove('hidden');
-                    document.getElementById('lblTryAttempt').innerText = 'Intento 3 de 3';
-                    document.getElementById('authAlert').className = 'alert-box alert-warning';
-                    document.getElementById('authAlert').innerText = 'Correo no coincidente. Ingresa tu Primer Nombre registrado.';
-                    btn.disabled = false;
-                    btn.innerText = 'Validar por Nombre';
-                    return;
-                } else {
-                    await startSession(data, 'CORREO');
-                    return;
-                }
+              const dbEmail = data.email ? String(data.email).trim().toLowerCase() : '';
+
+        if (dbEmail === '' || dbEmail !== emailInput) {
+            authStepLevel = 3;
+            document.getElementById('blockOptB').classList.add('hidden');
+            document.getElementById('blockOptC').classList.remove('hidden');
+            document.getElementById('lblTryAttempt').innerText = 'Intento 3 de 3';
+            document.getElementById('authAlert').className = 'alert-box alert-warning';
+            document.getElementById('authAlert').innerText = 'Correo no coincidente o no registrado. Ingresa tu Primer Nombre.';
+            btn.disabled = false;
+            btn.innerText = 'Validar por Nombre';
+            return;
+        } else {
+            await startSession(data, 'CORREO');
+            return;
+        }
             }
 
             // NIVEL 3: PRIMER NOMBRE
