@@ -1986,37 +1986,6 @@ async function uploadFileToDrive(fileInputId, folio, docType) {
         if (newIneUrl)   updatedData.doc1_url = newIneUrl;
         if (newCartaUrl) updatedData.doc2_url = newCartaUrl;
             
-            const nombreComp = `${document.getElementById('edit_nombre').value} ${document.getElementById('edit_primerApellido').value} ${document.getElementById('edit_segundoApellido').value}`.trim();
-
-            const updatedData = {
-                curp: document.getElementById('edit_curp').value.toUpperCase(),
-                nombre: document.getElementById('edit_nombre').value,
-                primer_apellido: document.getElementById('edit_primerApellido').value,
-                segundo_apellido: document.getElementById('edit_segundoApellido').value,
-                nombre_completo: nombreComp,
-                email: document.getElementById('edit_email').value,
-                telefono: document.getElementById('edit_telefono').value,
-                distancia: document.getElementById('edit_distancia').value,
-                pais_residencia: document.getElementById('edit_paisResidencia').value,
-                estado_residencia: document.getElementById('edit_estadoResidencia').value,
-                edad: document.getElementById('edit_edad').value,
-                fecha_nacimiento: document.getElementById('edit_fechaNacimiento').value,
-                genero: document.getElementById('edit_genero').value,
-                entidad_origen: document.getElementById('edit_entidadOrigen').value,
-                rama: document.getElementById('edit_rama').value,
-                categoria: document.getElementById('edit_categoria').value,
-                talla_playera: document.getElementById('edit_talla').value,
-                perfil_corredor: document.getElementById('edit_perfilCorredor').value,
-                tipo_sangre: document.getElementById('edit_tipoSangre').value,
-                contacto_nombre: document.getElementById('edit_contactoNombre').value,
-                contacto_telefono: document.getElementById('edit_contactoTelefono').value,
-                alergias: document.getElementById('edit_alergias').value,
-                situaciones_extra: document.getElementById('edit_situacionesExtra').value,
-                monto_cobrado: parseFloat(document.getElementById('edit_monto').value) || 0,
-                operador_nombre: document.getElementById('edit_operador').value,
-                comentarios: document.getElementById('edit_comentarios').value
-            };
-
             try {
                 const { error } = await dbClient
                     .from('corredores')
