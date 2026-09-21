@@ -386,16 +386,6 @@ const GOOGLE_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz9z7D
     }
     // ============================
 
-    let dbClient = null;
-    let currentCorredor = null;
-    let authStepLevel = 1;
-    let allCorredoresData = [];
-    let chartDocsObj = null;
-    let chartAccesosObj = null;
-
-    try {
-        if (window.supabase) dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    } catch(e) { console.error(e); }
     
     
 
@@ -542,7 +532,7 @@ const GOOGLE_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz9z7D
                 const curpInput = document.getElementById('authCurp').value.trim().toUpperCase();
                 const phone4Input = document.getElementById('authPhone4').value.trim();
 
-                if (isInvalidValue(data.curp)) {
+             if (isMissing(data.curp)) {
                     authStepLevel = 2;
                     document.getElementById('blockOptA').classList.add('hidden');
                     document.getElementById('blockOptB').classList.remove('hidden');
@@ -868,9 +858,9 @@ function renderPendientesForm(c) {
             else if (acc === 1) acc1++;
             else acc2++;
 
-            const hasFoto = !isInvalidValue(c.foto_url);
-            const hasIne = !isInvalidValue(c.doc1_url);
-            const hasCarta = !isInvalidValue(c.doc2_url);
+            const hasFoto = !isMissing(c.foto_url);
+            const hasIne = !isMissing(c.doc1_url);
+            const hasCarta = !isMissing(c.doc2_url);
 
             if (hasFoto) fotosOk++;
             if (hasIne) ineOk++;
@@ -919,15 +909,16 @@ function renderPendientesForm(c) {
         });
     }
 
-    function getCamposFaltantesList(c) {
-        const faltantes = [];
-        if (isInvalidValue(c.curp)) faltantes.push('CURP Incompleta o con "X"');
-        if (isInvalidValue(c.segundo_apellido)) faltantes.push('Segundo Apellido Faltante');
-        if (isInvalidValue(c.email) || !c.email.includes('@')) faltantes.push('Correo Electrónico');
-        if (isInvalidValue(c.distancia)) faltantes.push('Distancia de Carrera');
-        if (isInvalidValue(c.contacto_emergencia) || isInvalidValue(c.telefono_emergencia)) faltantes.push('Datos de Emergencia');
-        return faltantes;
-    }
+    // ✅ CÓDIGO CORREGIDO:
+function getCamposFaltantesList(c) {
+    const faltantes = [];
+    if (isMissing(c.curp)) faltantes.push('CURP Incompleta o con "X"');
+    if (isMissing(c.segundo_apellido)) faltantes.push('Segundo Apellido Faltante');
+    if (isMissing(c.email) || !c.email.includes('@')) faltantes.push('Correo Electrónico');
+    if (isMissing(c.distancia)) faltantes.push('Distancia de Carrera');
+    if (isMissing(c.contacto_nombre) || isMissing(c.contacto_telefono)) faltantes.push('Datos de Emergencia');
+    return faltantes;
+}
 
     function renderAdminTable(data) {
         const tbody = document.getElementById('tblAdminAuditoria');
@@ -940,18 +931,18 @@ function renderPendientesForm(c) {
 
         data.forEach(c => {
             const camposFaltantes = getCamposFaltantesList(c);
-            const hasFoto = !isInvalidValue(c.foto_url);
-            const hasIne = !isInvalidValue(c.doc1_url);
-            const hasCarta = !isInvalidValue(c.doc2_url);
+            const hasFoto = !isMissing(c.foto_url);
+            const hasIne = !isMissing(c.doc1_url);
+            const hasCarta = !isMissing(c.doc2_url);
 
             const totalItems = 3 + 3;
             let itemsOk = 0;
             if (hasFoto) itemsOk++;
             if (hasIne) itemsOk++;
             if (hasCarta) itemsOk++;
-            if (!isInvalidValue(c.curp)) itemsOk++;
-            if (!isInvalidValue(c.email) && c.email.includes('@')) itemsOk++;
-            if (!isInvalidValue(c.contacto_emergencia)) itemsOk++;
+         if (!isMissing(c.curp)) itemsOk++;
+        if (!isMissing(c.email) && c.email.includes('@')) itemsOk++;
+        if (!isMissing(c.contacto_nombre)) itemsOk++;
 
             const pct = Math.round((itemsOk / totalItems) * 100);
             
@@ -1041,22 +1032,7 @@ function renderPendientesForm(c) {
         closeModal('modalSupport');
     }
 
-function isMissing(val) {
-    if (val === undefined || val === null) return true;
-    const clean = String(val).trim().toUpperCase();
-    return (
-        clean === '' || 
-        clean === 'X' || 
-        clean === '-' || 
-        clean === 'NO' || 
-        clean === 'N/A' || 
-        clean === 'NO DEFINIÓ' || 
-        clean === 'NO DEFINIO' || 
-        clean === 'NO DEFINIDO' || 
-        clean === 'PENDIENTE'
-    );
-}
-    
+
 </script>
 
 </body>
