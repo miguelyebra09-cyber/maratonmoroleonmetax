@@ -1949,12 +1949,7 @@ async function uploadFileToDrive(fileInputId, folio, docType) {
             // ➕ AGREGAR AQUÍ: Obtener el folio del atleta
         const folio = document.getElementById('edit_folio') ? document.getElementById('edit_folio').value : 'REGISTRO';
 // ➕ AGREGAR AQUÍ: Mostrar indicador de carga mientras sube archivos
-        Swal.fire({
-            title: 'Subiendo archivos...',
-            text: 'Espere mientras se guardan los documentos en Drive',
-            allowOutsideClick: false,
-            didOpen: () => { Swal.showLoading(); }
-        });
+     
 
         // ➕ AGREGAR AQUÍ: Subida de nuevos archivos a Google Drive
         const newFotoUrl  = await uploadFileToDrive('editFotoFile', folio, 'FOTO');
