@@ -210,6 +210,12 @@
                 </div>
             </div>
 
+            <!-- ADVERTENCIA DE CONSUMO DE INTENTO -->
+            <div class="alert-box alert-warning" id="alertSecurityAttempt" style="border-left: 5px solid var(--warning);">
+                <strong>⚠️ AVISO IMPORTANTE SOBRE TU EXPEDIENTE:</strong><br>
+                Puedes enviar tu información aunque no hayas completado todos los campos o documentos. Sin embargo, al dar clic en <strong>"Guardar y Finalizar Carga"</strong> se registrará la actualización y habrás utilizado <strong>1 de los 2 intentos de acceso permitidos por seguridad</strong>. Si dejas elementos pendientes, ya no podrás subirlos por este portal y deberás pedir soporte al Comité Organizador.
+            </div>
+
             <div class="card hidden" id="cardCompleted">
                 <div class="alert-box alert-warning" style="margin: 0; text-align: center;">
                     🎉 <strong>¡Tu expediente está 100% Validado!</strong> No tienes archivos ni datos pendientes por cargar.
@@ -350,7 +356,7 @@
 <script>
     const SUPABASE_URL = 'https://rpcevbxzpfgyobehgjth.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwY2V2Ynh6cGZneW9iZWhnanRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMDA3MDQsImV4cCI6MjEwMTg3NjcwNH0.hECuSvVKVehKZjZ9jMqwHM1xspD2l1kS3G9X1jfHIuk';
-const GOOGLE_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz9z7DO_lQyQ3F9KOJX2_7F2ts6cvBvLl1HWKk6KHfcNQ-9heDu2IB6LUPO7StDBG1V/exec'; // Poner la URL del Webhook de Drive
+    const GOOGLE_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz9z7DO_lQyQ3F9KOJX2_7F2ts6cvBvLl1HWKk6KHfcNQ-9heDu2IB6LUPO7StDBG1V/exec';
 
     async function uploadToGoogleDrive(file, folio, tipoDoc) {
         if (!file) return null;
@@ -384,89 +390,99 @@ const GOOGLE_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz9z7D
 
         return resData.url;
     }
-    // ============================
-
-    
-    
 
     async function handleExpedienteSubmit(e) {
-    e.preventDefault();
-    const btn = document.getElementById('btnSubmit');
-    if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = '<span class="loader"></span> Subiendo a Google Drive y guardando...';
-    }
+        e.preventDefault();
 
-    try {
-        const updates = {};
-        const folio = currentCorredor.folio_oficial || currentCorredor.id;
-
-        // 1. Recolección de textos ingresados por el usuario
-        const elComentarios = document.getElementById('inpAtletaComentarios');
-        if (elComentarios && elComentarios.value.trim()) updates.comentarios = elComentarios.value.trim();
-
-        const elCurp = document.getElementById('inp_curp');
-        if (elCurp && elCurp.value.trim()) updates.curp = elCurp.value.trim().toUpperCase();
-
-        const elSegundoApellido = document.getElementById('inp_segundo_apellido');
-        if (elSegundoApellido && elSegundoApellido.value.trim()) updates.segundo_apellido = elSegundoApellido.value.trim().toUpperCase();
-
-        const elDistancia = document.getElementById('inp_distancia');
-        if (elDistancia && elDistancia.value) updates.distancia = elDistancia.value;
-
-        const elCategoria = document.getElementById('inp_categoria');
-        if (elCategoria && elCategoria.value.trim()) updates.categoria = elCategoria.value.trim();
-
-        const elTalla = document.getElementById('inp_talla_playera');
-        if (elTalla && elTalla.value.trim()) updates.talla_playera = elTalla.value.trim().toUpperCase();
-
-        const elEmail = document.getElementById('inp_email');
-        if (elEmail && elEmail.value.trim()) updates.email = elEmail.value.trim();
-
-        const elTelefono = document.getElementById('inp_telefono');
-        if (elTelefono && elTelefono.value.trim()) updates.telefono = elTelefono.value.trim();
-
-        const elSangre = document.getElementById('inp_tipo_sangre');
-        if (elSangre && elSangre.value.trim()) updates.tipo_sangre = elSangre.value.trim().toUpperCase();
-
-        const elContactoNombre = document.getElementById('inp_contacto_nombre');
-        if (elContactoNombre && elContactoNombre.value.trim()) updates.contacto_nombre = elContactoNombre.value.trim();
-
-        const elContactoTelefono = document.getElementById('inp_contacto_telefono');
-        if (elContactoTelefono && elContactoTelefono.value.trim()) updates.contacto_telefono = elContactoTelefono.value.trim();
-
-        // 2. Envío directo a Google Drive y captura de URLs resultantes
+        // Verificar si se está enviando un expediente incompleto para pedir confirmación
         const elFoto = document.getElementById('f_foto');
-        if (elFoto && elFoto.files[0]) {
-            updates.foto_url = await uploadToGoogleDrive(elFoto.files[0], folio, 'FOTO');
-        }
-
         const elDoc1 = document.getElementById('f_doc1');
-        if (elDoc1 && elDoc1.files[0]) {
-            updates.doc1_url = await uploadToGoogleDrive(elDoc1.files[0], folio, 'INE');
-        }
-
         const elDoc2 = document.getElementById('f_doc2');
-        if (elDoc2 && elDoc2.files[0]) {
-            updates.doc2_url = await uploadToGoogleDrive(elDoc2.files[0], folio, 'RESPONSIVA');
+
+        let archivosEnviados = 0;
+        if (elFoto && elFoto.files[0]) archivosEnviados++;
+        if (elDoc1 && elDoc1.files[0]) archivosEnviados++;
+        if (elDoc2 && elDoc2.files[0]) archivosEnviados++;
+
+        const confirmacion = confirm("⚠️ ¿Estás seguro de que deseas guardar y finalizar?\n\nRecuerda que este envío consumirá 1 de tus 2 accesos permitidos. Si dejas archivos o datos sin completar, no podrás volver a subirlos por este portal.");
+        if (!confirmacion) return;
+
+        const btn = document.getElementById('btnSubmit');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loader"></span> Subiendo a Google Drive y guardando...';
         }
 
-        // 3. Guardado final en Supabase con los textos y los enlaces de Google Drive
-        const { error } = await dbClient.from('corredores').update(updates).eq('id', currentCorredor.id);
-        if (error) throw error;
+        try {
+            const updates = {};
+            const folio = currentCorredor.folio_oficial || currentCorredor.id;
 
-        alert('¡Expediente actualizado y documentos subidos a Google Drive con éxito!');
-        window.location.reload();
+            // 1. Recolección opcional de textos ingresados
+            const elComentarios = document.getElementById('inpAtletaComentarios');
+            if (elComentarios && elComentarios.value.trim()) updates.comentarios = elComentarios.value.trim();
 
-    } catch(err) {
-        alert('Error durante el proceso de guardado: ' + err.message);
-    } finally {
-        if (btn) {
-            btn.disabled = false;
-            btn.innerHTML = 'Guardar Información';
+            const elCurp = document.getElementById('inp_curp');
+            if (elCurp && elCurp.value.trim()) updates.curp = elCurp.value.trim().toUpperCase();
+
+            const elSegundoApellido = document.getElementById('inp_segundo_apellido');
+            if (elSegundoApellido && elSegundoApellido.value.trim()) updates.segundo_apellido = elSegundoApellido.value.trim().toUpperCase();
+
+            const elDistancia = document.getElementById('inp_distancia');
+            if (elDistancia && elDistancia.value) updates.distancia = elDistancia.value;
+
+            const elCategoria = document.getElementById('inp_categoria');
+            if (elCategoria && elCategoria.value.trim()) updates.categoria = elCategoria.value.trim();
+
+            const elTalla = document.getElementById('inp_talla_playera');
+            if (elTalla && elTalla.value.trim()) updates.talla_playera = elTalla.value.trim().toUpperCase();
+
+            const elEmail = document.getElementById('inp_email');
+            if (elEmail && elEmail.value.trim()) updates.email = elEmail.value.trim();
+
+            const elTelefono = document.getElementById('inp_telefono');
+            if (elTelefono && elTelefono.value.trim()) updates.telefono = elTelefono.value.trim();
+
+            const elSangre = document.getElementById('inp_tipo_sangre');
+            if (elSangre && elSangre.value.trim()) updates.tipo_sangre = elSangre.value.trim().toUpperCase();
+
+            const elContactoNombre = document.getElementById('inp_contacto_nombre');
+            if (elContactoNombre && elContactoNombre.value.trim()) updates.contacto_nombre = elContactoNombre.value.trim();
+
+            const elContactoTelefono = document.getElementById('inp_contacto_telefono');
+            if (elContactoTelefono && elContactoTelefono.value.trim()) updates.contacto_telefono = elContactoTelefono.value.trim();
+
+            // 2. Envío a Google Drive si el atleta eligió adjuntar archivos
+            if (elFoto && elFoto.files[0]) {
+                updates.foto_url = await uploadToGoogleDrive(elFoto.files[0], folio, 'FOTO');
+            }
+
+            if (elDoc1 && elDoc1.files[0]) {
+                updates.doc1_url = await uploadToGoogleDrive(elDoc1.files[0], folio, 'INE');
+            }
+
+            if (elDoc2 && elDoc2.files[0]) {
+                updates.doc2_url = await uploadToGoogleDrive(elDoc2.files[0], folio, 'RESPONSIVA');
+            }
+
+            // Registrar marca de tiempo de última modificación
+            updates.ultima_modificacion = new Date().toISOString();
+
+            // 3. Guardado en Supabase
+            const { error } = await dbClient.from('corredores').update(updates).eq('id', currentCorredor.id);
+            if (error) throw error;
+
+            alert('¡Información guardada e historial actualizado con éxito!');
+            window.location.reload();
+
+        } catch(err) {
+            alert('Error durante el proceso de guardado: ' + err.message);
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '💾 Guardar y Finalizar Carga de Expediente';
+            }
         }
     }
-}
     
     let dbClient = null;
     let currentCorredor = null;
@@ -485,21 +501,21 @@ const GOOGLE_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz9z7D
         if (folioUrl) document.getElementById('authFolio').value = folioUrl.trim().toUpperCase();
     });
 
-   function isMissing(val) {
-    if (val === undefined || val === null) return true;
-    const clean = String(val).trim().toUpperCase();
-    return (
-        clean === '' || 
-        clean === 'X' || 
-        clean === '-' || 
-        clean === 'NO' || 
-        clean === 'N/A' || 
-        clean === 'NO DEFINIÓ' || 
-        clean === 'NO DEFINIO' || 
-        clean === 'NO DEFINIDO' || 
-        clean === 'PENDIENTE'
-    );
-}
+    function isMissing(val) {
+        if (val === undefined || val === null) return true;
+        const clean = String(val).trim().toUpperCase();
+        return (
+            clean === '' || 
+            clean === 'X' || 
+            clean === '-' || 
+            clean === 'NO' || 
+            clean === 'N/A' || 
+            clean === 'NO DEFINIÓ' || 
+            clean === 'NO DEFINIO' || 
+            clean === 'NO DEFINIDO' || 
+            clean === 'PENDIENTE'
+        );
+    }
 
     // AUTENTICACIÓN ESCALONADA DE ATLETA Y REGISTRO DE HUELLA DE SISTEMA
     async function handleAuthentication(e) {
@@ -532,7 +548,7 @@ const GOOGLE_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz9z7D
                 const curpInput = document.getElementById('authCurp').value.trim().toUpperCase();
                 const phone4Input = document.getElementById('authPhone4').value.trim();
 
-             if (isMissing(data.curp)) {
+                if (isMissing(data.curp)) {
                     authStepLevel = 2;
                     document.getElementById('blockOptA').classList.add('hidden');
                     document.getElementById('blockOptB').classList.remove('hidden');
@@ -562,30 +578,25 @@ const GOOGLE_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz9z7D
             }
 
             // NIVEL 2: CORREO
-         // ✅ CÓDIGO CORREGIDO:
-if (authStepLevel === 2) {
-    // 1. PRIMERO declaramos e ingresamos el valor del input HTML
-    const emailInput = document.getElementById('authEmail').value.trim().toLowerCase();
-    
-    // 2. Obtenemos el correo registrado en Supabase
-    const dbEmail = data.email ? String(data.email).trim().toLowerCase() : '';
+            if (authStepLevel === 2) {
+                const emailInput = document.getElementById('authEmail').value.trim().toLowerCase();
+                const dbEmail = data.email ? String(data.email).trim().toLowerCase() : '';
 
-    // 3. AHORA SÍ comparamos
-    if (dbEmail === '' || dbEmail !== emailInput) {
-        authStepLevel = 3;
-        document.getElementById('blockOptB').classList.add('hidden');
-        document.getElementById('blockOptC').classList.remove('hidden');
-        document.getElementById('lblTryAttempt').innerText = 'Intento 3 de 3';
-        document.getElementById('authAlert').className = 'alert-box alert-warning';
-        document.getElementById('authAlert').innerText = 'Correo no coincidente o no registrado. Ingresa tu Primer Nombre.';
-        btn.disabled = false;
-        btn.innerText = 'Validar por Nombre';
-        return;
-    } else {
-        await startSession(data, 'CORREO');
-        return;
-    }
-}
+                if (dbEmail === '' || dbEmail !== emailInput) {
+                    authStepLevel = 3;
+                    document.getElementById('blockOptB').classList.add('hidden');
+                    document.getElementById('blockOptC').classList.remove('hidden');
+                    document.getElementById('lblTryAttempt').innerText = 'Intento 3 de 3';
+                    document.getElementById('authAlert').className = 'alert-box alert-warning';
+                    document.getElementById('authAlert').innerText = 'Correo no coincidente o no registrado. Ingresa tu Primer Nombre.';
+                    btn.disabled = false;
+                    btn.innerText = 'Validar por Nombre';
+                    return;
+                } else {
+                    await startSession(data, 'CORREO');
+                    return;
+                }
+            }
 
             // NIVEL 3: PRIMER NOMBRE
             if (authStepLevel === 3) {
@@ -613,29 +624,30 @@ if (authStepLevel === 2) {
         errDiv.innerText = msg;
         errDiv.classList.remove('hidden');
     }
-async function startSession(corredor, metodoAuth) {
-    currentCorredor = corredor;
-    const newAccesos = (corredor.accesos_realizados || 0) + 1;
 
-    const { error } = await dbClient
-        .from('corredores')
-        .update({ 
-            accesos_realizados: newAccesos,
-            ultimo_acceso: new Date().toISOString(),
-            metodo_ultimo_acceso: metodoAuth
-        })
-        .eq('id', corredor.id);
+    async function startSession(corredor, metodoAuth) {
+        currentCorredor = corredor;
+        const newAccesos = (corredor.accesos_realizados || 0) + 1;
 
-    if (error) {
-        console.warn("Error al registrar acceso:", error.message);
+        const { error } = await dbClient
+            .from('corredores')
+            .update({ 
+                accesos_realizados: newAccesos,
+                ultimo_acceso: new Date().toISOString(),
+                metodo_ultimo_acceso: metodoAuth
+            })
+            .eq('id', corredor.id);
+
+        if (error) {
+            console.warn("Error al registrar acceso:", error.message);
+        }
+
+        document.getElementById('stepAuth').classList.add('hidden');
+        document.getElementById('stepPortal').classList.remove('hidden');
+
+        renderDatosPersonales();
+        renderPendientesForm(corredor);
     }
-
-    document.getElementById('stepAuth').classList.add('hidden');
-    document.getElementById('stepPortal').classList.remove('hidden');
-
-    renderDatosPersonales();
-    renderPendientesForm(corredor);
-}
 
     function renderDatosPersonales() {
         const c = currentCorredor;
@@ -655,170 +667,152 @@ async function startSession(corredor, metodoAuth) {
     function renderFileInput(id, title, desc) {
         return `
             <div class="file-upload-item">
-                <label>${title} *</label>
+                <label>${title}</label>
                 <p style="font-size:0.75rem; color:var(--text-muted); margin-bottom:6px;">${desc}</p>
-                <input type="file" id="${id}" accept="image/*,application/pdf" class="form-control" style="background:white;" required>
+                <input type="file" id="${id}" accept="image/*,application/pdf" class="form-control" style="background:white;">
             </div>
         `;
     }
 
-function renderPendientesForm(c) {
-    const containerData = document.getElementById('containerDataInputs');
-    const containerDoc = document.getElementById('containerDocInputs');
+    function renderPendientesForm(c) {
+        const containerData = document.getElementById('containerDataInputs');
+        const containerDoc = document.getElementById('containerDocInputs');
 
-    if (!containerData || !containerDoc) return;
+        if (!containerData || !containerDoc) return;
 
-    containerData.innerHTML = '';
-    containerDoc.innerHTML = '';
+        containerData.innerHTML = '';
+        containerDoc.innerHTML = '';
 
-    let pendingData = 0;
-    let pendingDocs = 0;
+        let pendingData = 0;
+        let pendingDocs = 0;
 
-    // --- EVALUACIÓN DE DATOS PERSONALES ---
+        // --- EVALUACIÓN DE DATOS PERSONALES (OPCIONALES PARA PERMITIR ENVÍO PARCIAL) ---
 
-    // CURP
-    if (isMissing(c.curp) || String(c.curp).trim().length < 18) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>CURP *</label>
-                <input type="text" id="inp_curp" class="form-control" style="text-transform:uppercase;" maxlength="18" value="${!isMissing(c.curp) ? c.curp : ''}" required>
-            </div>`;
-    }
+        if (isMissing(c.curp) || String(c.curp).trim().length < 18) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>CURP (Opcional si no la tienes a la mano)</label>
+                    <input type="text" id="inp_curp" class="form-control" style="text-transform:uppercase;" maxlength="18" value="${!isMissing(c.curp) ? c.curp : ''}">
+                </div>`;
+        }
 
-    // SEGUNDO APELLIDO
-    if (isMissing(c.segundo_apellido)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Segundo Apellido *</label>
-                <input type="text" id="inp_segundo_apellido" class="form-control" value="${!isMissing(c.segundo_apellido) ? c.segundo_apellido : ''}" required>
-            </div>`;
-    }
+        if (isMissing(c.segundo_apellido)) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Segundo Apellido</label>
+                    <input type="text" id="inp_segundo_apellido" class="form-control" value="${!isMissing(c.segundo_apellido) ? c.segundo_apellido : ''}">
+                </div>`;
+        }
 
-    // DISTANCIA
-    if (isMissing(c.distancia)) {
-        pendingData++;
-        const distClean = c.distancia ? String(c.distancia).trim().toUpperCase() : '';
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Distancia *</label>
-                <select id="inp_distancia" class="form-control" required>
-                    <option value="">-- SELECCIONA DISTANCIA --</option>
-                    <option value="5K Recreativa" ${distClean === '5K RECREATIVA' ? 'selected' : ''}>5K Recreativa</option>
-                    <option value="10K" ${distClean === '10K' ? 'selected' : ''}>10K</option>
-                    <option value="21K" ${distClean === '21K' ? 'selected' : ''}>21K (Medio Maratón)</option>
-                    <option value="42K" ${distClean === '42K' ? 'selected' : ''}>42K (Maratón)</option>
-                </select>
-            </div>`;
-    }
+        if (isMissing(c.distancia)) {
+            pendingData++;
+            const distClean = c.distancia ? String(c.distancia).trim().toUpperCase() : '';
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Distancia</label>
+                    <select id="inp_distancia" class="form-control">
+                        <option value="">-- SELECCIONA DISTANCIA --</option>
+                        <option value="5K Recreativa" ${distClean === '5K RECREATIVA' ? 'selected' : ''}>5K Recreativa</option>
+                        <option value="10K" ${distClean === '10K' ? 'selected' : ''}>10K</option>
+                        <option value="21K" ${distClean === '21K' ? 'selected' : ''}>21K (Medio Maratón)</option>
+                        <option value="42K" ${distClean === '42K' ? 'selected' : ''}>42K (Maratón)</option>
+                    </select>
+                </div>`;
+        }
 
-    // CATEGORÍA
-    if (isMissing(c.categoria)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Categoría *</label>
-                <input type="text" id="inp_categoria" class="form-control" value="${!isMissing(c.categoria) ? c.categoria : ''}" required>
-            </div>`;
-    }
+        if (isMissing(c.categoria)) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Categoría</label>
+                    <input type="text" id="inp_categoria" class="form-control" value="${!isMissing(c.categoria) ? c.categoria : ''}">
+                </div>`;
+        }
 
-    // TALLA DE PLAYERA
-    if (isMissing(c.talla_playera)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Talla de Playera *</label>
-                <input type="text" id="inp_talla_playera" class="form-control" value="${!isMissing(c.talla_playera) ? c.talla_playera : ''}" required>
-            </div>`;
-    }
+        if (isMissing(c.talla_playera)) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Talla de Playera</label>
+                    <input type="text" id="inp_talla_playera" class="form-control" value="${!isMissing(c.talla_playera) ? c.talla_playera : ''}">
+                </div>`;
+        }
 
-    // EMAIL
-    if (isMissing(c.email) || !String(c.email).includes('@')) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Correo Electrónico *</label>
-                <input type="email" id="inp_email" class="form-control" style="text-transform:none;" value="${!isMissing(c.email) ? c.email : ''}" required>
-            </div>`;
-    }
+        if (isMissing(c.email) || !String(c.email).includes('@')) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Correo Electrónico</label>
+                    <input type="email" id="inp_email" class="form-control" style="text-transform:none;" value="${!isMissing(c.email) ? c.email : ''}">
+                </div>`;
+        }
 
-    // TELÉFONO
-    if (isMissing(c.telefono) || String(c.telefono).trim().length < 10) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Teléfono Celular *</label>
-                <input type="tel" id="inp_telefono" class="form-control" maxlength="10" value="${!isMissing(c.telefono) ? c.telefono : ''}" required>
-            </div>`;
-    }
+        if (isMissing(c.telefono) || String(c.telefono).trim().length < 10) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Teléfono Celular</label>
+                    <input type="tel" id="inp_telefono" class="form-control" maxlength="10" value="${!isMissing(c.telefono) ? c.telefono : ''}">
+                </div>`;
+        }
 
-    // TIPO DE SANGRE
-    if (isMissing(c.tipo_sangre)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Tipo de Sangre *</label>
-                <input type="text" id="inp_tipo_sangre" class="form-control" value="${!isMissing(c.tipo_sangre) ? c.tipo_sangre : ''}" required>
-            </div>`;
-    }
+        if (isMissing(c.tipo_sangre)) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Tipo de Sangre</label>
+                    <input type="text" id="inp_tipo_sangre" class="form-control" value="${!isMissing(c.tipo_sangre) ? c.tipo_sangre : ''}">
+                </div>`;
+        }
 
-    // CONTACTO DE EMERGENCIA
-    if (isMissing(c.contacto_nombre) || isMissing(c.contacto_telefono)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Contacto de Emergencia (Nombre) *</label>
-                <input type="text" id="inp_contacto_nombre" class="form-control" value="${!isMissing(c.contacto_nombre) ? c.contacto_nombre : ''}" required>
-            </div>
-            <div class="form-group">
-                <label>Contacto de Emergencia (Teléfono) *</label>
-                <input type="tel" id="inp_contacto_telefono" class="form-control" value="${!isMissing(c.contacto_telefono) ? c.contacto_telefono : ''}" required>
-            </div>`;
-    }
+        if (isMissing(c.contacto_nombre) || isMissing(c.contacto_telefono)) {
+            pendingData++;
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>Contacto de Emergencia (Nombre)</label>
+                    <input type="text" id="inp_contacto_nombre" class="form-control" value="${!isMissing(c.contacto_nombre) ? c.contacto_nombre : ''}">
+                </div>
+                <div class="form-group">
+                    <label>Contacto de Emergencia (Teléfono)</label>
+                    <input type="tel" id="inp_contacto_telefono" class="form-control" value="${!isMissing(c.contacto_telefono) ? c.contacto_telefono : ''}">
+                </div>`;
+        }
 
-    // --- EVALUACIÓN DE DOCUMENTAL PENDIENTE ---
+        // --- EVALUACIÓN DE DOCUMENTAL PENDIENTE ---
 
-    if (isMissing(c.foto_url)) {
-        pendingDocs++;
-        containerDoc.innerHTML += renderFileInput('f_foto', '📷 Fotografía Oficial', 'Fotografía clara de rostro.');
-    }
+        if (isMissing(c.foto_url)) {
+            pendingDocs++;
+            containerDoc.innerHTML += renderFileInput('f_foto', '📷 Fotografía Oficial', 'Fotografía clara de rostro.');
+        }
 
-    if (isMissing(c.doc1_url)) {
-        pendingDocs++;
-        containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE)', 'Frente y reverso.');
-    }
+        if (isMissing(c.doc1_url)) {
+            pendingDocs++;
+            containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE)', 'Frente y reverso.');
+        }
 
-    if (isMissing(c.doc2_url)) {
-        pendingDocs++;
-        containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Documento de deslinde.');
-    }
+        if (isMissing(c.doc2_url)) {
+            pendingDocs++;
+            containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Documento de deslinde.');
+        }
 
-    // Control de visibilidad de tarjetas
-    const cardData = document.getElementById('cardDataInputs');
-    const cardDoc = document.getElementById('cardDocInputs');
-    const cardCompleted = document.getElementById('cardCompleted');
-    const btnSubmitContainer = document.getElementById('btnSubmitContainer');
+        // Control de visibilidad de tarjetas
+        const cardData = document.getElementById('cardDataInputs');
+        const cardDoc = document.getElementById('cardDocInputs');
+        const cardCompleted = document.getElementById('cardCompleted');
+        const btnSubmitContainer = document.getElementById('btnSubmitContainer');
 
-    if (cardData) cardData.classList.toggle('hidden', pendingData === 0);
-    if (cardDoc) cardDoc.classList.toggle('hidden', pendingDocs === 0);
+        if (cardData) cardData.classList.toggle('hidden', pendingData === 0);
+        if (cardDoc) cardDoc.classList.toggle('hidden', pendingDocs === 0);
 
-    if (pendingData === 0 && pendingDocs === 0) {
-        if (cardCompleted) cardCompleted.classList.remove('hidden');
-        if (btnSubmitContainer) btnSubmitContainer.classList.add('hidden');
-    } else {
-        if (cardCompleted) cardCompleted.classList.add('hidden');
-        if (btnSubmitContainer) btnSubmitContainer.classList.remove('hidden');
-    }
-}
-    
-    function uploadBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = (error) => reject(error);
-            reader.readAsDataURL(file);
-        });
+        if (pendingData === 0 && pendingDocs === 0) {
+            if (cardCompleted) cardCompleted.classList.remove('hidden');
+            if (btnSubmitContainer) btnSubmitContainer.classList.add('hidden');
+        } else {
+            if (cardCompleted) cardCompleted.classList.add('hidden');
+            if (btnSubmitContainer) btnSubmitContainer.classList.remove('hidden');
+        }
     }
 
     // FUNCIONES DEL PANEL ADMINISTRADOR
@@ -916,16 +910,15 @@ function renderPendientesForm(c) {
         });
     }
 
-    // ✅ CÓDIGO CORREGIDO:
-function getCamposFaltantesList(c) {
-    const faltantes = [];
-    if (isMissing(c.curp)) faltantes.push('CURP Incompleta o con "X"');
-    if (isMissing(c.segundo_apellido)) faltantes.push('Segundo Apellido Faltante');
-    if (isMissing(c.email) || !c.email.includes('@')) faltantes.push('Correo Electrónico');
-    if (isMissing(c.distancia)) faltantes.push('Distancia de Carrera');
-    if (isMissing(c.contacto_nombre) || isMissing(c.contacto_telefono)) faltantes.push('Datos de Emergencia');
-    return faltantes;
-}
+    function getCamposFaltantesList(c) {
+        const faltantes = [];
+        if (isMissing(c.curp)) faltantes.push('CURP Incompleta o con "X"');
+        if (isMissing(c.segundo_apellido)) faltantes.push('Segundo Apellido Faltante');
+        if (isMissing(c.email) || !c.email.includes('@')) faltantes.push('Correo Electrónico');
+        if (isMissing(c.distancia)) faltantes.push('Distancia de Carrera');
+        if (isMissing(c.contacto_nombre) || isMissing(c.contacto_telefono)) faltantes.push('Datos de Emergencia');
+        return faltantes;
+    }
 
     function renderAdminTable(data) {
         const tbody = document.getElementById('tblAdminAuditoria');
@@ -947,9 +940,9 @@ function getCamposFaltantesList(c) {
             if (hasFoto) itemsOk++;
             if (hasIne) itemsOk++;
             if (hasCarta) itemsOk++;
-         if (!isMissing(c.curp)) itemsOk++;
-        if (!isMissing(c.email) && c.email.includes('@')) itemsOk++;
-        if (!isMissing(c.contacto_nombre)) itemsOk++;
+            if (!isMissing(c.curp)) itemsOk++;
+            if (!isMissing(c.email) && c.email.includes('@')) itemsOk++;
+            if (!isMissing(c.contacto_nombre)) itemsOk++;
 
             const pct = Math.round((itemsOk / totalItems) * 100);
             
@@ -962,25 +955,23 @@ function getCamposFaltantesList(c) {
             }
 
             const htmlDocs = `
-                <span class="badge-tag ${hasFoto ? 'badge-success' : 'badge-danger'}">${hasFoto ? '✓' : '❌'} Fotograf\u00eda Oficial</span><br>
-                <span class="badge-tag ${hasIne ? 'badge-success' : 'badge-danger'}">${hasIne ? '✓' : '❌'} Identificaci\u00f3n Oficial / INE</span><br>
+                <span class="badge-tag ${hasFoto ? 'badge-success' : 'badge-danger'}">${hasFoto ? '✓' : '❌'} Fotografía Oficial</span><br>
+                <span class="badge-tag ${hasIne ? 'badge-success' : 'badge-danger'}">${hasIne ? '✓' : '❌'} Identificación Oficial / INE</span><br>
                 <span class="badge-tag ${hasCarta ? 'badge-success' : 'badge-danger'}">${hasCarta ? '✓' : '❌'} Carta Responsiva Firmada</span>
             `;
 
             const accesos = c.accesos_realizados || 0;
             const fechaUltAcceso = c.ultimo_acceso ? new Date(c.ultimo_acceso).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }) : 'Sin registro';
             const metodoAcceso = c.metodo_ultimo_acceso || 'N/A';
-            const historialCambios = c.historial_cambios || 'Sin cambios realizados';
-            const fechaUltModif = c.ultima_modificacion ? new Date(c.ultima_modificacion).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }) : 'N/A';
+            const fechaUltModif = c.ultima_modificacion ? new Date(c.ultima_modificacion).toLocaleString('es-MX', { dateStyle: 'short', timeStyle: 'short' }) : 'Sin registro';
 
             const htmlHuella = `
                 <span class="badge-tag ${accesos > 0 ? 'badge-info' : 'badge-warning'}">🔢 Accesos: ${accesos} / 2</span><br>
                 <small style="color:var(--text-muted);"><strong>Último Ingreso:</strong> ${fechaUltAcceso}</small><br>
                 <small style="color:var(--text-muted);"><strong>Vía:</strong> ${metodoAcceso}</small><br>
                 <hr style="border:0; border-top:1px dashed #cbd5e1; margin: 4px 0;">
-                <small style="color:var(--primary); font-weight:bold;">📝 Cambios Guardados:</small><br>
-                <small style="color:var(--text-main);">${historialCambios}</small><br>
-                <small style="color:var(--text-muted);"><strong>Fecha Cambios:</strong> ${fechaUltModif}</small>
+                <small style="color:var(--primary); font-weight:bold;">📝 Última Modificación:</small><br>
+                <small style="color:var(--text-muted);">${fechaUltModif}</small>
             `;
 
             const phone = c.telefono ? c.telefono.replace(/\D/g, '') : '';
@@ -1003,7 +994,7 @@ function getCamposFaltantesList(c) {
                     </td>
                     <td>${htmlCampos}</td>
                     <td>${htmlDocs}</td>
-                    <td><small>${c.comentarios_atleta || '<em>Sin observaciones</em>'}</small></td>
+                    <td><small>${c.comentarios || '<em>Sin observaciones</em>'}</small></td>
                     <td>${htmlHuella}</td>
                 </tr>
             `;
@@ -1038,8 +1029,6 @@ function getCamposFaltantesList(c) {
         window.open(`https://api.whatsapp.com/send?phone=524731372597&text=${encodeURIComponent(text)}`, '_blank');
         closeModal('modalSupport');
     }
-
-
 </script>
 
 </body>
