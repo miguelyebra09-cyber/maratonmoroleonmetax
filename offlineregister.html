@@ -418,7 +418,6 @@
         <li><button class="nav-btn" onclick="openRegistrosModal()">📋 Ver / Editar Registros</button></li>
         <li><button class="nav-btn" onclick="openMetricasModal()">📊 Métricas</button></li>
         
-        <!-- BOTÓN NUEVO DE AUDITORÍA Y REVISIÓN -->
         <li>
             <a href="revision-registros.html" class="nav-btn" style="background-color: #d97706; color: white; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
                 🔍 Auditoría y Revisión
@@ -456,7 +455,6 @@
                     <input type="text" id="fechaRegistro" readonly>
                 </div>
                 
-                <!-- CAMPO CURP REUBICADO -->
                 <div class="form-group">
                     <label>CURP *</label>
                     <input type="text" id="curp" required maxlength="18" placeholder="Ingresa tu CURP" style="text-transform: uppercase;">
@@ -502,7 +500,7 @@
             </div>
         </div>
 
-        <!-- SECCIÓN 2: INFORMACIÓN DE IDENTIDAD Y RESIDENCIA (CAMPOS EDITABLES MANUALMENTE) -->
+        <!-- SECCIÓN 2: INFORMACIÓN DE IDENTIDAD Y RESIDENCIA -->
         <div class="card">
             <div class="card-header">
                 <div class="card-subtitle">Información de Identidad</div>
@@ -587,89 +585,84 @@
         </div>
 
         <!-- SECCIÓN 3: PERFIL DEL CORREDOR, PLAYERA Y FOTOS -->
-       <!-- SECCIÓN 3: PERFIL DEL CORREDOR, PLAYERA Y FOTOS -->
-<div class="card">
-    <div class="card-header">
-        <div class="card-subtitle">Perfil del Corredor y Documentación</div>
-        <div class="card-title">Playera, fotografía y comprobantes</div>
-    </div>
-    
-    <!-- Campos de selección principales -->
-    <div class="form-grid" style="margin-bottom: 20px;">
-        <div class="form-group">
-            <label>Talla de playera *</label>
-            <select id="tallaPlayera" required>
-                <option value="">-----------</option>
-                <option value="XS">Extra Chica (XS)</option>
-                <option value="S">Chica (S)</option>
-                <option value="M">Mediana (M)</option>
-                <option value="L">Grande (L)</option>
-                <option value="XL">Extra Grande (XL)</option>
-            </select>
-        </div>
-        <div class="form-group">
-            <label>Perfil del corredor *</label>
-            <select id="perfilCorredor" required>
-                <option value="">Selecciona tu perfil</option>
-                <option value="No especifica">No Especifica</option>
-                <option value="Recreativo">Recreativo</option>
-                <option value="Amateur">Amateur</option>
-                <option value="Intermedio">Intermedio</option>
-                <option value="Semiprofesional">Semiprofesional</option>
-                <option value="Profesional">Profesional</option>
-            </select>
-        </div>
-    </div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-subtitle">Perfil del Corredor y Documentación</div>
+                <div class="card-title">Playera, fotografía y comprobantes</div>
+            </div>
+            
+            <div class="form-grid" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label>Talla de playera *</label>
+                    <select id="tallaPlayera" required>
+                        <option value="">-----------</option>
+                        <option value="XS">Extra Chica (XS)</option>
+                        <option value="S">Chica (S)</option>
+                        <option value="M">Mediana (M)</option>
+                        <option value="L">Grande (L)</option>
+                        <option value="XL">Extra Grande (XL)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Perfil del corredor *</label>
+                    <select id="perfilCorredor" required>
+                        <option value="">Selecciona tu perfil</option>
+                        <option value="No especifica">No Especifica</option>
+                        <option value="Recreativo">Recreativo</option>
+                        <option value="Amateur">Amateur</option>
+                        <option value="Intermedio">Intermedio</option>
+                        <option value="Semiprofesional">Semiprofesional</option>
+                        <option value="Profesional">Profesional</option>
+                    </select>
+                </div>
+            </div>
 
-    <!-- Rejilla de Subida de Archivos y Vistas Previas Emparejadas -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
-        
-        <!-- Bloque 1: Fotografía Oficial -->
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div class="form-group">
-                <label>Fotografía oficial</label>
-                <input type="file" id="fotoFile" accept="image/*" onchange="previewImage(event)">
-            </div>
-            <div class="photo-preview-box" id="photoPreview">
-                La foto aparecerá aquí cuando esté seleccionada.
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px;">
+                <!-- Bloque 1: Fotografía Oficial -->
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div class="form-group">
+                        <label>Fotografía oficial</label>
+                        <input type="file" id="fotoFile" accept="image/*" onchange="previewImage(event)">
+                    </div>
+                    <div class="photo-preview-box" id="photoPreview">
+                        La foto aparecerá aquí cuando esté seleccionada.
+                    </div>
+                </div>
+
+                <!-- Bloque 2: Comprobante de Pago -->
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div class="form-group">
+                        <label>Evidencia de Pago (Comprobante)</label>
+                        <input type="file" id="pagoFile" accept="image/*,application/pdf" onchange="previewPago(event)">
+                    </div>
+                    <div class="photo-preview-box" id="pagoPreview">
+                        El comprobante aparecerá aquí.
+                    </div>
+                </div>
+
+                <!-- Bloque 3: Identificación Oficial -->
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div class="form-group">
+                        <label>Identificación Oficial (INE)(DOC1)</label>
+                        <input type="file" id="doc1File" accept="image/*,application/pdf" onchange="previewDoc(event, 'doc1Preview')">
+                    </div>
+                    <div class="photo-preview-box" id="doc1Preview">
+                        Documento 1 aparecerá aquí.
+                    </div>
+                </div>
+
+                <!-- Bloque 4: Carta Responsiva -->
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    <div class="form-group">
+                        <label>Carta Responsiva (Doc 2)</label>
+                        <input type="file" id="doc2File" accept="image/*,application/pdf" onchange="previewDoc(event, 'doc2Preview')">
+                    </div>
+                    <div class="photo-preview-box" id="doc2Preview">
+                        Carta Responsiva DOC2 aparecerá aquí.
+                    </div>
+                </div>
             </div>
         </div>
-
-        <!-- Bloque 2: Comprobante de Pago -->
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div class="form-group">
-                <label>Evidencia de Pago (Comprobante)</label>
-                <input type="file" id="pagoFile" accept="image/*,application/pdf" onchange="previewPago(event)">
-            </div>
-            <div class="photo-preview-box" id="pagoPreview">
-                El comprobante aparecerá aquí.
-            </div>
-        </div>
-
-        <!-- Bloque 3: Identificación Oficial -->
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div class="form-group">
-                <label>Identificación Oficial (INE)(DOC1)</label>
-                <input type="file" id="doc1File" accept="image/*,application/pdf" onchange="previewDoc(event, 'doc1Preview')">
-            </div>
-            <div class="photo-preview-box" id="doc1Preview">
-                Documento 1 aparecerá aquí.
-            </div>
-        </div>
-
-        <!-- Bloque 4: Carta Responsiva -->
-        <div style="display: flex; flex-direction: column; gap: 8px;">
-            <div class="form-group">
-                <label>Carta Responsiva (Doc 2)</label>
-                <input type="file" id="doc2File" accept="image/*,application/pdf" onchange="previewDoc(event, 'doc2Preview')">
-            </div>
-            <div class="photo-preview-box" id="doc2Preview">
-                Carta Responsiva DOC2 aparecerá aquí.
-            </div>
-        </div>
-
-    </div>
-</div>
         
         <!-- SECCIÓN 4: EXPEDIENTE MÉDICO Y SEGURIDAD -->
         <div class="card">
@@ -707,7 +700,6 @@
                 </div>
             </div>
 
-            <!-- Padecimientos Crónicos -->
             <label style="font-size: 0.85rem; font-weight: 700; color: #1e293b;">Padecimientos crónicos <span style="background:#e0f2fe; color:#0369a1; padding:2px 6px; border-radius:4px; font-size:0.7rem;">SELECCIÓN MÚLTIPLE</span></label>
             <div class="checkbox-grid">
                 <label class="checkbox-card">
@@ -780,7 +772,7 @@
             </div>
         </div>
 
-      <button type="submit" id="submitBtn" class="btn-submit">Confirmar Pago en Efectivo y Generar Folio Oficial (MM27OFF-RUN-MMO1026)</button>
+        <button type="submit" id="submitBtn" class="btn-submit">Confirmar Pago en Efectivo y Generar Folio Oficial (MM27OFF-RUN-MMO1026)</button>
     </form>
 
 </div>
@@ -849,61 +841,63 @@
             <input type="text" id="searchRegistros" placeholder="Buscar por Nombre, CURP o Folio..." style="flex:1; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);" onkeyup="filterRegistros()">
         </div>
 
-<!-- SUBMODAL: VISTA DE CARNET DINÁMICO DE PARTICIPANTE -->
-<div class="modal" id="carnetVistaModal">
-    <div class="modal-content" style="max-width: 500px; text-align: left;">
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
-            <h3 style="color: var(--primary);">🪪 Carnet del Atleta</h3>
-            <button class="btn-close" onclick="closeModal('carnetVistaModal')">✖</button>
-        </div>
-        
-        <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
-            <div id="carnetFotoBox" style="width: 100px; height: 100px; border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #64748b; text-align: center;">
-                Sin Foto
-            </div>
-            <div>
-                <h4 id="carnetNombre" style="font-size: 1.1rem; color: var(--primary); margin-bottom: 4px;">-</h4>
-                <p style="font-size: 0.85rem; color: var(--text-muted);"><strong>Folio:</strong> <span id="carnetFolio">-</span></p>
-                <p style="font-size: 0.85rem; color: var(--text-muted);"><strong>CURP:</strong> <span id="carnetCurp">-</span></p>
-                <p style="font-size: 0.85rem; color: var(--text-muted);"><strong>Distancia:</strong> <span id="carnetDistancia">-</span></p>
-            </div>
-        </div>
+        <!-- SUBMODAL: VISTA DE CARNET DINÁMICO DE PARTICIPANTE -->
+        <div class="modal" id="carnetVistaModal">
+            <div class="modal-content" style="max-width: 500px; text-align: left;">
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
+                    <h3 style="color: var(--primary);">🪪 Carnet del Atleta</h3>
+                    <button class="btn-close" onclick="closeModal('carnetVistaModal')">✖</button>
+                </div>
+                
+                <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
+                    <div id="carnetFotoBox" style="width: 100px; height: 100px; border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #64748b; text-align: center;">
+                        Sin Foto
+                    </div>
+                    <div>
+                        <h4 id="carnetNombre" style="font-size: 1.1rem; color: var(--primary); margin-bottom: 4px;">-</h4>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);"><strong>Folio:</strong> <span id="carnetFolio">-</span></p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);"><strong>CURP:</strong> <span id="carnetCurp">-</span></p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);"><strong>Distancia:</strong> <span id="carnetDistancia">-</span></p>
+                    </div>
+                </div>
 
-        <div class="card" style="padding: 12px; margin-bottom: 12px; background: #f8fafc;">
-            <div class="card-subtitle" style="margin-bottom: 8px;">Estatus de Expediente de Documentos</div>
-            <ul style="list-style: none; padding: 0; font-size: 0.9rem; line-height: 2;">
-                <li><span id="chkFoto"></span> 📸 Fotografía Oficial</li>
-                <li><span id="chkINE"></span> 🪪 Identificación Oficial (INE)</li>
-                <li><span id="chkPago"></span> 💳 Comprobante de Pago</li>
-                <li><span id="chkCarta"></span> 📄 Carta Responsiva</li>
-            </ul>
-        </div>
+                <div class="card" style="padding: 12px; margin-bottom: 12px; background: #f8fafc;">
+                    <div class="card-subtitle" style="margin-bottom: 8px;">Estatus de Expediente de Documentos</div>
+                    <ul style="list-style: none; padding: 0; font-size: 0.9rem; line-height: 2;">
+                        <li><span id="chkFoto"></span> 📸 Fotografía Oficial</li>
+                        <li><span id="chkINE"></span> 🪪 Identificación Oficial (INE)</li>
+                        <li><span id="chkPago"></span> 💳 Comprobante de Pago</li>
+                        <li><span id="chkCarta"></span> 📄 Carta Responsiva</li>
+                    </ul>
+                </div>
 
-        <div style="text-align: right;">
-            <button class="btn-close" onclick="closeModal('carnetVistaModal')">Cerrar Carnet</button>
+                <div style="text-align: right;">
+                    <button class="btn-close" onclick="closeModal('carnetVistaModal')">Cerrar Carnet</button>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
         
         <div class="table-responsive">
-    <table>
-        <thead>
-            <tr>
-                <th>Foto</th>
-                <th>Fecha</th>
-                <th>Folio</th>
-                <th>Nombre Completo</th>
-                <th>CURP</th>
-                <th>Distancia</th>
-                <th>Categoría</th>
-                <th>Expediente</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody id="registrosTableBody">
-            <!-- Filas dinámicas -->
-        </tbody>
-    </table>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Folio</th>
+                        <th>Nombre Completo</th>
+                        <th>CURP</th>
+                        <th>Distancia</th>
+                        <th>Categoría</th>
+                        <th>Talla</th>
+                        <th>Monto</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="registrosTableBody">
+                    <!-- Filas dinámicas -->
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <!-- MODAL 4: FORMULARIO DE EDICIÓN DE REGISTRO INDIVIDUAL COMPLETO -->
@@ -919,7 +913,7 @@
                 </div>
                 <div class="form-group">
                     <label>CURP</label>
-                    <input type="text" id="edit_curp" required>
+                    <input type="text" id="edit_curp" required style="text-transform: uppercase;">
                 </div>
                 <div class="form-group">
                     <label>Nombre(s)</label>
@@ -1036,56 +1030,56 @@
                     <textarea id="edit_comentarios" rows="2"></textarea>
                 </div>
 
-<!-- SECCIÓN: EXPEDIENTE DIGITAL Y SUBIDA DE DOCUMENTOS -->
-        <div class="form-group" style="grid-column: span 2; margin-top: 20px;">
-            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 16px;">
-            <h4 style="color: var(--primary, #1e293b); margin-bottom: 12px; font-size: 1rem; display: flex; align-items: center; gap: 8px;">
-                📂 Expediente Digital del Atleta
-            </h4>
+                <!-- SECCIÓN: EXPEDIENTE DIGITAL Y SUBIDA DE DOCUMENTOS -->
+                <div class="form-group" style="grid-column: span 2; margin-top: 20px;">
+                    <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 16px;">
+                    <h4 style="color: var(--primary, #1e293b); margin-bottom: 12px; font-size: 1rem; display: flex; align-items: center; gap: 8px;">
+                        📂 Expediente Digital del Atleta
+                    </h4>
 
-            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
-                <!-- 1. Fotografía Oficial -->
-                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px; color: #334155;">Fotografía Oficial</label>
-                    <input type="file" id="editFotoFile" accept="image/*" class="form-control" style="font-size: 0.8rem; width: 100%;">
-                    <div id="editFotoPreview" style="margin-top: 8px; font-size: 0.8rem; background: #ffffff; padding: 8px; border-radius: 6px; border: 1px dashed #cbd5e1; text-align: center;">
-                        Sin foto cargada
-                    </div>
-                </div>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                        <!-- 1. Fotografía Oficial -->
+                        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px; color: #334155;">Fotografía Oficial</label>
+                            <input type="file" id="editFotoFile" accept="image/*" class="form-control" style="font-size: 0.8rem; width: 100%;">
+                            <div id="editFotoPreview" style="margin-top: 8px; font-size: 0.8rem; background: #ffffff; padding: 8px; border-radius: 6px; border: 1px dashed #cbd5e1; text-align: center;">
+                                Sin foto cargada
+                            </div>
+                        </div>
 
-                <!-- 2. Evidencia de Pago -->
-                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px; color: #334155;">Evidencia de Pago (Comprobante)</label>
-                    <input type="file" id="editPagoFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem; width: 100%;">
-                    <div id="editPagoPreview" style="margin-top: 8px; font-size: 0.8rem; background: #ffffff; padding: 8px; border-radius: 6px; border: 1px dashed #cbd5e1; text-align: center;">
-                        Sin comprobante cargado
-                    </div>
-                </div>
+                        <!-- 2. Evidencia de Pago -->
+                        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px; color: #334155;">Evidencia de Pago (Comprobante)</label>
+                            <input type="file" id="editPagoFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem; width: 100%;">
+                            <div id="editPagoPreview" style="margin-top: 8px; font-size: 0.8rem; background: #ffffff; padding: 8px; border-radius: 6px; border: 1px dashed #cbd5e1; text-align: center;">
+                                Sin comprobante cargado
+                            </div>
+                        </div>
 
-                <!-- 3. Identificación Oficial (INE) -->
-                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px; color: #334155;">Identificación Oficial (INE) (DOC1)</label>
-                    <input type="file" id="editIneFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem; width: 100%;">
-                    <div id="editInePreview" style="margin-top: 8px; font-size: 0.8rem; background: #ffffff; padding: 8px; border-radius: 6px; border: 1px dashed #cbd5e1; text-align: center;">
-                        Sin documento 1 cargado
-                    </div>
-                </div>
+                        <!-- 3. Identificación Oficial (INE) -->
+                        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px; color: #334155;">Identificación Oficial (INE) (DOC1)</label>
+                            <input type="file" id="editIneFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem; width: 100%;">
+                            <div id="editInePreview" style="margin-top: 8px; font-size: 0.8rem; background: #ffffff; padding: 8px; border-radius: 6px; border: 1px dashed #cbd5e1; text-align: center;">
+                                Sin documento 1 cargado
+                            </div>
+                        </div>
 
-                <!-- 4. Carta Responsiva -->
-                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
-                    <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px; color: #334155;">Carta Responsiva (Doc 2)</label>
-                    <input type="file" id="editCartaFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem; width: 100%;">
-                    <div id="editCartaPreview" style="margin-top: 8px; font-size: 0.8rem; background: #ffffff; padding: 8px; border-radius: 6px; border: 1px dashed #cbd5e1; text-align: center;">
-                        Sin carta responsiva cargada
+                        <!-- 4. Carta Responsiva -->
+                        <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                            <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px; color: #334155;">Carta Responsiva (Doc 2)</label>
+                            <input type="file" id="editCartaFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem; width: 100%;">
+                            <div id="editCartaPreview" style="margin-top: 8px; font-size: 0.8rem; background: #ffffff; padding: 8px; border-radius: 6px; border: 1px dashed #cbd5e1; text-align: center;">
+                                Sin carta responsiva cargada
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-                
-            </div>
+
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px;">
                 <button type="button" class="btn-close" onclick="closeModal('editModal')">Cancelar</button>
-                <button type="submit" class="btn-print" style="background-color: var(--success);">Guardar Cambios</button>
+                <button type="submit" id="btnSaveEdit" class="btn-print" style="background-color: var(--success);">Guardar Cambios</button>
             </div>
         </form>
     </div>
@@ -1135,9 +1129,7 @@
     </div>
 </div>
 
-<!-- =======================================================
-     MODAL 1: EXTRAER DATOS DESDE WHATSAPP (IMAGEN O TEXTO)
-======================================================= -->
+<!-- MODAL EXTRAER DESDE WHATSAPP -->
 <div class="modal" id="whatsappExtractModal">
     <div class="modal-content modal-large">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
@@ -1147,13 +1139,11 @@
             <button class="btn-close" onclick="closeModal('whatsappExtractModal')">✖ Cerrar</button>
         </div>
 
-        <!-- Pestañas de Selección -->
         <div style="display: flex; gap: 10px; margin-bottom: 16px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px;">
             <button id="tabImgBtn" class="btn-action" style="background-color: var(--primary-blue);" onclick="switchWaTab('img')">🖼️ Opción A: Cargar / Pegar Imagen</button>
             <button id="tabTxtBtn" class="btn-action" style="background-color: #64748b;" onclick="switchWaTab('txt')">📋 Opción B: Pegar Texto Directo</button>
         </div>
 
-        <!-- OPCCIÓN A: CARGAR / PEGAR CAPTURA -->
         <div id="waTabImg">
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
                 Puedes pegar directamente la captura del chat con <kbd style="background:#e2e8f0; padding:2px 6px; border-radius:4px;">Ctrl + V</kbd> o seleccionar una imagen desde tu equipo.
@@ -1165,7 +1155,6 @@
             </div>
         </div>
 
-        <!-- OPCIÓN B: PEGAR TEXTO -->
         <div id="waTabTxt" style="display: none;">
             <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">
                 Pega el mensaje con la plantilla de registro recibida por WhatsApp:
@@ -1182,10 +1171,7 @@
     </div>
 </div>
 
-<!-- =======================================================
-     MODAL 2: ESCANEAR E EXTRAER DATOS DE IDENTIFICACIÓN
-======================================================= -->
-<!-- MODAL 2: LECTURA DE IDENTIFICACIÓN OFICIAL (INE) -->
+<!-- MODAL LECTURA DE IDENTIFICACIÓN OFICIAL (INE) -->
 <div class="modal" id="docExtractModal">
     <div class="modal-content modal-large">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -1200,7 +1186,6 @@
         </p>
 
         <div style="display: grid; grid-template-columns: 280px 1fr; gap: 16px;">
-            <!-- Columna Izquierda: Vista previa de imagen -->
             <div>
                 <input type="file" id="docFileInput" accept="image/*" onchange="processDocImage(event)" style="margin-bottom: 8px; width: 100%; font-size: 0.8rem;">
                 <div id="docPreviewBox" class="photo-preview-box" style="height: 220px;">
@@ -1211,7 +1196,6 @@
                 </button>
             </div>
 
-            <!-- Columna Derecha: Salida de Texto Estructurado -->
             <div style="display: flex; flex-direction: column;">
                 <label style="font-size: 0.85rem; font-weight: bold; margin-bottom: 6px; color: var(--primary);">
                     Texto Extraído Formateado:
@@ -1232,15 +1216,11 @@
     </div>
 </div>
     
-    
 <script>
-    
-    // 1. Inicialización ultra-segura para evitar conflictos globales de identificadores
+    // 1. Configuración de Supabase y Apps Script
     const SUPABASE_URL = 'https://rpcevbxzpfgyobehgjth.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwY2V2Ynh6cGZneW9iZWhnanRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMDA3MDQsImV4cCI6MjEwMTg3NjcwNH0.hECuSvVKVehKZjZ9jMqwHM1xspD2l1kS3G9X1jfHIuk';
-
-    // AGREGAR AQUÍ LA URL DE TU SCRIPT DE GOOGLE:
-const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwlzXJVU6I_b8AZtd9MVXjdfQ9qiLPIo1CnZMwccAnpwbmP4jgpjCuy2oS3TGM_RvDL/exec';
+    const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9z7DO_lQyQ3F9KOJX2_7F2ts6cvBvLl1HWKk6KHfcNQ-9heDu2IB6LUPO7StDBG1V/exec';
     
     let dbClient = null;
     try {
@@ -1253,61 +1233,53 @@ const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwlzXJVU
         console.error('Error al inicializar el cliente de Supabase:', err);
     }
 
-    // =========================================================================
-  // PEGAR AQUÍ LA FUNCIÓN DE SUBIDA A GOOGLE DRIVE
-  // =========================================================================
-    
-async function uploadFileToDrive(fileInputId, folio, docType) {
-    const fileInput = document.getElementById(fileInputId);
-    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-        return null; // Si no hay archivo seleccionado, no realiza acción
+    // FUNCIÓN AUXILIAR DE SUBIDA DE ARCHIVOS A GOOGLE DRIVE
+    async function uploadFileToDrive(fileInputId, folio, docType) {
+        const fileInput = document.getElementById(fileInputId);
+        if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+            return null; // Si no hay archivo seleccionado, no realiza acción
+        }
+
+        const file = fileInput.files[0];
+
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = async function (e) {
+                const base64Data = e.target.result.split(',')[1];
+                
+                const payload = {
+                    fileData: base64Data,
+                    fileName: `${folio}_${docType}_${file.name}`,
+                    mimeType: file.type,
+                    folio: folio,
+                    type: docType
+                };
+
+                try {
+                    const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    let fileUrl = result.url || result.fileUrl || result.driveUrl || result.link;
+
+                    if (!fileUrl && result.id) {
+                        fileUrl = `https://drive.google.com/file/d/${result.id}/view`;
+                    }
+
+                    resolve(fileUrl || null);
+                } catch (err) {
+                    console.error(`Error procesando subida de ${docType}:`, err);
+                    resolve(null);
+                }
+            };
+            reader.onerror = error => reject(error);
+            reader.readAsDataURL(file);
+        });
     }
 
-    const file = fileInput.files[0];
-    const scriptUrl = 'https://script.google.com/macros/s/AKfycbz9z7DO_lQyQ3F9KOJX2_7F2ts6cvBvLl1HWKk6KHfcNQ-9heDu2IB6LUPO7StDBG1V/exec';
-
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = async function (e) {
-            const base64Data = e.target.result.split(',')[1];
-            
-            // Estructura idéntica a la que consume tu formulario principal
-            const payload = {
-                fileData: base64Data,
-                fileName: `${folio}_${docType}_${file.name}`,
-                mimeType: file.type,
-                folio: folio,
-                type: docType
-            };
-
-            try {
-                const response = await fetch(scriptUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payload)
-                });
-
-                const result = await response.json();
-                
-                // Extraer la URL devuelta por el servidor de Apps Script
-                let fileUrl = result.url || result.fileUrl || result.driveUrl || result.link;
-
-                // Si Apps Script devuelve el ID directo del archivo subido
-                if (!fileUrl && result.id) {
-                    fileUrl = `https://drive.google.com/file/d/${result.id}/view`;
-                }
-
-                resolve(fileUrl || null);
-            } catch (err) {
-                console.error(`Error procesando subida de ${docType}:`, err);
-                resolve(null);
-            }
-        };
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
-    });
-}
-    
     let cachedRegistros = [];
 
     // Auxiliares de Navegación y Modales
@@ -1353,31 +1325,30 @@ async function uploadFileToDrive(fileInputId, folio, docType) {
     const fechaRegEl = document.getElementById('fechaRegistro');
     if (fechaRegEl) fechaRegEl.value = formattedFecha;
 
-  // 3. Folio automático ajustado al registro 1026
-let offlineCounter = 1026;
-try {
-    const storedCounter = localStorage.getItem('metaX_offline_counter');
-    if (storedCounter) {
-        let val = parseInt(storedCounter, 10);
-        // Si el valor guardado en cache local es menor que 1026, forzar el inicio a 1026
-        offlineCounter = (isNaN(val) || val < 1026) ? 1026 : val;
+    // 3. Folio automático ajustado al registro 1026
+    let offlineCounter = 1026;
+    try {
+        const storedCounter = localStorage.getItem('metaX_offline_counter');
+        if (storedCounter) {
+            let val = parseInt(storedCounter, 10);
+            offlineCounter = (isNaN(val) || val < 1026) ? 1026 : val;
+        }
+    } catch (e) {
+        console.warn('localStorage no está accesible:', e);
     }
-} catch (e) {
-    console.warn('localStorage no está accesible:', e);
-}
 
-function updateFolio() {
-    const folioCode = `MM27OFF-RUN-MMO${offlineCounter}`;
-    const folioDisplay = document.getElementById('nextFolioDisplay');
-    if (folioDisplay) {
-        folioDisplay.innerText = folioCode;
+    function updateFolio() {
+        const folioCode = `MM27OFF-RUN-MMO${offlineCounter}`;
+        const folioDisplay = document.getElementById('nextFolioDisplay');
+        if (folioDisplay) {
+            folioDisplay.innerText = folioCode;
+        }
+        const submitBtn = document.getElementById('submitBtn');
+        if (submitBtn) {
+            submitBtn.innerText = `Confirmar Pago en Efectivo y Generar Folio Oficial (${folioCode})`;
+        }
     }
-    const submitBtn = document.getElementById('submitBtn');
-    if (submitBtn) {
-        submitBtn.innerText = `Confirmar Pago en Efectivo y Generar Folio Oficial (${folioCode})`;
-    }
-}
-updateFolio();
+    updateFolio();
 
     // Catálogo RENAPO para Estados de Nacimiento
     const estadosCURP = {
@@ -1392,7 +1363,7 @@ updateFolio();
         'ZS': 'Zacatecas', 'NE': 'Nacido en el Extranjero'
     };
 
-    // 4. Lógica de lectura y cálculo con validación CURP corregida
+    // 4. Lógica de lectura y cálculo con validación CURP
     const curpInput = document.getElementById('curp');
     if (curpInput) {
         curpInput.addEventListener('input', function(e) {
@@ -1526,39 +1497,7 @@ updateFolio();
         if (ningunoEsp) ningunoEsp.checked = false;
     }
 
-    // Función auxiliar para subir archivos al Storage de Supabase ('Documentos')
-    async function uploadFileToSupabase(fileInputId, folderName, folio) {
-        const fileInput = document.getElementById(fileInputId);
-        if (!fileInput || !fileInput.files || fileInput.files.length === 0) return null;
-        
-        const file = fileInput.files[0];
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${folio}_${folderName}_${Date.now()}.${fileExt}`;
-        const filePath = `${fileName}`;
-
-        try {
-            const { data, error } = await dbClient.storage
-                .from('Documentos')
-                .upload(filePath, file);
-
-            if (error) {
-                console.error(`Error subiendo archivo ${folderName}:`, error);
-                return null;
-            }
-
-            // Obtener URL pública
-            const { data: publicUrlData } = dbClient.storage
-                .from('Documentos')
-                .getPublicUrl(filePath);
-
-            return publicUrlData ? publicUrlData.publicUrl : null;
-        } catch (err) {
-            console.error(`Excepción al subir archivo ${folderName}:`, err);
-            return null;
-        }
-    }
-
-    // 5. Envío del Formulario e Inserción Controlada en Supabase con Subida de Archivos
+    // 5. ENVÍO Y REGISTRO EN FORMULARIO PRINCIPAL
     const formEl = document.getElementById('fullRegistrationForm');
     if (formEl) {
         formEl.addEventListener('submit', async function(e) {
@@ -1567,7 +1506,7 @@ updateFolio();
             const submitBtn = e.target.querySelector('button[type="submit"]');
             if (submitBtn) {
                 submitBtn.disabled = true;
-                submitBtn.innerText = 'Subiendo archivos y guardando...';
+                submitBtn.innerText = 'Subiendo archivos a Google Drive...';
             }
 
             try {
@@ -1575,46 +1514,13 @@ updateFolio();
                     throw new Error('La biblioteca de Supabase no está disponible o no se inicializó correctamente.');
                 }
                 const folio = `MM27OFF-RUN-MMO${offlineCounter}`;
-                
-// ==========================================
-// Subir archivos a Google Drive
-// ==========================================
 
-// 1. Obtener los elementos input tipo file del HTML
-const inputFoto = document.getElementById('fotoFile');
-const inputPago = document.getElementById('pagoFile');
-const inputDoc1 = document.getElementById('doc1File');
-const inputDoc2 = document.getElementById('doc2File');
+                // Subir archivos mediante uploadFileToDrive
+                const fotoUrl = await uploadFileToDrive('fotoFile', folio, 'FOTO') || '';
+                const pagoUrl = await uploadFileToDrive('pagoFile', folio, 'PAGO') || '';
+                const doc1Url = await uploadFileToDrive('doc1File', folio, 'INE') || '';
+                const doc2Url = await uploadFileToDrive('doc2File', folio, 'CARTA') || '';
 
-// 2. Extraer el archivo de cada input (si existe)
-const fileFoto = inputFoto && inputFoto.files[0] ? inputFoto.files[0] : null;
-const filePago = inputPago && inputPago.files[0] ? inputPago.files[0] : null;
-const fileDoc1 = inputDoc1 && inputDoc1.files[0] ? inputDoc1.files[0] : null;
-const fileDoc2 = inputDoc2 && inputDoc2.files[0] ? inputDoc2.files[0] : null;
-
-// 3. Declarar las variables para almacenar las URLs de Drive
-let fotoUrl = '';
-let pagoUrl = '';
-let doc1Url = '';
-let doc2Url = '';
-
-// 4. Subir cada archivo a Google Drive
-if (fileFoto) {
-  fotoUrl = await uploadToGoogleDrive(fileFoto, 'Fotos_Atletas', `FOTO_${folio}_${fileFoto.name}`);
-}
-
-if (filePago) {
-  pagoUrl = await uploadToGoogleDrive(filePago, 'Pagos_Atletas', `PAGO_${folio}_${filePago.name}`);
-}
-
-if (fileDoc1) {
-  doc1Url = await uploadToGoogleDrive(fileDoc1, 'Documentos_Atletas', `DOC1_${folio}_${fileDoc1.name}`);
-}
-
-if (fileDoc2) {
-  doc2Url = await uploadToGoogleDrive(fileDoc2, 'Documentos_Atletas', `DOC2_${folio}_${fileDoc2.name}`);
-}
-                
                 const nombreComp = `${getSafeValue('nombre')} ${getSafeValue('primerApellido')} ${getSafeValue('segundoApellido')}`.trim();
                 const padecimientosSelected = Array.from(document.querySelectorAll('input[name="padecimientos"]:checked')).map(cb => cb.value);
 
@@ -1695,7 +1601,7 @@ if (fileDoc2) {
             } finally {
                 if (submitBtn) {
                     submitBtn.disabled = false;
-                    submitBtn.innerText = 'Confirmar Pago en Efectivo y Generar Folio Oficial (MM27-OFF)';
+                    submitBtn.innerText = `Confirmar Pago en Efectivo y Generar Folio Oficial (MM27OFF-RUN-MMO${offlineCounter})`;
                 }
             }
         });
@@ -1764,7 +1670,7 @@ if (fileDoc2) {
         });
     }
 
-    // 7. VER Y BUSCAR REGISTROS EN MODAL (Con botón Descargar Ticket)
+    // 7. VER Y BUSCAR REGISTROS EN MODAL
     async function openRegistrosModal() {
         const modal = document.getElementById('registrosModal');
         if (modal) modal.style.display = 'flex';
@@ -1818,18 +1724,17 @@ if (fileDoc2) {
                 <td>${r.categoria || '-'}</td>
                 <td>${r.talla_playera || '-'}</td>
                 <td>$${r.monto_cobrado || 0}</td>
-               <td style="display: flex; gap: 6px;">
-    <button class="btn-action" onclick="openEditModal('${r.id}')">✏️ Editar</button>
-    <button class="btn-action" style="background-color: #f97316;" onclick="openCarnetFormModal('${r.id}')">🪪 Ver carnet</button>
-    <button class="btn-ticket" onclick="descargarTicketPorId('${r.id}')">📥 Ticket</button>
-    <button class="btn-action" style="background-color: #8b5cf6;" onclick="openSubmodalCarnet('${r.id}')">👁️ Mostrar carnet</button>
-</td>
+                <td style="display: flex; gap: 6px;">
+                    <button class="btn-action" onclick="openEditModal('${r.id}')">✏️ Editar</button>
+                    <button class="btn-action" style="background-color: #f97316;" onclick="openCarnetFormModal('${r.id}')">🪪 Ver carnet</button>
+                    <button class="btn-ticket" onclick="descargarTicketPorId('${r.id}')">📥 Ticket</button>
+                    <button class="btn-action" style="background-color: #8b5cf6;" onclick="openSubmodalCarnet('${r.id}')">👁️ Mostrar carnet</button>
+                </td>
             </tr>
         `;
         }).join('');
     }
 
-    // Función para descargar/ver el ticket de un corredor específico desde la tabla
     function descargarTicketPorId(id) {
         const r = cachedRegistros.find(item => item.id == id);
         if (!r) return;
@@ -1864,7 +1769,7 @@ if (fileDoc2) {
         renderRegistrosTable(filtered);
     }
 
-    // 8. EDITAR REGISTROS (COMPLETO)
+    // 8. APERTURA Y EDICIÓN DE REGISTROS EN MODAL (EXPEDIENTE Y UPDATE INTEGRADO)
     function openEditModal(id) {
         const registro = cachedRegistros.find(r => r.id == id);
         if (!registro) return;
@@ -1897,135 +1802,89 @@ if (fileDoc2) {
         document.getElementById('edit_operador').value = registro.operador_nombre || '';
         document.getElementById('edit_comentarios').value = registro.comentarios || '';
 
-// Cargar previsualizaciones de expedientes existentes (Nota: usa el nombre de variable "registro")
- // Validar y construir enlaces válidos de expedientes
-    const makeDocLink = (url, label) => {
-        if (url && typeof url === 'string' && url.trim().startsWith('http')) {
-            return `<a href="${url}" target="_blank" style="color:#2563eb; font-weight:bold;">${label}</a>`;
-        } else if (url) {
-            return `<span style="color:#eab308; font-weight:bold;" title="${url}">⚠️ ${url}</span>`;
-        } else {
-            return `<span style="color:#94a3b8;">Sin archivo</span>`;
-        }
-    };
+        // Resetear inputs de archivos
+        document.getElementById('editFotoFile').value = '';
+        document.getElementById('editPagoFile').value = '';
+        document.getElementById('editIneFile').value = '';
+        document.getElementById('editCartaFile').value = '';
 
-    document.getElementById('editFotoPreview').innerHTML = makeDocLink(registro.foto_url, '📸 Ver foto actual');
-    document.getElementById('editPagoPreview').innerHTML = makeDocLink(registro.pago_url, '💳 Ver pago actual');
-    document.getElementById('editInePreview').innerHTML = makeDocLink(registro.doc1_url, '📄 Ver INE actual');
-    document.getElementById('editCartaPreview').innerHTML = makeDocLink(registro.doc2_url, '📄 Ver Carta actual');
+        // Validar y construir enlaces válidos de expedientes preexistentes
+        const makeDocLink = (url, label) => {
+            if (url && typeof url === 'string' && url.trim().startsWith('http')) {
+                return `<a href="${url}" target="_blank" style="color:#2563eb; font-weight:bold;">${label}</a>`;
+            } else if (url) {
+                return `<span style="color:#eab308; font-weight:bold;" title="${url}">⚠️ ${url}</span>`;
+            } else {
+                return `<span style="color:#94a3b8;">Sin archivo</span>`;
+            }
+        };
 
-        
+        document.getElementById('editFotoPreview').innerHTML = makeDocLink(registro.foto_url, '📸 Ver foto actual');
+        document.getElementById('editPagoPreview').innerHTML = makeDocLink(registro.pago_url, '💳 Ver pago actual');
+        document.getElementById('editInePreview').innerHTML = makeDocLink(registro.doc1_url, '📄 Ver INE actual');
+        document.getElementById('editCartaPreview').innerHTML = makeDocLink(registro.doc2_url, '📄 Ver Carta actual');
+
         document.getElementById('editModal').style.display = 'flex';
     }
 
-// Función auxiliar para subir archivos individuales a Google Drive
-async function uploadFileToDrive(fileInputId, folio, docType) {
-    const fileInput = document.getElementById(fileInputId);
-    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-        return null; // No se seleccionó archivo nuevo
-    }
-
-    const file = fileInput.files[0];
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = async function (e) {
-            const base64Data = e.target.result.split(',')[1];
-            const payload = {
-                fileData: base64Data,
-                fileName: `${folio}_${docType}_${file.name}`,
-                mimeType: file.type,
-                folio: folio,
-                docType: docType
-            };
-
-            try {
-                const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-                
-                // Extraer la URL devuelta por el Apps Script
-                let finalUrl = result.url || result.fileUrl || result.link || result.driveUrl;
-
-                // Si la API devolvió solo un ID de archivo (ej. id: "1A2b3C..."):
-                if (!finalUrl && result.id) {
-                    finalUrl = `https://drive.google.com/file/d/${result.id}/view`;
-                }
-
-                resolve(finalUrl || null);
-            } catch (err) {
-                console.error(`Error al subir ${docType}:`, err);
-                resolve(null);
-            }
-        };
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
-    });
-}
-            try {
-                // Utiliza la misma URL de Google Apps Script cargada en el proyecto
-                const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-                const result = await response.json();
-                if (result.status === 'success' || result.url) {
-                    resolve(result.url || result.fileUrl);
-                } else {
-                    resolve(null);
-                }
-            } catch (err) {
-                console.error(`Error al subir ${docType}:`, err);
-                resolve(null);
-            }
-        };
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
-    });
-}
-    
+    // EVENT LISTENER DE GUARDAR CAMBIOS EN MODAL
     const editFormEl = document.getElementById('editForm');
     if (editFormEl) {
         editFormEl.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const id = document.getElementById('edit_id').value;
-            // ➕ AGREGAR AQUÍ: Obtener el folio del atleta
-        const folio = document.getElementById('edit_folio') ? document.getElementById('edit_folio').value : 'REGISTRO';
-// ➕ AGREGAR AQUÍ: Mostrar indicador de carga mientras sube archivos
-     
 
-        // ➕ AGREGAR AQUÍ: Subida de nuevos archivos a Google Drive
-        const newFotoUrl  = await uploadFileToDrive('editFotoFile', folio, 'FOTO');
-        const newPagoUrl  = await uploadFileToDrive('editPagoFile', folio, 'PAGO');
-        const newIneUrl   = await uploadFileToDrive('editIneFile', folio, 'INE');
-        const newCartaUrl = await uploadFileToDrive('editCartaFile', folio, 'CARTA');
+            const btnSave = document.getElementById('btnSaveEdit');
+            const originalBtnText = btnSave.innerText;
+            btnSave.disabled = true;
+            btnSave.innerText = '⏳ Subiendo archivos y guardando...';
 
-        const nombreComp = `${document.getElementById('edit_nombre').value} ${document.getElementById('edit_primerApellido').value} ${document.getElementById('edit_segundoApellido').value}`;
-
-        const updatedData = {
-            curp: document.getElementById('edit_curp').value.toUpperCase(),
-            nombre: document.getElementById('edit_nombre').value,
-            primer_apellido: document.getElementById('edit_primerApellido').value,
-            segundo_apellido: document.getElementById('edit_segundoApellido').value,
-            nombre_completo: nombreComp,
-            email: document.getElementById('edit_email').value,
-            telefono: document.getElementById('edit_telefono').value,
-            distancia: document.getElementById('edit_distancia').value,
-            pais_residencia: document.getElementById('edit_paisResidencia').value,
-            estado_residencia: document.getElementById('edit_estadoResidencia').value,
-            edad: document.getElementById('edit_edad').value,
-            fecha_nacimiento: document.getElementById('edit_fechaNacimiento').value,
-            // ... (resto de campos que ya tienes en tu objeto updatedData) ...
-        };
-
-        // ➕ AGREGAR AQUÍ: Asignar las URLs solo si se subió un nuevo archivo
-        if (newFotoUrl)  updatedData.foto_url = newFotoUrl;
-        if (newPagoUrl)  updatedData.pago_url = newPagoUrl;
-        if (newIneUrl)   updatedData.doc1_url = newIneUrl;
-        if (newCartaUrl) updatedData.doc2_url = newCartaUrl;
-            
             try {
+                const id = document.getElementById('edit_id').value;
+                const folio = document.getElementById('edit_folio') ? document.getElementById('edit_folio').value : 'REGISTRO';
+
+                // Subida de nuevos archivos a Google Drive
+                const newFotoUrl  = await uploadFileToDrive('editFotoFile', folio, 'FOTO');
+                const newPagoUrl  = await uploadFileToDrive('editPagoFile', folio, 'PAGO');
+                const newIneUrl   = await uploadFileToDrive('editIneFile', folio, 'INE');
+                const newCartaUrl = await uploadFileToDrive('editCartaFile', folio, 'CARTA');
+
+                const nombreComp = `${document.getElementById('edit_nombre').value} ${document.getElementById('edit_primerApellido').value} ${document.getElementById('edit_segundoApellido').value}`.trim();
+
+                const updatedData = {
+                    curp: document.getElementById('edit_curp').value.toUpperCase(),
+                    nombre: document.getElementById('edit_nombre').value,
+                    primer_apellido: document.getElementById('edit_primerApellido').value,
+                    segundo_apellido: document.getElementById('edit_segundoApellido').value,
+                    nombre_completo: nombreComp,
+                    email: document.getElementById('edit_email').value,
+                    telefono: document.getElementById('edit_telefono').value,
+                    distancia: document.getElementById('edit_distancia').value,
+                    pais_residencia: document.getElementById('edit_paisResidencia').value,
+                    estado_residencia: document.getElementById('edit_estadoResidencia').value,
+                    edad: document.getElementById('edit_edad').value,
+                    fecha_nacimiento: document.getElementById('edit_fechaNacimiento').value,
+                    genero: document.getElementById('edit_genero') ? document.getElementById('edit_genero').value : '',
+                    entidad_origen: document.getElementById('edit_entidadOrigen') ? document.getElementById('edit_entidadOrigen').value : '',
+                    rama: document.getElementById('edit_rama') ? document.getElementById('edit_rama').value : '',
+                    categoria: document.getElementById('edit_categoria') ? document.getElementById('edit_categoria').value : '',
+                    talla_playera: document.getElementById('edit_talla') ? document.getElementById('edit_talla').value : '',
+                    perfil_corredor: document.getElementById('edit_perfilCorredor') ? document.getElementById('edit_perfilCorredor').value : '',
+                    tipo_sangre: document.getElementById('edit_tipoSangre') ? document.getElementById('edit_tipoSangre').value : '',
+                    contacto_nombre: document.getElementById('edit_contactoNombre') ? document.getElementById('edit_contactoNombre').value : '',
+                    contacto_telefono: document.getElementById('edit_contactoTelefono') ? document.getElementById('edit_contactoTelefono').value : '',
+                    alergias: document.getElementById('edit_alergias') ? document.getElementById('edit_alergias').value : '',
+                    situaciones_extra: document.getElementById('edit_situacionesExtra') ? document.getElementById('edit_situacionesExtra').value : '',
+                    monto_cobrado: parseFloat(document.getElementById('edit_monto') ? document.getElementById('edit_monto').value : 0) || 0,
+                    operador_nombre: document.getElementById('edit_operador') ? document.getElementById('edit_operador').value : '',
+                    comentarios: document.getElementById('edit_comentarios') ? document.getElementById('edit_comentarios').value : ''
+                };
+
+                // Asignar las URLs solo si se subió un nuevo archivo
+                if (newFotoUrl)  updatedData.foto_url = newFotoUrl;
+                if (newPagoUrl)  updatedData.pago_url = newPagoUrl;
+                if (newIneUrl)   updatedData.doc1_url = newIneUrl;
+                if (newCartaUrl) updatedData.doc2_url = newCartaUrl;
+
                 const { error } = await dbClient
                     .from('corredores')
                     .update(updatedData)
@@ -2033,13 +1892,16 @@ async function uploadFileToDrive(fileInputId, folio, docType) {
 
                 if (error) throw error;
 
-                alert('Registro actualizado con éxito.');
+                alert('¡Registro actualizado con éxito!');
                 closeModal('editModal');
                 await fetchRegistros();
 
             } catch (err) {
                 console.error('Error al actualizar:', err);
                 alert(`Error al actualizar el registro: ${err.message}`);
+            } finally {
+                btnSave.disabled = false;
+                btnSave.innerText = originalBtnText;
             }
         });
     }
@@ -2115,254 +1977,205 @@ async function uploadFileToDrive(fileInputId, folio, docType) {
         document.body.removeChild(link);
     }
 
-
-// =======================================================
-// FUNCIONES DE EXTRACCIÓN DE WHATSAPP Y DOCUMENTOS
-// =======================================================
-let extractedWhatsAppFolder = {};
-let extractedDocFolder = {};
-
-function openWhatsAppModal() {
-    document.getElementById('whatsappExtractModal').style.display = 'flex';
-}
-
-function openDocModal() {
-    document.getElementById('docExtractModal').style.display = 'flex';
-}
-
-function switchWaTab(tab) {
-    const tabImg = document.getElementById('waTabImg');
-    const tabTxt = document.getElementById('waTabTxt');
-    const btnImg = document.getElementById('tabImgBtn');
-    const btnTxt = document.getElementById('tabTxtBtn');
-
-    if (tab === 'img') {
-        tabImg.style.display = 'block';
-        tabTxt.style.display = 'none';
-        btnImg.style.backgroundColor = 'var(--primary-blue)';
-        btnTxt.style.backgroundColor = '#64748b';
-    } else {
-        tabImg.style.display = 'none';
-        tabTxt.style.display = 'block';
-        btnTxt.style.backgroundColor = 'var(--primary-blue)';
-        btnImg.style.backgroundColor = '#64748b';
+    // EXTRACCIÓN DE WHATSAPP Y DOCUMENTOS
+    function openWhatsAppModal() {
+        document.getElementById('whatsappExtractModal').style.display = 'flex';
     }
-}
 
-window.addEventListener('paste', e => {
-    const modal = document.getElementById('whatsappExtractModal');
-    if (modal && modal.style.display === 'flex') {
-        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-        for (let item of items) {
-            if (item.type.indexOf('image') === 0) {
-                const blob = item.getAsFile();
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    document.getElementById('waImgPreview').innerHTML = `<img src="${event.target.result}" style="max-height:160px; border-radius:6px;">`;
-                };
-                reader.readAsDataURL(blob);
+    function openDocModal() {
+        document.getElementById('docExtractModal').style.display = 'flex';
+    }
+
+    function switchWaTab(tab) {
+        const tabImg = document.getElementById('waTabImg');
+        const tabTxt = document.getElementById('waTabTxt');
+        const btnImg = document.getElementById('tabImgBtn');
+        const btnTxt = document.getElementById('tabTxtBtn');
+
+        if (tab === 'img') {
+            tabImg.style.display = 'block';
+            tabTxt.style.display = 'none';
+            btnImg.style.backgroundColor = 'var(--primary-blue)';
+            btnTxt.style.backgroundColor = '#64748b';
+        } else {
+            tabImg.style.display = 'none';
+            tabTxt.style.display = 'block';
+            btnTxt.style.backgroundColor = 'var(--primary-blue)';
+            btnImg.style.backgroundColor = '#64748b';
+        }
+    }
+
+    let currentWaImageFile = null;
+
+    function processWaImage(event) {
+        const file = event.target ? event.target.files[0] : event;
+        if (file) {
+            currentWaImageFile = file;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('waImgPreview').innerHTML = `<img id="waPreviewImgEl" src="${e.target.result}" style="max-height:160px; border-radius:6px;">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    window.addEventListener('paste', e => {
+        const modal = document.getElementById('whatsappExtractModal');
+        if (modal && modal.style.display === 'flex') {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let item of items) {
+                if (item.type.indexOf('image') === 0) {
+                    const blob = item.getAsFile();
+                    processWaImage(blob);
+                }
             }
-        }
-    }
-});
-
-function processWaImage(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('waImgPreview').innerHTML = `<img src="${e.target.result}" style="max-height:160px; border-radius:6px;">`;
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-let currentWaImageFile = null;
-
-// Escuchar cambios en la imagen cargada o pegada
-function processWaImage(event) {
-    const file = event.target ? event.target.files[0] : event;
-    if (file) {
-        currentWaImageFile = file;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('waImgPreview').innerHTML = `<img id="waPreviewImgEl" src="${e.target.result}" style="max-height:160px; border-radius:6px;">`;
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-// Soportar Ctrl+V directo
-window.addEventListener('paste', e => {
-    const modal = document.getElementById('whatsappExtractModal');
-    if (modal && modal.style.display === 'flex') {
-        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-        for (let item of items) {
-            if (item.type.indexOf('image') === 0) {
-                const blob = item.getAsFile();
-                processWaImage(blob);
-            }
-        }
-    }
-});
-
-// Función principal de extracción e inyección
-async function applyWhatsAppExtraction() {
-    const isTabImgVisible = document.getElementById('waTabImg').style.display !== 'none';
-    let textToParse = '';
-
-    if (isTabImgVisible) {
-        const imgEl = document.getElementById('waPreviewImgEl');
-        if (!imgEl) {
-            alert('Por favor selecciona o pega una imagen primero.');
-            return;
-        }
-
-        const btnSubmit = document.querySelector('#whatsappExtractModal .btn-submit');
-        const originalBtnText = btnSubmit.innerText;
-        btnSubmit.disabled = true;
-        btnSubmit.innerText = '⏳ Escaneando imagen (OCR)...';
-
-        try {
-            // Ejecutar reconocimiento de texto OCR en español
-            const result = await Tesseract.recognize(imgEl.src, 'spa');
-            textToParse = result.data.text;
-        } catch (err) {
-            console.error('Error OCR:', err);
-            alert('No se pudo leer la imagen. Intenta pegar el texto directamente en la Opción B.');
-            btnSubmit.disabled = false;
-            btnSubmit.innerText = originalBtnText;
-            return;
-        } finally {
-            btnSubmit.disabled = false;
-            btnSubmit.innerText = originalBtnText;
-        }
-    } else {
-        textToParse = document.getElementById('waRawText').value;
-    }
-
-    if (!textToParse || !textToParse.trim()) {
-        alert('No se encontró información para procesar.');
-        return;
-    }
-
-    // Extractor Regex
-    const getValue = (label) => {
-        const regex = new RegExp(`${label}:?\\s*([^\\n•]+)`, 'i');
-        const match = textToParse.match(regex);
-        return match ? match[1].trim() : '';
-    };
-
-    const extracted = {
-        curp: getValue('CURP'),
-        nombre: getValue('Nombre\\(s\\)'),
-        primerApellido: getValue('Primer apellido'),
-        segundoApellido: getValue('Segundo apellido'),
-        email: getValue('Correo electrónico'),
-        telefono: getValue('Teléfono celular'),
-        distancia: getValue('Distancia'),
-        paisResidencia: getValue('País de residencia'),
-        estadoResidencia: getValue('Estado de residencia'),
-        tallaPlayera: getValue('Talla de playera'),
-        tipoSangre: getValue('Tipo de sangre'),
-        contactoNombre: getValue('Contacto emergencia'),
-        contactoTelefono: getValue('Teléfono emergencia'),
-        alergias: getValue('Alergias conocidas')
-    };
-
-    // Inyectar en los elementos HTML del formulario principal
-    let countInjected = 0;
-    Object.keys(extracted).forEach(key => {
-        const el = document.getElementById(key);
-        if (el && extracted[key]) {
-            el.value = extracted[key];
-            if (key === 'curp') el.dispatchEvent(new Event('input'));
-            countInjected++;
         }
     });
 
-    if (countInjected > 0) {
-        alert('¡Datos extraídos e inyectados exitosamente en el formulario!');
-        closeModal('whatsappExtractModal');
-    } else {
-        alert('No se detectaron campos coincidentes. Asegúrate de que la imagen sea legible o prueba pegando el texto en la Opción B.');
-    }
-}
+    async function applyWhatsAppExtraction() {
+        const isTabImgVisible = document.getElementById('waTabImg').style.display !== 'none';
+        let textToParse = '';
 
-let currentDocImageSrc = null;
-
-function processDocImage(event) {
-    const file = event.target ? event.target.files[0] : event;
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            currentDocImageSrc = e.target.result;
-            document.getElementById('docPreviewBox').innerHTML = `<img id="docPreviewImgEl" src="${e.target.result}" style="max-height:200px; max-width:100%; border-radius:6px; object-fit:contain;">`;
-        };
-        reader.readAsDataURL(file);
-    }
-}
-
-// Escanear la imagen usando Tesseract OCR y decodificar datos de la credencial
-
-
-// =======================================================
-// CONTINUACIÓN Y FINALIZACIÓN DE scanDocImage()
-// =======================================================
-async function scanDocImage() {
-    if (!currentDocImageSrc) {
-        alert('Por favor selecciona una imagen de la credencial primero.');
-        return;
-    }
-
-    const btn = document.getElementById('btnScanDoc');
-    const origText = btn.innerText;
-    btn.disabled = true;
-    btn.innerText = '⏳ Procesando INE (OCR)...';
-
-    try {
-        const result = await Tesseract.recognize(currentDocImageSrc, 'spa');
-        const text = result.data.text || '';
-
-        // 1. Extraer CURP mediante Expresión Regular
-        const curpMatch = text.match(/[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]{2}/i);
-        let curp = curpMatch ? curpMatch[0].toUpperCase() : '';
-
-        let fechaNacimiento = '';
-        let edadStr = '';
-        let genero = '';
-        let rama = '';
-        let entidadOrigen = '';
-
-        // 2. Decodificar CURP
-        if (curp.length === 18) {
-            let aa = curp.substring(4, 6);
-            let mm = curp.substring(6, 8);
-            let dd = curp.substring(8, 10);
-            
-            let anioNum = parseInt(aa, 10);
-            let siglo = (anioNum < 27) ? "20" : "19";
-            let anioNacimiento = parseInt(`${siglo}${aa}`, 10);
-            fechaNacimiento = `${dd}/${mm}/${siglo}${aa}`;
-
-            let edad = 2027 - anioNacimiento;
-            edadStr = `${edad} años`;
-
-            let sexoChar = curp.charAt(10);
-            if (sexoChar === 'H') {
-                genero = 'Masculino';
-                rama = 'Varonil';
-            } else if (sexoChar === 'M') {
-                genero = 'Femenino';
-                rama = 'Femenil';
+        if (isTabImgVisible) {
+            const imgEl = document.getElementById('waPreviewImgEl');
+            if (!imgEl) {
+                alert('Por favor selecciona o pega una imagen primero.');
+                return;
             }
 
-            let entCode = curp.substring(11, 13);
-            entidadOrigen = estadosCURP[entCode] || `Entidad (${entCode})`;
+            const btnSubmit = document.querySelector('#whatsappExtractModal .btn-submit');
+            const originalBtnText = btnSubmit.innerText;
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = '⏳ Escaneando imagen (OCR)...';
+
+            try {
+                const result = await Tesseract.recognize(imgEl.src, 'spa');
+                textToParse = result.data.text;
+            } catch (err) {
+                console.error('Error OCR:', err);
+                alert('No se pudo leer la imagen. Intenta pegar el texto directamente en la Opción B.');
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = originalBtnText;
+                return;
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = originalBtnText;
+            }
+        } else {
+            textToParse = document.getElementById('waRawText').value;
         }
 
-        // 3. Generar formato estandarizado
-        const formattedTemplate = `• 🆔 CURP: ${curp || 'No detectado'}
+        if (!textToParse || !textToParse.trim()) {
+            alert('No se encontró información para procesar.');
+            return;
+        }
+
+        const getValue = (label) => {
+            const regex = new RegExp(`${label}:?\\s*([^\\n•]+)`, 'i');
+            const match = textToParse.match(regex);
+            return match ? match[1].trim() : '';
+        };
+
+        const extracted = {
+            curp: getValue('CURP'),
+            nombre: getValue('Nombre\\(s\\)'),
+            primerApellido: getValue('Primer apellido'),
+            segundoApellido: getValue('Segundo apellido'),
+            email: getValue('Correo electrónico'),
+            telefono: getValue('Teléfono celular'),
+            distancia: getValue('Distancia'),
+            paisResidencia: getValue('País de residencia'),
+            estadoResidencia: getValue('Estado de residencia'),
+            tallaPlayera: getValue('Talla de playera'),
+            tipoSangre: getValue('Tipo de sangre'),
+            contactoNombre: getValue('Contacto emergencia'),
+            contactoTelefono: getValue('Teléfono emergencia'),
+            alergias: getValue('Alergias conocidas')
+        };
+
+        let countInjected = 0;
+        Object.keys(extracted).forEach(key => {
+            const el = document.getElementById(key);
+            if (el && extracted[key]) {
+                el.value = extracted[key];
+                if (key === 'curp') el.dispatchEvent(new Event('input'));
+                countInjected++;
+            }
+        });
+
+        if (countInjected > 0) {
+            alert('¡Datos extraídos e inyectados exitosamente en el formulario!');
+            closeModal('whatsappExtractModal');
+        } else {
+            alert('No se detectaron campos coincidentes. Asegúrate de que la imagen sea legible o prueba pegando el texto en la Opción B.');
+        }
+    }
+
+    let currentDocImageSrc = null;
+
+    function processDocImage(event) {
+        const file = event.target ? event.target.files[0] : event;
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentDocImageSrc = e.target.result;
+                document.getElementById('docPreviewBox').innerHTML = `<img id="docPreviewImgEl" src="${e.target.result}" style="max-height:200px; max-width:100%; border-radius:6px; object-fit:contain;">`;
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    async function scanDocImage() {
+        if (!currentDocImageSrc) {
+            alert('Por favor selecciona una imagen de la credencial primero.');
+            return;
+        }
+
+        const btn = document.getElementById('btnScanDoc');
+        const origText = btn.innerText;
+        btn.disabled = true;
+        btn.innerText = '⏳ Procesando INE (OCR)...';
+
+        try {
+            const result = await Tesseract.recognize(currentDocImageSrc, 'spa');
+            const text = result.data.text || '';
+
+            const curpMatch = text.match(/[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]{2}/i);
+            let curp = curpMatch ? curpMatch[0].toUpperCase() : '';
+
+            let fechaNacimiento = '';
+            let edadStr = '';
+            let genero = '';
+            let rama = '';
+            let entidadOrigen = '';
+
+            if (curp.length === 18) {
+                let aa = curp.substring(4, 6);
+                let mm = curp.substring(6, 8);
+                let dd = curp.substring(8, 10);
+                
+                let anioNum = parseInt(aa, 10);
+                let siglo = (anioNum < 27) ? "20" : "19";
+                let anioNacimiento = parseInt(`${siglo}${aa}`, 10);
+                fechaNacimiento = `${dd}/${mm}/${siglo}${aa}`;
+
+                let edad = 2027 - anioNacimiento;
+                edadStr = `${edad} años`;
+
+                let sexoChar = curp.charAt(10);
+                if (sexoChar === 'H') {
+                    genero = 'Masculino';
+                    rama = 'Varonil';
+                } else if (sexoChar === 'M') {
+                    genero = 'Femenino';
+                    rama = 'Femenil';
+                }
+
+                let entCode = curp.substring(11, 13);
+                entidadOrigen = estadosCURP[entCode] || `Entidad (${entCode})`;
+            }
+
+            const formattedTemplate = `• 🆔 CURP: ${curp || 'No detectado'}
 • 👤 Nombre(s): 
 • 👤 Primer apellido: 
 • 👤 Segundo apellido: 
@@ -2381,107 +2194,88 @@ async function scanDocImage() {
 • 📞 Teléfono emergencia: 
 • ⚠️ Alergias conocidas: Ninguna`;
 
-        document.getElementById('docFormattedOutput').value = formattedTemplate;
+            document.getElementById('docFormattedOutput').value = formattedTemplate;
 
-        // Auto-inyectar CURP en el formulario si fue encontrada
-        if (curp) {
-            const curpEl = document.getElementById('curp');
-            if (curpEl) {
-                curpEl.value = curp;
-                curpEl.dispatchEvent(new Event('input'));
+            if (curp) {
+                const curpEl = document.getElementById('curp');
+                if (curpEl) {
+                    curpEl.value = curp;
+                    curpEl.dispatchEvent(new Event('input'));
+                }
             }
+
+        } catch (err) {
+            console.error('Error durante la lectura OCR del documento:', err);
+            alert('Ocurrió un error al procesar la imagen del documento.');
+        } finally {
+            btn.disabled = false;
+            btn.innerText = origText;
+        }
+    }
+
+    function copyFormattedDocText() {
+        const outputText = document.getElementById('docFormattedOutput');
+        if (!outputText || !outputText.value.trim()) {
+            alert('No hay texto para copiar.');
+            return;
+        }
+        
+        outputText.select();
+        outputText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(outputText.value).then(() => {
+            alert('¡Texto copiado al portapapeles!');
+        }).catch(err => {
+            console.error('Error al copiar:', err);
+        });
+    }
+
+    function openCarnetFormModal(id) {
+        const r = cachedRegistros.find(item => item.id == id);
+        if (!r) return;
+
+        document.getElementById('curp').value = r.curp || '';
+        document.getElementById('nombre').value = r.nombre || '';
+        document.getElementById('primerApellido').value = r.primer_apellido || '';
+        document.getElementById('segundoApellido').value = r.segundo_apellido || '';
+        document.getElementById('email').value = r.email || '';
+        document.getElementById('telefono').value = r.telefono || '';
+        document.getElementById('distancia').value = r.distancia || '';
+        document.getElementById('tallaPlayera').value = r.talla_playera || '';
+        document.getElementById('perfilCorredor').value = r.perfil_corredor || '';
+        document.getElementById('tipoSangre').value = r.tipo_sangre || '';
+
+        if (r.foto_url) document.getElementById('photoPreview').innerHTML = `<img src="${r.foto_url}" style="max-height: 100px;">`;
+        if (r.pago_url) document.getElementById('pagoPreview').innerHTML = `<a href="${r.pago_url}" target="_blank">Ver Comprobante</a>`;
+        if (r.doc1_url) document.getElementById('doc1Preview').innerHTML = `<a href="${r.doc1_url}" target="_blank">Ver INE</a>`;
+        if (r.doc2_url) document.getElementById('doc2Preview').innerHTML = `<a href="${r.doc2_url}" target="_blank">Ver Responsiva</a>`;
+
+        closeModal('registrosModal');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function openSubmodalCarnet(id) {
+        const r = cachedRegistros.find(item => item.id == id);
+        if (!r) return;
+
+        document.getElementById('carnetNombre').innerText = r.nombre_completo || `${r.nombre} ${r.primer_apellido}`;
+        document.getElementById('carnetFolio').innerText = r.folio_oficial || 'S/N';
+        document.getElementById('carnetCurp').innerText = r.curp || '-';
+        document.getElementById('carnetDistancia').innerText = r.distancia || '-';
+
+        const fotoBox = document.getElementById('carnetFotoBox');
+        if (r.foto_url) {
+            fotoBox.innerHTML = `<img src="${r.foto_url}" style="width:100%; height:100%; object-fit:cover;">`;
+        } else {
+            fotoBox.innerHTML = 'Sin Foto';
         }
 
-    } catch (err) {
-        console.error('Error durante la lectura OCR del documento:', err);
-        alert('Ocurrió un error al procesar la imagen del documento.');
-    } finally {
-        btn.disabled = false;
-        btn.innerText = origText;
+        document.getElementById('chkFoto').innerHTML = r.foto_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
+        document.getElementById('chkINE').innerHTML = r.doc1_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
+        document.getElementById('chkPago').innerHTML = r.pago_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
+        document.getElementById('chkCarta').innerHTML = r.doc2_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
+
+        document.getElementById('carnetVistaModal').style.display = 'flex';
     }
-}
-
-function copyFormattedDocText() {
-    const outputText = document.getElementById('docFormattedOutput');
-    if (!outputText || !outputText.value.trim()) {
-        alert('No hay texto para copiar.');
-        return;
-    }
-    
-    outputText.select();
-    outputText.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(outputText.value).then(() => {
-        alert('¡Texto copiado al portapapeles!');
-    }).catch(err => {
-        console.error('Error al copiar:', err);
-    });
-}
-    
-// Función para copiar todo el texto generado al portapapeles
-function copyFormattedDocText() {
-    const textEl = document.getElementById('docFormattedOutput');
-    if (textEl && textEl.value.trim() !== '') {
-        textEl.select();
-        navigator.clipboard.writeText(textEl.value).then(() => {
-            alert('¡Texto extraído copiado al portapapeles!');
-        });
-    } else {
-        alert('No hay texto disponible para copiar. Realiza la lectura primero.');
-    }
-}
-    // A. Acción del Botón Naranja "Ver Carnet": Despliega el formulario original y carga el registro activo con carga de archivos
-function openCarnetFormModal(id) {
-    const r = cachedRegistros.find(item => item.id == id);
-    if (!r) return;
-
-    // Poblar campos del formulario principal
-    document.getElementById('curp').value = r.curp || '';
-    document.getElementById('nombre').value = r.nombre || '';
-    document.getElementById('primerApellido').value = r.primer_apellido || '';
-    document.getElementById('segundoApellido').value = r.segundo_apellido || '';
-    document.getElementById('email').value = r.email || '';
-    document.getElementById('telefono').value = r.telefono || '';
-    document.getElementById('distancia').value = r.distancia || '';
-    document.getElementById('tallaPlayera').value = r.talla_playera || '';
-    document.getElementById('perfilCorredor').value = r.perfil_corredor || '';
-    document.getElementById('tipoSangre').value = r.tipo_sangre || '';
-
-    // Si existen URLs previas en la DB, desplegar previsualización
-    if (r.foto_url) document.getElementById('photoPreview').innerHTML = `<img src="${r.foto_url}" style="max-height: 100px;">`;
-    if (r.pago_url) document.getElementById('pagoPreview').innerHTML = `<a href="${r.pago_url}" target="_blank">Ver Comprobante</a>`;
-    if (r.doc1_url) document.getElementById('doc1Preview').innerHTML = `<a href="${r.doc1_url}" target="_blank">Ver INE</a>`;
-    if (r.doc2_url) document.getElementById('doc2Preview').innerHTML = `<a href="${r.doc2_url}" target="_blank">Ver Responsiva</a>`;
-
-    closeModal('registrosModal');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-// B. Acción del Submodal "Mostrar Carnet" con Indicadores de Palomita Verde/Roja
-function openSubmodalCarnet(id) {
-    const r = cachedRegistros.find(item => item.id == id);
-    if (!r) return;
-
-    document.getElementById('carnetNombre').innerText = r.nombre_completo || `${r.nombre} ${r.primer_apellido}`;
-    document.getElementById('carnetFolio').innerText = r.folio_oficial || 'S/N';
-    document.getElementById('carnetCurp').innerText = r.curp || '-';
-    document.getElementById('carnetDistancia').innerText = r.distancia || '-';
-
-    // Cargar imagen o marca por defecto
-    const fotoBox = document.getElementById('carnetFotoBox');
-    if (r.foto_url) {
-        fotoBox.innerHTML = `<img src="${r.foto_url}" style="width:100%; height:100%; object-fit:cover;">`;
-    } else {
-        fotoBox.innerHTML = 'Sin Foto';
-    }
-
-    // Evaluar estado de documentos subidos (Palomita verde / roja)
-    document.getElementById('chkFoto').innerHTML = r.foto_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
-    document.getElementById('chkINE').innerHTML = r.doc1_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
-    document.getElementById('chkPago').innerHTML = r.pago_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
-    document.getElementById('chkCarta').innerHTML = r.doc2_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
-
-    document.getElementById('carnetVistaModal').style.display = 'flex';
-}
 </script>
 
 </body>
