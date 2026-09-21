@@ -1903,7 +1903,7 @@ if (fileDoc2) {
 async function uploadFileToDrive(fileInputId, folio, docType) {
     const fileInput = document.getElementById(fileInputId);
     if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-        return null;
+        return null; // No se seleccionó archivo nuevo
     }
 
     const file = fileInput.files[0];
@@ -1919,6 +1919,31 @@ async function uploadFileToDrive(fileInputId, folio, docType) {
                 docType: docType
             };
 
+            try {
+                const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                
+                // Extraer la URL devuelta por el Apps Script
+                let finalUrl = result.url || result.fileUrl || result.link || result.driveUrl;
+
+                // Si la API devolvió solo un ID de archivo (ej. id: "1A2b3C..."):
+                if (!finalUrl && result.id) {
+                    finalUrl = `https://drive.google.com/file/d/${result.id}/view`;
+                }
+
+                resolve(finalUrl || null);
+            } catch (err) {
+                console.error(`Error al subir ${docType}:`, err);
+                resolve(null);
+            }
+        };
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+    });
+}
             try {
                 // Utiliza la misma URL de Google Apps Script cargada en el proyecto
                 const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
