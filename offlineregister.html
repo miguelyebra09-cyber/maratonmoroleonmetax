@@ -842,34 +842,44 @@
         </div>
 
         <!-- SUBMODAL: VISTA DE CARNET DINÁMICO DE PARTICIPANTE -->
-        <div class="modal" id="carnetVistaModal">
-            <div class="modal-content" style="max-width: 500px; text-align: left;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
-                    <h3 style="color: var(--primary);">🪪 Carnet del Atleta</h3>
-                    <button class="btn-close" onclick="closeModal('carnetVistaModal')">✖</button>
-                </div>
-                
-                <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px;">
-                    <div id="carnetFotoBox" style="width: 100px; height: 100px; border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #64748b; text-align: center;">
-                        Sin Foto
-                    </div>
-                    <div>
-                        <h4 id="carnetNombre" style="font-size: 1.1rem; color: var(--primary); margin-bottom: 4px;">-</h4>
-                        <p style="font-size: 0.85rem; color: var(--text-muted);"><strong>Folio:</strong> <span id="carnetFolio">-</span></p>
-                        <p style="font-size: 0.85rem; color: var(--text-muted);"><strong>CURP:</strong> <span id="carnetCurp">-</span></p>
-                        <p style="font-size: 0.85rem; color: var(--text-muted);"><strong>Distancia:</strong> <span id="carnetDistancia">-</span></p>
-                    </div>
-                </div>
+ <!-- SUBMODAL: VISTA DE CARNET DINÁMICO DE PARTICIPANTE -->
+<div class="modal" id="carnetVistaModal">
+    <div class="modal-content" style="max-width: 550px; text-align: left;">
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
+            <h3 style="color: var(--primary);">🪪 Carnet del Atleta</h3>
+            <button class="btn-close" onclick="closeModal('carnetVistaModal')">✖</button>
+        </div>
+        
+        <div style="display: flex; gap: 16px; align-items: flex-start; margin-bottom: 16px;">
+            <div id="carnetFotoBox" style="width: 110px; height: 130px; border-radius: 8px; border: 1px solid var(--border-color); overflow: hidden; background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #64748b; text-align: center; flex-shrink: 0;">
+                Sin Foto
+            </div>
+            <div style="font-size: 0.85rem; line-height: 1.6; color: var(--text-main);">
+                <h4 id="carnetNombre" style="font-size: 1.1rem; color: var(--primary); margin-bottom: 6px;">-</h4>
+                <p><strong>Folio:</strong> <span id="carnetFolio" style="color: var(--primary-blue); font-weight: bold;">-</span></p>
+                <p><strong>CURP:</strong> <span id="carnetCurp">-</span></p>
+                <p><strong>Distancia:</strong> <span id="carnetDistancia">-</span></p>
+                <p><strong>Edad / Nacimiento:</strong> <span id="carnetEdadNac">-</span></p>
+                <p><strong>Talla Playera:</strong> <span id="carnetTalla">-</span></p>
+                <p><strong>Rama:</strong> <span id="carnetRama">-</span></p>
+            </div>
+        </div>
 
-                <div class="card" style="padding: 12px; margin-bottom: 12px; background: #f8fafc;">
-                    <div class="card-subtitle" style="margin-bottom: 8px;">Estatus de Expediente de Documentos</div>
-                    <ul style="list-style: none; padding: 0; font-size: 0.9rem; line-height: 2;">
-                        <li><span id="chkFoto"></span> 📸 Fotografía Oficial</li>
-                        <li><span id="chkINE"></span> 🪪 Identificación Oficial (INE)</li>
-                        <li><span id="chkPago"></span> 💳 Comprobante de Pago</li>
-                        <li><span id="chkCarta"></span> 📄 Carta Responsiva</li>
-                    </ul>
-                </div>
+        <div class="card" style="padding: 12px; margin-bottom: 12px; background: #f8fafc;">
+            <div class="card-subtitle" style="margin-bottom: 8px;">Estatus de Expediente de Documentos</div>
+            <ul style="list-style: none; padding: 0; font-size: 0.9rem; line-height: 2;">
+                <li><span id="chkFoto"></span> 📸 Fotografía Oficial</li>
+                <li><span id="chkINE"></span> 🪪 Identificación Oficial (INE)</li>
+                <li><span id="chkPago"></span> 💳 Comprobante de Pago</li>
+                <li><span id="chkCarta"></span> 📄 Carta Responsiva</li>
+            </ul>
+        </div>
+
+        <div style="text-align: right;">
+            <button class="btn-close" onclick="closeModal('carnetVistaModal')">Cerrar Carnet</button>
+        </div>
+    </div>
+</div>
 
                 <div style="text-align: right;">
                     <button class="btn-close" onclick="closeModal('carnetVistaModal')">Cerrar Carnet</button>
@@ -1726,7 +1736,6 @@
                 <td>$${r.monto_cobrado || 0}</td>
                 <td style="display: flex; gap: 6px;">
                     <button class="btn-action" onclick="openEditModal('${r.id}')">✏️ Editar</button>
-                    <button class="btn-action" style="background-color: #f97316;" onclick="openCarnetFormModal('${r.id}')">🪪 Ver carnet</button>
                     <button class="btn-ticket" onclick="descargarTicketPorId('${r.id}')">📥 Ticket</button>
                     <button class="btn-action" style="background-color: #8b5cf6;" onclick="openSubmodalCarnet('${r.id}')">👁️ Mostrar carnet</button>
                 </td>
@@ -2253,26 +2262,45 @@
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    function openSubmodalCarnet(id) {
+function openSubmodalCarnet(id) {
         const r = cachedRegistros.find(item => item.id == id);
         if (!r) return;
 
-        document.getElementById('carnetNombre').innerText = r.nombre_completo || `${r.nombre} ${r.primer_apellido}`;
+        // 1. Cargar Datos Personales
+        document.getElementById('carnetNombre').innerText = r.nombre_completo || `${r.nombre || ''} ${r.primer_apellido || ''}`.trim();
         document.getElementById('carnetFolio').innerText = r.folio_oficial || 'S/N';
         document.getElementById('carnetCurp').innerText = r.curp || '-';
         document.getElementById('carnetDistancia').innerText = r.distancia || '-';
+        
+        const edad = r.edad || '-';
+        const nac = r.fecha_nacimiento || '-';
+        document.getElementById('carnetEdadNac').innerText = `${edad} (${nac})`;
+        document.getElementById('carnetTalla').innerText = r.talla_playera || '-';
+        document.getElementById('carnetRama').innerText = r.rama || r.genero || '-';
 
+        // 2. Procesar y Visualizar Foto del Atleta
         const fotoBox = document.getElementById('carnetFotoBox');
-        if (r.foto_url) {
-            fotoBox.innerHTML = `<img src="${r.foto_url}" style="width:100%; height:100%; object-fit:cover;">`;
+        if (r.foto_url && typeof r.foto_url === 'string' && r.foto_url.trim().startsWith('http')) {
+            // Convertir links compartidos de Drive a vista previa si aplica
+            let displayUrl = r.foto_url;
+            if (displayUrl.includes('drive.google.com/file/d/')) {
+                const fileId = displayUrl.split('/d/')[1].split('/')[0];
+                displayUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+            }
+            fotoBox.innerHTML = `<img src="${displayUrl}" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML='⚠️ Error de Imagen'">`;
+        } else if (r.foto_url) {
+            fotoBox.innerHTML = '<span style="font-size:0.7rem; color:#eab308; padding:4px;">⚠️ Registrado sin link web</span>';
         } else {
             fotoBox.innerHTML = 'Sin Foto';
         }
 
-        document.getElementById('chkFoto').innerHTML = r.foto_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
-        document.getElementById('chkINE').innerHTML = r.doc1_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
-        document.getElementById('chkPago').innerHTML = r.pago_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
-        document.getElementById('chkCarta').innerHTML = r.doc2_url ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
+        // 3. Evaluar Estatus de Documentos (Palomita Verde si existe cualquier registro)
+        const hasDoc = (val) => val && typeof val === 'string' && val.trim().length > 0;
+
+        document.getElementById('chkFoto').innerHTML = hasDoc(r.foto_url) ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
+        document.getElementById('chkINE').innerHTML = hasDoc(r.doc1_url) ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
+        document.getElementById('chkPago').innerHTML = hasDoc(r.pago_url) ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
+        document.getElementById('chkCarta').innerHTML = hasDoc(r.doc2_url) ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
 
         document.getElementById('carnetVistaModal').style.display = 'flex';
     }
