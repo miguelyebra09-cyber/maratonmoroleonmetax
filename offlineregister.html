@@ -1879,21 +1879,21 @@ if (fileDoc2) {
         document.getElementById('edit_comentarios').value = registro.comentarios || '';
 
 // Cargar previsualizaciones de expedientes existentes (Nota: usa el nombre de variable "registro")
-    document.getElementById('editFotoPreview').innerHTML = registro.foto_url 
-        ? `<a href="${registro.foto_url}" target="_blank" style="color:#2563eb; font-weight:bold;">📸 Ver foto actual</a>` 
-        : 'Sin foto cargada';
+ // Validar y construir enlaces válidos de expedientes
+    const makeDocLink = (url, label) => {
+        if (url && typeof url === 'string' && url.trim().startsWith('http')) {
+            return `<a href="${url}" target="_blank" style="color:#2563eb; font-weight:bold;">${label}</a>`;
+        } else if (url) {
+            return `<span style="color:#eab308; font-weight:bold;" title="${url}">⚠️ ${url}</span>`;
+        } else {
+            return `<span style="color:#94a3b8;">Sin archivo</span>`;
+        }
+    };
 
-    document.getElementById('editPagoPreview').innerHTML = registro.pago_url 
-        ? `<a href="${registro.pago_url}" target="_blank" style="color:#2563eb; font-weight:bold;">💳 Ver pago actual</a>` 
-        : 'Sin comprobante cargado';
-
-    document.getElementById('editInePreview').innerHTML = registro.doc1_url 
-        ? `<a href="${registro.doc1_url}" target="_blank" style="color:#2563eb; font-weight:bold;">📄 Ver INE actual</a>` 
-        : 'Sin documento 1 cargado';
-
-    document.getElementById('editCartaPreview').innerHTML = registro.doc2_url 
-        ? `<a href="${registro.doc2_url}" target="_blank" style="color:#2563eb; font-weight:bold;">📄 Ver Carta actual</a>` 
-        : 'Sin carta cargada';
+    document.getElementById('editFotoPreview').innerHTML = makeDocLink(registro.foto_url, '📸 Ver foto actual');
+    document.getElementById('editPagoPreview').innerHTML = makeDocLink(registro.pago_url, '💳 Ver pago actual');
+    document.getElementById('editInePreview').innerHTML = makeDocLink(registro.doc1_url, '📄 Ver INE actual');
+    document.getElementById('editCartaPreview').innerHTML = makeDocLink(registro.doc2_url, '📄 Ver Carta actual');
 
         
         document.getElementById('editModal').style.display = 'flex';
