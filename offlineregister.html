@@ -2117,6 +2117,11 @@ function processDocImage(event) {
 }
 
 // Escanear la imagen usando Tesseract OCR y decodificar datos de la credencial
+
+<script>
+// =======================================================
+// CONTINUACIÓN Y FINALIZACIÓN DE scanDocImage()
+// =======================================================
 async function scanDocImage() {
     if (!currentDocImageSrc) {
         alert('Por favor selecciona una imagen de la credencial primero.');
@@ -2132,18 +2137,17 @@ async function scanDocImage() {
         const result = await Tesseract.recognize(currentDocImageSrc, 'spa');
         const text = result.data.text || '';
 
-        // 1. Extraer CURP mediante Expresión Regular de 18 Caracteres
+        // 1. Extraer CURP mediante Expresión Regular
         const curpMatch = text.match(/[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]{2}/i);
         let curp = curpMatch ? curpMatch[0].toUpperCase() : '';
 
-        // Variables derivadas
         let fechaNacimiento = '';
         let edadStr = '';
         let genero = '';
         let rama = '';
         let entidadOrigen = '';
 
-        // 2. Decodificar la CURP si se encontró
+        // 2. Decodificar CURP
         if (curp.length === 18) {
             let aa = curp.substring(4, 6);
             let mm = curp.substring(6, 8);
@@ -2151,69 +2155,84 @@ async function scanDocImage() {
             
             let anioNum = parseInt(aa, 10);
             let siglo = (anioNum < 27) ? "20" : "19";
-            let anioNac = parseInt(`${siglo}${aa}`, 10);
-            
+            let anioNacimiento = parseInt(`${siglo}${aa}`, 10);
             fechaNacimiento = `${dd}/${mm}/${siglo}${aa}`;
-            let edad = 2027 - anioNac;
+
+            let edad = 2027 - anioNacimiento;
             edadStr = `${edad} años`;
 
             let sexoChar = curp.charAt(10);
             if (sexoChar === 'H') {
-                genero = 'M';
+                genero = 'Masculino';
                 rama = 'Varonil';
             } else if (sexoChar === 'M') {
-                genero = 'F';
+                genero = 'Femenino';
                 rama = 'Femenil';
             }
 
             let entCode = curp.substring(11, 13);
-            entidadOrigen = estadosCURP[entCode] || '';
+            entidadOrigen = estadosCURP[entCode] || `Entidad (${entCode})`;
         }
 
-        // 3. Intentar extraer Nombre y Apellidos de la lectura de texto
-        const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 2);
-        let nombres = '';
-        let primerApellido = '';
-        let segundoApellido = '';
-
-        // Búsqueda aproximada de líneas de nombre en credencial INE
-        let nombreIndex = lines.findIndex(l => l.includes('NOMBRE') || l.includes('CLAVE'));
-        if (nombreIndex !== -1 && lines[nombreIndex + 1]) {
-            primerApellido = lines[nombreIndex + 1] || '';
-            segundoApellido = lines[nombreIndex + 2] || '';
-            nombres = lines[nombreIndex + 3] || '';
-        } else if (lines.length >= 3) {
-            primerApellido = lines[0] || '';
-            segundoApellido = lines[1] || '';
-            nombres = lines[2] || '';
-        }
-
-        // 4. Armar el bloque de texto con el formato final requerido
-        const formattedOutput = `• 🆔 CURP: ${curp}
-• 👤 Nombre(s): ${nombres}
-• 👤 Primer apellido: ${primerApellido}
-• 👥 Segundo apellido: ${segundoApellido}
-
-Residencia y Datos Extraídos o Manuales
+        // 3. Generar formato estandarizado
+        const formattedTemplate = `• 🆔 CURP: ${curp || 'No detectado'}
+• 👤 Nombre(s): 
+• 👤 Primer apellido: 
+• 👤 Segundo apellido: 
+• 📧 Correo electrónico: 
+• 📱 Teléfono celular: 
+• 🏃 Distancia: 10K Recreativa
 • 🇲🇽 País de residencia: México
-• 📍 Estado de residencia: ${entidadOrigen}
-• 🎂 Edad (dd/mm/aaaa): ${fechaNacimiento} (${edadStr})
-• 🗓️ Fecha de nacimiento: ${fechaNacimiento}
-• ⚧️ Género (F/M): ${genero}
-• 🗺️ Entidad / Estado de nacimiento: ${entidadOrigen}
-• 🏆 Rama competencia (F/V): ${rama}`;
+• 📍 Estado de residencia: Guanajuato
+• 🎂 Edad: ${edadStr}
+• 📅 Fecha de nacimiento: ${fechaNacimiento}
+• 👤 Género: ${genero}
+• 🏛️ Entidad / Estado de nacimiento: ${entidadOrigen}
+• 🎽 Talla de playera: M
+• 🩸 Tipo de sangre: O+
+• 🚑 Contacto emergencia: 
+• 📞 Teléfono emergencia: 
+• ⚠️ Alergias conocidas: Ninguna`;
 
-        document.getElementById('docFormattedOutput').value = formattedOutput;
+        document.getElementById('docFormattedOutput').value = formattedTemplate;
+
+        // Auto-inyectar CURP en el formulario si fue encontrada
+        if (curp) {
+            const curpEl = document.getElementById('curp');
+            if (curpEl) {
+                curpEl.value = curp;
+                curpEl.dispatchEvent(new Event('input'));
+            }
+        }
 
     } catch (err) {
-        console.error('Error al procesar la identificación:', err);
-        alert('No se pudo procesar la imagen. Asegúrate de que la credencial esté bien iluminada y enfocada.');
+        console.error('Error durante la lectura OCR del documento:', err);
+        alert('Ocurrió un error al procesar la imagen del documento.');
     } finally {
         btn.disabled = false;
         btn.innerText = origText;
     }
 }
 
+function copyFormattedDocText() {
+    const outputText = document.getElementById('docFormattedOutput');
+    if (!outputText || !outputText.value.trim()) {
+        alert('No hay texto para copiar.');
+        return;
+    }
+    
+    outputText.select();
+    outputText.setSelectionRange(0, 99999);
+    navigator.clipboard.writeText(outputText.value).then(() => {
+        alert('¡Texto copiado al portapapeles!');
+    }).catch(err => {
+        console.error('Error al copiar:', err);
+    });
+}
+</script>
+</body>
+</html>
+    
 // Función para copiar todo el texto generado al portapapeles
 function copyFormattedDocText() {
     const textEl = document.getElementById('docFormattedOutput');
