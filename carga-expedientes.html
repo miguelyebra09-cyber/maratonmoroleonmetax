@@ -562,24 +562,30 @@ const GOOGLE_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz9z7D
             }
 
             // NIVEL 2: CORREO
-            if (authStepLevel === 2) {
-              const dbEmail = data.email ? String(data.email).trim().toLowerCase() : '';
+         // ✅ CÓDIGO CORREGIDO:
+if (authStepLevel === 2) {
+    // 1. PRIMERO declaramos e ingresamos el valor del input HTML
+    const emailInput = document.getElementById('authEmail').value.trim().toLowerCase();
+    
+    // 2. Obtenemos el correo registrado en Supabase
+    const dbEmail = data.email ? String(data.email).trim().toLowerCase() : '';
 
-        if (dbEmail === '' || dbEmail !== emailInput) {
-            authStepLevel = 3;
-            document.getElementById('blockOptB').classList.add('hidden');
-            document.getElementById('blockOptC').classList.remove('hidden');
-            document.getElementById('lblTryAttempt').innerText = 'Intento 3 de 3';
-            document.getElementById('authAlert').className = 'alert-box alert-warning';
-            document.getElementById('authAlert').innerText = 'Correo no coincidente o no registrado. Ingresa tu Primer Nombre.';
-            btn.disabled = false;
-            btn.innerText = 'Validar por Nombre';
-            return;
-        } else {
-            await startSession(data, 'CORREO');
-            return;
-        }
-            }
+    // 3. AHORA SÍ comparamos
+    if (dbEmail === '' || dbEmail !== emailInput) {
+        authStepLevel = 3;
+        document.getElementById('blockOptB').classList.add('hidden');
+        document.getElementById('blockOptC').classList.remove('hidden');
+        document.getElementById('lblTryAttempt').innerText = 'Intento 3 de 3';
+        document.getElementById('authAlert').className = 'alert-box alert-warning';
+        document.getElementById('authAlert').innerText = 'Correo no coincidente o no registrado. Ingresa tu Primer Nombre.';
+        btn.disabled = false;
+        btn.innerText = 'Validar por Nombre';
+        return;
+    } else {
+        await startSession(data, 'CORREO');
+        return;
+    }
+}
 
             // NIVEL 3: PRIMER NOMBRE
             if (authStepLevel === 3) {
