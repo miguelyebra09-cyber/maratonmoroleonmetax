@@ -1037,46 +1037,50 @@
                 </div>
 
 <!-- SECCIÓN: EXPEDIENTE DIGITAL Y SUBIDA DE DOCUMENTOS -->
-<hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border-color, #cbd5e1);">
-<h4 style="color: var(--primary, #1e293b); margin-bottom: 12px; font-size: 1rem;">📁 Expediente Digital del Atleta</h4>
+        <div class="form-group" style="grid-column: span 2; margin-top: 20px;">
+            <hr style="border: 0; border-top: 1px solid #e2e8f0; margin-bottom: 16px;">
+            <h4 style="color: var(--primary, #1e293b); margin-bottom: 12px; font-size: 1rem; display: flex; align-items: center; gap: 8px;">
+                📂 Expediente Digital del Atleta
+            </h4>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
-    <!-- 1. Fotografía Oficial -->
-    <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
-        <label style="font-weight: 600; font-size: 0.82rem; display: block; margin-bottom: 6px;">Fotografía Oficial</label>
-        <input type="file" id="editFotoFile" accept="image/*" class="form-control" style="font-size: 0.8rem; width: 100%;">
-        <div id="editFotoPreview" style="margin-top: 8px; font-size: 0.78rem; color: #64748b; background: #ffffff; padding: 6px; border-radius: 4px; border: 1px dashed #cbd5e1; min-height: 40px; text-align: center;">
-            Sin foto seleccionada
-        </div>
-    </div>
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px;">
+                <!-- 1. Fotografía Oficial -->
+                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px; color: #334155;">Fotografía Oficial</label>
+                    <input type="file" id="editFotoFile" accept="image/*" class="form-control" style="font-size: 0.8rem; width: 100%;">
+                    <div id="editFotoPreview" style="margin-top: 8px; font-size: 0.8rem; background: #ffffff; padding: 8px; border-radius: 6px; border: 1px dashed #cbd5e1; text-align: center;">
+                        Sin foto cargada
+                    </div>
+                </div>
 
-    <!-- 2. Evidencia de Pago -->
-    <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
-        <label style="font-weight: 600; font-size: 0.82rem; display: block; margin-bottom: 6px;">Evidencia de Pago (Comprobante)</label>
-        <input type="file" id="editPagoFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem; width: 100%;">
-        <div id="editPagoPreview" style="margin-top: 8px; font-size: 0.78rem; color: #64748b; background: #ffffff; padding: 6px; border-radius: 4px; border: 1px dashed #cbd5e1; min-height: 40px; text-align: center;">
-            Sin comprobante seleccionado
-        </div>
-    </div>
+                <!-- 2. Evidencia de Pago -->
+                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px; color: #334155;">Evidencia de Pago (Comprobante)</label>
+                    <input type="file" id="editPagoFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem; width: 100%;">
+                    <div id="editPagoPreview" style="margin-top: 8px; font-size: 0.8rem; background: #ffffff; padding: 8px; border-radius: 6px; border: 1px dashed #cbd5e1; text-align: center;">
+                        Sin comprobante cargado
+                    </div>
+                </div>
 
-    <!-- 3. Identificación Oficial (INE) -->
-    <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
-        <label style="font-weight: 600; font-size: 0.82rem; display: block; margin-bottom: 6px;">Identificación Oficial (INE) (DOC1)</label>
-        <input type="file" id="editIneFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem; width: 100%;">
-        <div id="editInePreview" style="margin-top: 8px; font-size: 0.78rem; color: #64748b; background: #ffffff; padding: 6px; border-radius: 4px; border: 1px dashed #cbd5e1; min-height: 40px; text-align: center;">
-            Sin documento 1 seleccionado
-        </div>
-    </div>
+                <!-- 3. Identificación Oficial (INE) -->
+                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px; color: #334155;">Identificación Oficial (INE) (DOC1)</label>
+                    <input type="file" id="editIneFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem; width: 100%;">
+                    <div id="editInePreview" style="margin-top: 8px; font-size: 0.8rem; background: #ffffff; padding: 8px; border-radius: 6px; border: 1px dashed #cbd5e1; text-align: center;">
+                        Sin documento 1 cargado
+                    </div>
+                </div>
 
-    <!-- 4. Carta Responsiva -->
-    <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
-        <label style="font-weight: 600; font-size: 0.82rem; display: block; margin-bottom: 6px;">Carta Responsiva (Doc 2)</label>
-        <input type="file" id="editCartaFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem; width: 100%;">
-        <div id="editCartaPreview" style="margin-top: 8px; font-size: 0.78rem; color: #64748b; background: #ffffff; padding: 6px; border-radius: 4px; border: 1px dashed #cbd5e1; min-height: 40px; text-align: center;">
-            Sin carta responsiva seleccionada
+                <!-- 4. Carta Responsiva -->
+                <div style="background: #f8fafc; padding: 12px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <label style="font-weight: 600; font-size: 0.85rem; display: block; margin-bottom: 6px; color: #334155;">Carta Responsiva (Doc 2)</label>
+                    <input type="file" id="editCartaFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem; width: 100%;">
+                    <div id="editCartaPreview" style="margin-top: 8px; font-size: 0.8rem; background: #ffffff; padding: 8px; border-radius: 6px; border: 1px dashed #cbd5e1; text-align: center;">
+                        Sin carta responsiva cargada
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
                 
             </div>
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px;">
@@ -1253,40 +1257,55 @@ const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwlzXJVU
   // PEGAR AQUÍ LA FUNCIÓN DE SUBIDA A GOOGLE DRIVE
   // =========================================================================
     
-async function uploadToGoogleDrive(file, folderName, customFileName) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = async () => {
-      try {
-        const base64Data = reader.result.split(',')[1];
+async function uploadFileToDrive(fileInputId, folio, docType) {
+    const fileInput = document.getElementById(fileInputId);
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+        return null; // Si no hay archivo seleccionado, no realiza acción
+    }
 
-        const payload = {
-          fileData: base64Data,
-          mimeType: file.type || 'application/octet-stream',
-          fileName: customFileName || file.name,
-          folderName: folderName
+    const file = fileInput.files[0];
+    const scriptUrl = 'https://script.google.com/macros/s/AKfycbz9z7DO_lQyQ3F9KOJX2_7F2ts6cvBvLl1HWKk6KHfcNQ-9heDu2IB6LUPO7StDBG1V/exec';
+
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async function (e) {
+            const base64Data = e.target.result.split(',')[1];
+            
+            // Estructura idéntica a la que consume tu formulario principal
+            const payload = {
+                fileData: base64Data,
+                fileName: `${folio}_${docType}_${file.name}`,
+                mimeType: file.type,
+                folio: folio,
+                type: docType
+            };
+
+            try {
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                
+                // Extraer la URL devuelta por el servidor de Apps Script
+                let fileUrl = result.url || result.fileUrl || result.driveUrl || result.link;
+
+                // Si Apps Script devuelve el ID directo del archivo subido
+                if (!fileUrl && result.id) {
+                    fileUrl = `https://drive.google.com/file/d/${result.id}/view`;
+                }
+
+                resolve(fileUrl || null);
+            } catch (err) {
+                console.error(`Error procesando subida de ${docType}:`, err);
+                resolve(null);
+            }
         };
-
-        // Usamos mode: 'no-cors' para romper definitivamente el bloqueo del navegador
-        await fetch('https://script.google.com/macros/s/AKfycbz9z7DO_lQyQ3F9KOJX2_7F2ts6cvBvLl1HWKk6KHfcNQ-9heDu2IB6LUPO7StDBG1V/exec', {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: {
-            'Content-Type': 'text/plain'
-          },
-          body: JSON.stringify(payload)
-        });
-
-        // Al usar no-cors la subida se completa en Google Drive exitosamente.
-        // Asignamos una URL de confirmación genérica o de la carpeta.
-        resolve('Subido a Google Drive');
-      } catch (err) {
-        reject(err);
-      }
-    };
-    reader.onerror = (error) => reject(error);
-    reader.readAsDataURL(file);
-  });
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+    });
 }
     
     let cachedRegistros = [];
