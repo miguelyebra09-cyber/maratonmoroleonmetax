@@ -368,11 +368,21 @@
         if (folioUrl) document.getElementById('authFolio').value = folioUrl.trim().toUpperCase();
     });
 
-    function isInvalidValue(val) {
-        if (!val || val === null) return true;
-        const clean = String(val).trim().toUpperCase();
-        return (clean === '' || clean === 'X' || clean === '-' || clean === 'NO' || clean === 'N/A');
-    }
+   function isInvalidValue(val) {
+    if (!val || val === null) return true;
+    const clean = String(val).trim().toUpperCase();
+    return (
+        clean === '' || 
+        clean === 'X' || 
+        clean === '-' || 
+        clean === 'NO' || 
+        clean === 'N/A' || 
+        clean === 'NO DEFINIÓ' || 
+        clean === 'NO DEFINIO' || 
+        clean === 'NO DEFINIDO' || 
+        clean === 'PENDIENTE'
+    );
+}
 
     // AUTENTICACIÓN ESCALONADA DE ATLETA Y REGISTRO DE HUELLA DE SISTEMA
     async function handleAuthentication(e) {
@@ -479,23 +489,29 @@
         errDiv.innerText = msg;
         errDiv.classList.remove('hidden');
     }
+async function startSession(corredor, metodoAuth) {
+    currentCorredor = corredor;
+    const newAccesos = (corredor.accesos_realizados || 0) + 1;
 
-    async function startSession(corredor, metodoAuth) {
-        currentCorredor = corredor;
-        const newAccesos = (corredor.accesos_realizados || 0) + 1;
-
-        await dbClient.from('corredores').update({ 
+    const { error } = await dbClient
+        .from('corredores')
+        .update({ 
             accesos_realizados: newAccesos,
             ultimo_acceso: new Date().toISOString(),
             metodo_ultimo_acceso: metodoAuth
-        }).eq('id', corredor.id);
+        })
+        .eq('id', corredor.id);
 
-        document.getElementById('stepAuth').classList.add('hidden');
-        document.getElementById('stepPortal').classList.remove('hidden');
-
-        renderDatosPersonales();
-        renderPendientesForm(corredor);
+    if (error) {
+        console.warn("Error al registrar acceso:", error.message);
     }
+
+    document.getElementById('stepAuth').classList.add('hidden');
+    document.getElementById('stepPortal').classList.remove('hidden');
+
+    renderDatosPersonales();
+    renderPendientesForm(corredor);
+}
 
     function renderDatosPersonales() {
         const c = currentCorredor;
@@ -522,142 +538,154 @@
         `;
     }
 
-    function renderPendientesForm(c) {
-        const containerData = document.getElementById('containerDataInputs');
-        const containerDoc = document.getElementById('containerDocInputs');
+function renderPendientesForm(c) {
+    const containerData = document.getElementById('containerDataInputs');
+    const containerDoc = document.getElementById('containerDocInputs');
 
-        if (!containerData || !containerDoc) return;
+    if (!containerData || !containerDoc) return;
 
-        containerData.innerHTML = '';
-        containerDoc.innerHTML = '';
+    containerData.innerHTML = '';
+    containerDoc.innerHTML = '';
 
-        let pendingData = 0;
-        let pendingDocs = 0;
+    let pendingData = 0;
+    let pendingDocs = 0;
 
-        const contactoNombre = c.contacto_nombre || c.contacto_emergencia || c.emergencia_contacto || '';
-        const contactoTelefono = c.contacto_telefono || c.telefono_emergencia || c.emergencia_telefono || '';
+    const contactoNombre = c.contacto_nombre || '';
+    const contactoTelefono = c.contacto_telefono || '';
+    const distClean = c.distancia ? String(c.distancia).trim().toUpperCase() : '';
 
-        if (isInvalidValue(c.curp) || String(c.curp).trim().length < 18) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>CURP *</label>
-                    <input type="text" id="inp_curp" class="form-control" style="text-transform:uppercase;" maxlength="18" value="${c.curp || ''}" required>
-                </div>`;
-        }
-
-        if (isInvalidValue(c.segundo_apellido)) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Segundo Apellido *</label>
-                    <input type="text" id="inp_segundo_apellido" class="form-control" value="${c.segundo_apellido || ''}" required>
-                </div>`;
-        }
-
-        if (isInvalidValue(c.distancia)) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Distancia *</label>
-                    <select id="inp_distancia" class="form-control" required>
-                        <option value="">-- Selecciona Distancia --</option>
-                        <option value="5K Recreativa" ${c.distancia === '5K Recreativa' ? 'selected' : ''}>5K Recreativa</option>
-                        <option value="10K" ${c.distancia === '10K' ? 'selected' : ''}>10K</option>
-                        <option value="21K" ${c.distancia === '21K' ? 'selected' : ''}>21K (Medio Maratón)</option>
-                        <option value="42K" ${c.distancia === '42K' ? 'selected' : ''}>42K (Maratón)</option>
-                    </select>
-                </div>`;
-        }
-
-        if (isInvalidValue(c.categoria)) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Categoría *</label>
-                    <input type="text" id="inp_categoria" class="form-control" value="${c.categoria || ''}" required>
-                </div>`;
-        }
-
-        if (isInvalidValue(c.talla_playera)) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Talla de Playera *</label>
-                    <input type="text" id="inp_talla_playera" class="form-control" value="${c.talla_playera || ''}" required>
-                </div>`;
-        }
-
-        if (isInvalidValue(c.email) || !String(c.email).includes('@')) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Correo Electrónico *</label>
-                    <input type="email" id="inp_email" class="form-control" style="text-transform:none;" value="${c.email || ''}" required>
-                </div>`;
-        }
-
-        if (isInvalidValue(c.telefono) || String(c.telefono).trim().length < 10) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Teléfono Celular *</label>
-                    <input type="tel" id="inp_telefono" class="form-control" maxlength="10" value="${c.telefono || ''}" required>
-                </div>`;
-        }
-
-        if (isInvalidValue(c.tipo_sangre)) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Tipo de Sangre *</label>
-                    <input type="text" id="inp_tipo_sangre" class="form-control" value="${c.tipo_sangre || ''}" required>
-                </div>`;
-        }
-
-        if (isInvalidValue(contactoNombre) || isInvalidValue(contactoTelefono)) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Contacto de Emergencia (Nombre) *</label>
-                    <input type="text" id="inp_contacto_nombre" class="form-control" value="${contactoNombre}" required>
-                </div>
-                <div class="form-group">
-                    <label>Contacto de Emergencia (Teléfono) *</label>
-                    <input type="tel" id="inp_contacto_telefono" class="form-control" value="${contactoTelefono}" required>
-                </div>`;
-        }
-
-        if (isInvalidValue(c.foto_url)) {
-            pendingDocs++;
-            containerDoc.innerHTML += renderFileInput('f_foto', '📷 Fotografía Oficial', 'Fotografía clara de rostro.');
-        }
-
-        if (isInvalidValue(c.doc1_url)) {
-            pendingDocs++;
-            containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE)', 'Frente y reverso.');
-        }
-
-        if (isInvalidValue(c.doc2_url)) {
-            pendingDocs++;
-            containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Documento de deslinde.');
-        }
-
-        if (pendingData > 0) document.getElementById('cardDataInputs').classList.remove('hidden');
-        else document.getElementById('cardDataInputs').classList.add('hidden');
-
-        if (pendingDocs > 0) document.getElementById('cardDocInputs').classList.remove('hidden');
-        else document.getElementById('cardDocInputs').classList.add('hidden');
-
-        if (pendingData === 0 && pendingDocs === 0) {
-            document.getElementById('cardCompleted').classList.remove('hidden');
-            document.getElementById('btnSubmitContainer').classList.add('hidden');
-        } else {
-            document.getElementById('cardCompleted').classList.add('hidden');
-            document.getElementById('btnSubmitContainer').classList.remove('hidden');
-        }
+    // CURP
+    if (isInvalidValue(c.curp) || String(c.curp).trim().length < 18) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>CURP *</label>
+                <input type="text" id="inp_curp" class="form-control" style="text-transform:uppercase;" maxlength="18" value="${c.curp && c.curp !== 'X' ? c.curp : ''}" required>
+            </div>`;
     }
 
+    // SEGUNDO APELLIDO
+    if (isInvalidValue(c.segundo_apellido)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Segundo Apellido *</label>
+                <input type="text" id="inp_segundo_apellido" class="form-control" value="${c.segundo_apellido && c.segundo_apellido !== 'X' ? c.segundo_apellido : ''}" required>
+            </div>`;
+    }
+
+    // DISTANCIA (Evaluación de 'No definió')
+    if (isInvalidValue(c.distancia)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Distancia *</label>
+                <select id="inp_distancia" class="form-control" required>
+                    <option value="">-- Selecciona Distancia --</option>
+                    <option value="5K Recreativa" ${distClean === '5K RECREATIVA' ? 'selected' : ''}>5K Recreativa</option>
+                    <option value="10K" ${distClean === '10K' ? 'selected' : ''}>10K</option>
+                    <option value="21K" ${distClean === '21K' ? 'selected' : ''}>21K (Medio Maratón)</option>
+                    <option value="42K" ${distClean === '42K' ? 'selected' : ''}>42K (Maratón)</option>
+                </select>
+            </div>`;
+    }
+
+    // CATEGORÍA
+    if (isInvalidValue(c.categoria)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Categoría *</label>
+                <input type="text" id="inp_categoria" class="form-control" value="${c.categoria && c.categoria !== 'X' ? c.categoria : ''}" required>
+            </div>`;
+    }
+
+    // TALLA DE PLAYERA
+    if (isInvalidValue(c.talla_playera)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Talla de Playera *</label>
+                <input type="text" id="inp_talla_playera" class="form-control" value="${c.talla_playera && c.talla_playera !== 'X' ? c.talla_playera : ''}" required>
+            </div>`;
+    }
+
+    // EMAIL
+    if (isInvalidValue(c.email) || !String(c.email).includes('@')) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Correo Electrónico *</label>
+                <input type="email" id="inp_email" class="form-control" style="text-transform:none;" value="${c.email && c.email !== 'X' ? c.email : ''}" required>
+            </div>`;
+    }
+
+    // TELÉFONO
+    if (isInvalidValue(c.telefono) || String(c.telefono).trim().length < 10) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Teléfono Celular *</label>
+                <input type="tel" id="inp_telefono" class="form-control" maxlength="10" value="${c.telefono && c.telefono !== 'X' ? c.telefono : ''}" required>
+            </div>`;
+    }
+
+    // TIPO DE SANGRE
+    if (isInvalidValue(c.tipo_sangre)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Tipo de Sangre *</label>
+                <input type="text" id="inp_tipo_sangre" class="form-control" value="${c.tipo_sangre && c.tipo_sangre !== 'X' ? c.tipo_sangre : ''}" required>
+            </div>`;
+    }
+
+    // CONTACTO DE EMERGENCIA
+    if (isInvalidValue(contactoNombre) || isInvalidValue(contactoTelefono)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Contacto de Emergencia (Nombre) *</label>
+                <input type="text" id="inp_contacto_nombre" class="form-control" value="${contactoNombre && contactoNombre !== 'X' ? contactoNombre : ''}" required>
+            </div>
+            <div class="form-group">
+                <label>Contacto de Emergencia (Teléfono) *</label>
+                <input type="tel" id="inp_contacto_telefono" class="form-control" value="${contactoTelefono && contactoTelefono !== 'X' ? contactoTelefono : ''}" required>
+            </div>`;
+    }
+
+    // ARCHIVOS / DOCUMENTOS
+    if (isInvalidValue(c.foto_url)) {
+        pendingDocs++;
+        containerDoc.innerHTML += renderFileInput('f_foto', '📷 Fotografía Oficial', 'Fotografía clara de rostro.');
+    }
+
+    if (isInvalidValue(c.doc1_url)) {
+        pendingDocs++;
+        containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE)', 'Frente y reverso.');
+    }
+
+    if (isInvalidValue(c.doc2_url)) {
+        pendingDocs++;
+        containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Documento de deslinde.');
+    }
+
+    // Mostrar u Ocultar Secciones
+    if (pendingData > 0) document.getElementById('cardDataInputs').classList.remove('hidden');
+    else document.getElementById('cardDataInputs').classList.add('hidden');
+
+    if (pendingDocs > 0) document.getElementById('cardDocInputs').classList.remove('hidden');
+    else document.getElementById('cardDocInputs').classList.add('hidden');
+
+    if (pendingData === 0 && pendingDocs === 0) {
+        document.getElementById('cardCompleted').classList.remove('hidden');
+        document.getElementById('btnSubmitContainer').classList.add('hidden');
+    } else {
+        document.getElementById('cardCompleted').classList.add('hidden');
+        document.getElementById('btnSubmitContainer').classList.remove('hidden');
+    }
+}
+    
     async function handleExpedienteSubmit(e) {
         e.preventDefault();
         const btn = document.getElementById('btnSubmit');
