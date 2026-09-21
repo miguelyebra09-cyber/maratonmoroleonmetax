@@ -1035,6 +1035,49 @@
                     <label>Comentarios</label>
                     <textarea id="edit_comentarios" rows="2"></textarea>
                 </div>
+
+<!-- SECCIÓN: EXPEDIENTE DIGITAL Y SUBIDA DE DOCUMENTOS -->
+<hr style="margin: 20px 0; border: 0; border-top: 1px solid var(--border-color, #cbd5e1);">
+<h4 style="color: var(--primary, #1e293b); margin-bottom: 12px; font-size: 1rem;">📁 Expediente Digital del Atleta</h4>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 16px;">
+    <!-- 1. Fotografía Oficial -->
+    <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+        <label style="font-weight: 600; font-size: 0.82rem; display: block; margin-bottom: 6px;">Fotografía Oficial</label>
+        <input type="file" id="editFotoFile" accept="image/*" class="form-control" style="font-size: 0.8rem; width: 100%;">
+        <div id="editFotoPreview" style="margin-top: 8px; font-size: 0.78rem; color: #64748b; background: #ffffff; padding: 6px; border-radius: 4px; border: 1px dashed #cbd5e1; min-height: 40px; text-align: center;">
+            Sin foto seleccionada
+        </div>
+    </div>
+
+    <!-- 2. Evidencia de Pago -->
+    <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+        <label style="font-weight: 600; font-size: 0.82rem; display: block; margin-bottom: 6px;">Evidencia de Pago (Comprobante)</label>
+        <input type="file" id="editPagoFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem; width: 100%;">
+        <div id="editPagoPreview" style="margin-top: 8px; font-size: 0.78rem; color: #64748b; background: #ffffff; padding: 6px; border-radius: 4px; border: 1px dashed #cbd5e1; min-height: 40px; text-align: center;">
+            Sin comprobante seleccionado
+        </div>
+    </div>
+
+    <!-- 3. Identificación Oficial (INE) -->
+    <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+        <label style="font-weight: 600; font-size: 0.82rem; display: block; margin-bottom: 6px;">Identificación Oficial (INE) (DOC1)</label>
+        <input type="file" id="editIneFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem; width: 100%;">
+        <div id="editInePreview" style="margin-top: 8px; font-size: 0.78rem; color: #64748b; background: #ffffff; padding: 6px; border-radius: 4px; border: 1px dashed #cbd5e1; min-height: 40px; text-align: center;">
+            Sin documento 1 seleccionado
+        </div>
+    </div>
+
+    <!-- 4. Carta Responsiva -->
+    <div style="background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
+        <label style="font-weight: 600; font-size: 0.82rem; display: block; margin-bottom: 6px;">Carta Responsiva (Doc 2)</label>
+        <input type="file" id="editCartaFile" accept="image/*,.pdf" class="form-control" style="font-size: 0.8rem; width: 100%;">
+        <div id="editCartaPreview" style="margin-top: 8px; font-size: 0.78rem; color: #64748b; background: #ffffff; padding: 6px; border-radius: 4px; border: 1px dashed #cbd5e1; min-height: 40px; text-align: center;">
+            Sin carta responsiva seleccionada
+        </div>
+    </div>
+</div>
+                
             </div>
             <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 16px;">
                 <button type="button" class="btn-close" onclick="closeModal('editModal')">Cancelar</button>
@@ -1835,14 +1878,114 @@ if (fileDoc2) {
         document.getElementById('edit_operador').value = registro.operador_nombre || '';
         document.getElementById('edit_comentarios').value = registro.comentarios || '';
 
+// Cargar previsualizaciones de expedientes existentes (Nota: usa el nombre de variable "registro")
+    document.getElementById('editFotoPreview').innerHTML = registro.foto_url 
+        ? `<a href="${registro.foto_url}" target="_blank" style="color:#2563eb; font-weight:bold;">📸 Ver foto actual</a>` 
+        : 'Sin foto cargada';
+
+    document.getElementById('editPagoPreview').innerHTML = registro.pago_url 
+        ? `<a href="${registro.pago_url}" target="_blank" style="color:#2563eb; font-weight:bold;">💳 Ver pago actual</a>` 
+        : 'Sin comprobante cargado';
+
+    document.getElementById('editInePreview').innerHTML = registro.doc1_url 
+        ? `<a href="${registro.doc1_url}" target="_blank" style="color:#2563eb; font-weight:bold;">📄 Ver INE actual</a>` 
+        : 'Sin documento 1 cargado';
+
+    document.getElementById('editCartaPreview').innerHTML = registro.doc2_url 
+        ? `<a href="${registro.doc2_url}" target="_blank" style="color:#2563eb; font-weight:bold;">📄 Ver Carta actual</a>` 
+        : 'Sin carta cargada';
+
+        
         document.getElementById('editModal').style.display = 'flex';
     }
 
+// Función auxiliar para subir archivos individuales a Google Drive
+async function uploadFileToDrive(fileInputId, folio, docType) {
+    const fileInput = document.getElementById(fileInputId);
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+        return null;
+    }
+
+    const file = fileInput.files[0];
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = async function (e) {
+            const base64Data = e.target.result.split(',')[1];
+            const payload = {
+                fileData: base64Data,
+                fileName: `${folio}_${docType}_${file.name}`,
+                mimeType: file.type,
+                folio: folio,
+                docType: docType
+            };
+
+            try {
+                // Utiliza la misma URL de Google Apps Script cargada en el proyecto
+                const response = await fetch(GOOGLE_APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const result = await response.json();
+                if (result.status === 'success' || result.url) {
+                    resolve(result.url || result.fileUrl);
+                } else {
+                    resolve(null);
+                }
+            } catch (err) {
+                console.error(`Error al subir ${docType}:`, err);
+                resolve(null);
+            }
+        };
+        reader.onerror = error => reject(error);
+        reader.readAsDataURL(file);
+    });
+}
+    
     const editFormEl = document.getElementById('editForm');
     if (editFormEl) {
         editFormEl.addEventListener('submit', async function(e) {
             e.preventDefault();
             const id = document.getElementById('edit_id').value;
+            // ➕ AGREGAR AQUÍ: Obtener el folio del atleta
+        const folio = document.getElementById('edit_folio') ? document.getElementById('edit_folio').value : 'REGISTRO';
+// ➕ AGREGAR AQUÍ: Mostrar indicador de carga mientras sube archivos
+        Swal.fire({
+            title: 'Subiendo archivos...',
+            text: 'Espere mientras se guardan los documentos en Drive',
+            allowOutsideClick: false,
+            didOpen: () => { Swal.showLoading(); }
+        });
+
+        // ➕ AGREGAR AQUÍ: Subida de nuevos archivos a Google Drive
+        const newFotoUrl  = await uploadFileToDrive('editFotoFile', folio, 'FOTO');
+        const newPagoUrl  = await uploadFileToDrive('editPagoFile', folio, 'PAGO');
+        const newIneUrl   = await uploadFileToDrive('editIneFile', folio, 'INE');
+        const newCartaUrl = await uploadFileToDrive('editCartaFile', folio, 'CARTA');
+
+        const nombreComp = `${document.getElementById('edit_nombre').value} ${document.getElementById('edit_primerApellido').value} ${document.getElementById('edit_segundoApellido').value}`;
+
+        const updatedData = {
+            curp: document.getElementById('edit_curp').value.toUpperCase(),
+            nombre: document.getElementById('edit_nombre').value,
+            primer_apellido: document.getElementById('edit_primerApellido').value,
+            segundo_apellido: document.getElementById('edit_segundoApellido').value,
+            nombre_completo: nombreComp,
+            email: document.getElementById('edit_email').value,
+            telefono: document.getElementById('edit_telefono').value,
+            distancia: document.getElementById('edit_distancia').value,
+            pais_residencia: document.getElementById('edit_paisResidencia').value,
+            estado_residencia: document.getElementById('edit_estadoResidencia').value,
+            edad: document.getElementById('edit_edad').value,
+            fecha_nacimiento: document.getElementById('edit_fechaNacimiento').value,
+            // ... (resto de campos que ya tienes en tu objeto updatedData) ...
+        };
+
+        // ➕ AGREGAR AQUÍ: Asignar las URLs solo si se subió un nuevo archivo
+        if (newFotoUrl)  updatedData.foto_url = newFotoUrl;
+        if (newPagoUrl)  updatedData.pago_url = newPagoUrl;
+        if (newIneUrl)   updatedData.doc1_url = newIneUrl;
+        if (newCartaUrl) updatedData.doc2_url = newCartaUrl;
+            
             const nombreComp = `${document.getElementById('edit_nombre').value} ${document.getElementById('edit_primerApellido').value} ${document.getElementById('edit_segundoApellido').value}`.trim();
 
             const updatedData = {
