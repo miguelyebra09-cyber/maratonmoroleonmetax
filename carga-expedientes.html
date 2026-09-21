@@ -358,39 +358,45 @@
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwY2V2Ynh6cGZneW9iZWhnanRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMDA3MDQsImV4cCI6MjEwMTg3NjcwNH0.hECuSvVKVehKZjZ9jMqwHM1xspD2l1kS3G9X1jfHIuk';
     const GOOGLE_DRIVE_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbz9z7DO_lQyQ3F9KOJX2_7F2ts6cvBvLl1HWKk6KHfcNQ-9heDu2IB6LUPO7StDBG1V/exec';
 
-    async function uploadToGoogleDrive(file, folio, tipoDoc) {
-        if (!file) return null;
+ async function uploadToGoogleDrive(file, folio, tipoDoc) {
+    if (!file) return null;
 
-        const reader = new FileReader();
-        const base64Promise = new Promise((resolve, reject) => {
-            reader.onload = () => resolve(reader.result.split(',')[1]);
-            reader.onerror = error => reject(error);
-        });
-        reader.readAsDataURL(file);
-        const fileBase64 = await base64Promise;
+    // 1. Convertir archivo a Base64
+    const reader = new FileReader();
+    const base64Promise = new Promise((resolve, reject) => {
+        reader.onload = () => resolve(reader.result.split(',')[1]);
+        reader.onerror = error => reject(error);
+    });
+    reader.readAsDataURL(file);
+    const fileBase64 = await base64Promise;
 
-        const payload = {
-            folio: folio,
-            tipoDocumento: tipoDoc,
-            fileName: `${folio}_${tipoDoc}_${file.name}`,
-            mimeType: file.type,
-            fileData: fileBase64
-        };
+    // 2. Estructurar el objeto EXACTAMENTE como lo espera tu doPost
+    const payload = {
+        fileName: `${folio}_${tipoDoc}_${file.name}`,
+        mimeType: file.type,
+        folderName: 'Expedientes_Moroleon', // O el nombre de carpeta que uses
+        fileData: fileBase64
+    };
 
-        const response = await fetch(GOOGLE_DRIVE_WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+    // 3. Petición POST evitando la verificación CORS preflight
+    const response = await fetch(GOOGLE_DRIVE_WEBHOOK_URL, {
+        method: 'POST',
+        // Cambiar Content-Type a text/plain evita que el navegador envíe la petición OPTIONS
+        headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify(payload)
+    });
 
-        const resData = await response.json();
-        if (!response.ok || !resData.url) {
-            throw new Error(resData.error || `Error al subir ${tipoDoc} a Google Drive`);
-        }
+    const resData = await response.json();
 
-        return resData.url;
+    if (resData.status !== 'success') {
+        throw new Error(resData.message || `Error al subir ${tipoDoc}`);
     }
 
+    // Devuelve la URL pública del archivo cargado a Drive
+    return resData.url;
+}
     async function handleExpedienteSubmit(e) {
         e.preventDefault();
 
