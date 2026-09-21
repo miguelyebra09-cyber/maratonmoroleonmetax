@@ -827,22 +827,42 @@
 </div>
 
 <!-- MODAL 3: VER Y EDITAR REGISTROS -->
+<!-- MODAL DE LISTADO DE REGISTROS -->
 <div class="modal" id="registrosModal">
-    <div class="modal-content modal-large">
+    <div class="modal-content" style="max-width: 95%; width: 1100px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <h3 style="color: var(--primary);">📋 Listado de Atletas Registrados</h3>
             <div style="display: flex; gap: 8px;">
-                <button class="btn-action" style="background-color: #16a34a;" onclick="exportTableToCSV()">📥 Exportar a CSV</button>
+                <button class="btn-action" style="background-color: #10b981;" onclick="exportTableToCSV('registros.csv')">📊 Exportar a CSV</button>
                 <button class="btn-close" onclick="closeModal('registrosModal')">✖ Cerrar</button>
             </div>
         </div>
+        
+        <input type="text" id="searchRegistrosInput" placeholder="Buscar por Nombre, CURP o Folio..." onkeyup="filterRegistrosTable()" style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 6px;">
 
-        <div style="display: flex; gap: 10px; margin-bottom: 12px;">
-            <input type="text" id="searchRegistros" placeholder="Buscar por Nombre, CURP o Folio..." style="flex:1; padding: 8px; border-radius: 6px; border: 1px solid var(--border-color);" onkeyup="filterRegistros()">
+        <div style="max-height: 400px; overflow-y: auto;">
+            <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #f8fafc; text-align: left;">
+                        <th>Fecha</th>
+                        <th>Folio</th>
+                        <th>Nombre Completo</th>
+                        <th>CURP</th>
+                        <th>Distancia</th>
+                        <th>Categoría</th>
+                        <th>Talla</th>
+                        <th>Monto</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="registrosTableBody">
+                    <!-- Se llena dinámicamente -->
+                </tbody>
+            </table>
         </div>
+    </div>
+</div>
 
-        <!-- SUBMODAL: VISTA DE CARNET DINÁMICO DE PARTICIPANTE -->
- <!-- SUBMODAL: VISTA DE CARNET DINÁMICO DE PARTICIPANTE -->
 <!-- SUBMODAL: VISTA DE CARNET DINÁMICO DE PARTICIPANTE -->
 <div class="modal" id="carnetVistaModal">
     <div class="modal-content" style="max-width: 550px; text-align: left;">
@@ -881,18 +901,6 @@
         </div>
     </div>
 </div>
-
-        <div style="text-align: right;">
-            <button class="btn-close" onclick="closeModal('carnetVistaModal')">Cerrar Carnet</button>
-        </div>
-    </div>
-</div>
-
-                <div style="text-align: right;">
-                    <button class="btn-close" onclick="closeModal('carnetVistaModal')">Cerrar Carnet</button>
-                </div>
-            </div>
-        </div>
         
         <div class="table-responsive">
             <table>
@@ -1715,7 +1723,7 @@
         }
     }
 
-  function renderRegistrosTable(data) {
+function renderRegistrosTable(data) {
     const tbody = document.getElementById('registrosTableBody');
     if (!tbody) return;
 
@@ -1743,16 +1751,17 @@
             <td>${r.categoria || '-'}</td>
             <td>${r.talla_playera || '-'}</td>
             <td>$${r.monto_cobrado || 0}</td>
-           <td style="display: flex; gap: 6px;">
-            <button class="btn-action" onclick="openEditModal('${r.id}')">✏️ Editar</button>
-            <button class="btn-ticket" onclick="descargarTicketPorId('${r.id}')">📥 Ticket</button>
-            <button class="btn-action" style="background-color: #8b5cf6;" onclick="openSubmodalCarnet('${r.id}')">👁️ Mostrar carnet</button>
-</td>
+            <td style="display: flex; gap: 6px;">
+                <button class="btn-action" onclick="openEditModal('${r.id}')">✏️ Editar</button>
+                <button class="btn-ticket" onclick="descargarTicketPorId('${r.id}')">📥 Ticket</button>
+                <button class="btn-action" style="background-color: #8b5cf6;" onclick="openSubmodalCarnet('${r.id}')">👁️ Mostrar carnet</button>
+            </td>
         </tr>
         `;
     }).join('');
 }
-    function descargarTicketPorId(id) {
+    
+      function descargarTicketPorId(id) {
         const r = cachedRegistros.find(item => item.id == id);
         if (!r) return;
 
