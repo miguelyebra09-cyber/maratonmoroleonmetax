@@ -1696,33 +1696,47 @@
     }
 
     // 7. VER Y BUSCAR REGISTROS EN MODAL
-    async function openRegistrosModal() {
-        const modal = document.getElementById('registrosModal');
-        if (modal) modal.style.display = 'flex';
-        await fetchRegistros();
-    }
-
-    async function fetchRegistros() {
-        const tbody = document.getElementById('registrosTableBody');
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Cargando registros...</td></tr>';
-
-        try {
-            const { data, error } = await dbClient
-                .from('corredores')
-                .select('*')
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-
-            cachedRegistros = data || [];
-            renderRegistrosTable(cachedRegistros);
-
-        } catch (err) {
-            console.error('Error al cargar registros:', err);
-            tbody.innerHTML = `<tr><td colspan="9" style="color:var(--danger); text-align:center;">Error al cargar datos: ${err.message}</td></tr>`;
+// Function a mang-lukat ken mang-serra ti modal
+function openRegistrosModal() {
+    const modal = document.getElementById('registrosModal');
+    if (modal) {
+        modal.style.display = 'block';
+        // No adda data-m, awagikato ti render function
+        if (typeof renderRegistrosTable === 'function' && window.registrosData) {
+            renderRegistrosTable(window.registrosData);
         }
     }
+}
 
+function openCsvModal() {
+    const modal = document.getElementById('csvModal');
+    if (modal) modal.style.display = 'block';
+}
+
+function openMetricasModal() {
+    const modal = document.getElementById('metricasModal');
+    if (modal) modal.style.display = 'block';
+}
+
+function openWhatsAppModal() {
+    const modal = document.getElementById('whatsAppModal');
+    if (modal) modal.style.display = 'block';
+}
+
+function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    if (modal) modal.style.display = 'none';
+}
+
+function showSection(sectionId) {
+    // Implementasion para iti section visibility
+    const sections = document.querySelectorAll('.app-section');
+    sections.forEach(s => s.style.display = 'none');
+    const target = document.getElementById(sectionId);
+    if (target) target.style.display = 'block';
+}
+
+// Function a renderRegistrosTable a nadalus ti syntax-na
 function renderRegistrosTable(data) {
     const tbody = document.getElementById('registrosTableBody');
     if (!tbody) return;
@@ -1741,11 +1755,14 @@ function renderRegistrosTable(data) {
                 fechaFormateada = dateObj.toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' });
             }
         }
+        
+        const nombreCompleto = r.nombre_completo || ((r.nombre || '') + ' ' + (r.primer_apellido || '')).trim();
+
         return `
         <tr>
             <td>${fechaFormateada}</td>
             <td><strong>${r.folio_oficial || 'N/A'}</strong></td>
-            <td>${r.nombre_completo || `${r.nombre \vert{}\vert{} ''}${r.primer_apellido || ''}`}</td>
+            <td>${nombreCompleto}</td>
             <td>${r.curp || '-'}</td>
             <td>${r.distancia || '-'}</td>
             <td>${r.categoria || '-'}</td>
