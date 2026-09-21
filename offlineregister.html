@@ -1710,6 +1710,8 @@
 
     function renderRegistrosTable(data) {
         const tbody = document.getElementById('registrosTableBody');
+        if (!tbody) return;
+        
         if (data.length === 0) {
             tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No hay registros encontrados.</td></tr>';
             return;
@@ -1728,7 +1730,7 @@
             <tr>
                 <td>${fechaFormateada}</td>
                 <td><strong>${r.folio_oficial || 'N/A'}</strong></td>
-                <td>${r.nombre_completo || `${r.nombre || ''} ${r.primer_apellido || ''}`}</td>
+                <td>${r.nombre_completo || `${r.nombre \vert{}\vert{} ''}${r.primer_apellido || ''}`}</td>
                 <td>${r.curp || '-'}</td>
                 <td>${r.distancia || '-'}</td>
                 <td>${r.categoria || '-'}</td>
@@ -1740,7 +1742,7 @@
                     <button class="btn-action" style="background-color: #8b5cf6;" onclick="openSubmodalCarnet('${r.id}')">👁️ Mostrar carnet</button>
                 </td>
             </tr>
-        `;
+            `;
         }).join('');
     }
 
