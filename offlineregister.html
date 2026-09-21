@@ -843,6 +843,7 @@
 
         <!-- SUBMODAL: VISTA DE CARNET DINÁMICO DE PARTICIPANTE -->
  <!-- SUBMODAL: VISTA DE CARNET DINÁMICO DE PARTICIPANTE -->
+<!-- SUBMODAL: VISTA DE CARNET DINÁMICO DE PARTICIPANTE -->
 <div class="modal" id="carnetVistaModal">
     <div class="modal-content" style="max-width: 550px; text-align: left;">
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; margin-bottom: 12px;">
@@ -874,6 +875,12 @@
                 <li><span id="chkCarta"></span> 📄 Carta Responsiva</li>
             </ul>
         </div>
+
+        <div style="text-align: right;">
+            <button class="btn-close" onclick="closeModal('carnetVistaModal')">Cerrar Carnet</button>
+        </div>
+    </div>
+</div>
 
         <div style="text-align: right;">
             <button class="btn-close" onclick="closeModal('carnetVistaModal')">Cerrar Carnet</button>
@@ -1708,43 +1715,43 @@
         }
     }
 
-    function renderRegistrosTable(data) {
-        const tbody = document.getElementById('registrosTableBody');
-        if (!tbody) return;
-        
-        if (data.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No hay registros encontrados.</td></tr>';
-            return;
-        }
+  function renderRegistrosTable(data) {
+    const tbody = document.getElementById('registrosTableBody');
+    if (!tbody) return;
 
-        tbody.innerHTML = data.map(r => {
-            let fechaFormateada = '-';
-            const rawFecha = r.fecha_registro || r.created_at;
-            if (rawFecha) {
-                const dateObj = new Date(rawFecha);
-                if (!isNaN(dateObj.getTime())) {
-                    fechaFormateada = dateObj.toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' });
-                }
-            }
-            return `
-            <tr>
-                <td>${fechaFormateada}</td>
-                <td><strong>${r.folio_oficial || 'N/A'}</strong></td>
-                <td>${r.nombre_completo || `${r.nombre \vert{}\vert{} ''}${r.primer_apellido || ''}`}</td>
-                <td>${r.curp || '-'}</td>
-                <td>${r.distancia || '-'}</td>
-                <td>${r.categoria || '-'}</td>
-                <td>${r.talla_playera || '-'}</td>
-                <td>$${r.monto_cobrado || 0}</td>
-                <td style="display: flex; gap: 6px;">
-                    <button class="btn-action" onclick="openEditModal('${r.id}')">✏️ Editar</button>
-                    <button class="btn-ticket" onclick="descargarTicketPorId('${r.id}')">📥 Ticket</button>
-                    <button class="btn-action" style="background-color: #8b5cf6;" onclick="openSubmodalCarnet('${r.id}')">👁️ Mostrar carnet</button>
-                </td>
-            </tr>
-            `;
-        }).join('');
+    if (!data || data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No hay registros encontrados.</td></tr>';
+        return;
     }
+
+    tbody.innerHTML = data.map(r => {
+        let fechaFormateada = '-';
+        const rawFecha = r.fecha_registro || r.created_at;
+        if (rawFecha) {
+            const dateObj = new Date(rawFecha);
+            if (!isNaN(dateObj.getTime())) {
+                fechaFormateada = dateObj.toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            }
+        }
+        return `
+        <tr>
+            <td>${fechaFormateada}</td>
+            <td><strong>${r.folio_oficial || 'N/A'}</strong></td>
+            <td>${r.nombre_completo || `${r.nombre \vert{}\vert{} ''}${r.primer_apellido || ''}`}</td>
+            <td>${r.curp || '-'}</td>
+            <td>${r.distancia || '-'}</td>
+            <td>${r.categoria || '-'}</td>
+            <td>${r.talla_playera || '-'}</td>
+            <td>$${r.monto_cobrado || 0}</td>
+            <td style="display: flex; gap: 6px;">
+                <button class="btn-action" onclick="openEditModal('${r.id}')">✏️ Editar</button>
+                <button class="btn-ticket" onclick="descargarTicketPorId('${r.id}')">📥 Ticket</button>
+                <button class="btn-action" style="background-color: #8b5cf6;" onclick="openSubmodalCarnet('${r.id}')">👁️ Mostrar carnet</button>
+            </td>
+        </tr>
+        `;
+    }).join('');
+}
 
     function descargarTicketPorId(id) {
         const r = cachedRegistros.find(item => item.id == id);
