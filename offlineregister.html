@@ -411,7 +411,7 @@
         🏃 MetaX Admin | Moroleón 2027
     </div>
     <ul class="navbar-menu">
-        <li><button class="nav-btn active" onclick="showSection('form')">📝 Registro Individual</button></li>
+        <li><button class="nav-btn active" onclick="showSection('formSection')">📝 Registro Individual</button></li>
         <li><button class="nav-btn" style="background-color: #25d366; color: white;" onclick="openWhatsAppModal()">📲 Extraer de WhatsApp</button></li>
         <li><button class="nav-btn" style="background-color: #0284c7; color: white;" onclick="openDocModal()">🪪 Escanear Identificación</button></li>
         <li><button class="nav-btn" onclick="openCsvModal()">📁 Subir CSV</button></li>
@@ -438,7 +438,7 @@
 
     <div class="folio-banner">
         <span>Folio Oficial a Generar:</span>
-        <div class="folio-number" id="nextFolioDisplay">MM27OFF-RUN-MMO1026</div>
+        <div class="folio-number" id="nextFolioDisplay">MM27OFF-RUN-MMO1048</div>
     </div>
 
     <form id="fullRegistrationForm">
@@ -772,7 +772,7 @@
             </div>
         </div>
 
-        <button type="submit" id="submitBtn" class="btn-submit">Confirmar Pago en Efectivo y Generar Folio Oficial (MM27OFF-RUN-MMO1026)</button>
+        <button type="submit" id="submitBtn" class="btn-submit">Confirmar Pago en Efectivo y Generar Folio Oficial (MM27OFF-RUN-MMO1048)</button>
     </form>
 
 </div>
@@ -826,22 +826,21 @@
     </div>
 </div>
 
-<!-- MODAL 3: VER Y EDITAR REGISTROS -->
-<!-- MODAL DE LISTADO DE REGISTROS -->
+<!-- MODAL 3: LISTADO DE REGISTROS -->
 <div class="modal" id="registrosModal">
     <div class="modal-content" style="max-width: 95%; width: 1100px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
             <h3 style="color: var(--primary);">📋 Listado de Atletas Registrados</h3>
             <div style="display: flex; gap: 8px;">
-                <button class="btn-action" style="background-color: #10b981;" onclick="exportTableToCSV('registros.csv')">📊 Exportar a CSV</button>
+                <button class="btn-action" style="background-color: #10b981;" onclick="exportTableToCSV()">📊 Exportar a CSV</button>
                 <button class="btn-close" onclick="closeModal('registrosModal')">✖ Cerrar</button>
             </div>
         </div>
         
         <input type="text" id="searchRegistrosInput" placeholder="Buscar por Nombre, CURP o Folio..." onkeyup="filterRegistrosTable()" style="width: 100%; padding: 8px; margin-bottom: 12px; border: 1px solid var(--border-color); border-radius: 6px;">
 
-        <div style="max-height: 400px; overflow-y: auto;">
-            <table class="data-table" style="width: 100%; border-collapse: collapse;">
+        <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
+            <table class="data-table">
                 <thead>
                     <tr style="background: #f8fafc; text-align: left;">
                         <th>Fecha</th>
@@ -898,29 +897,6 @@
 
         <div style="text-align: right;">
             <button class="btn-close" onclick="closeModal('carnetVistaModal')">Cerrar Carnet</button>
-        </div>
-    </div>
-</div>
-        
-        <div class="table-responsive">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Folio</th>
-                        <th>Nombre Completo</th>
-                        <th>CURP</th>
-                        <th>Distancia</th>
-                        <th>Categoría</th>
-                        <th>Talla</th>
-                        <th>Monto</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="registrosTableBody">
-                    <!-- Filas dinámicas -->
-                </tbody>
-            </table>
         </div>
     </div>
 </div>
@@ -1240,7 +1216,7 @@
         </div>
     </div>
 </div>
-    
+
 <script>
     // 1. Configuración de Supabase y Apps Script
     const SUPABASE_URL = 'https://rpcevbxzpfgyobehgjth.supabase.co';
@@ -1248,6 +1224,10 @@
     const GOOGLE_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9z7DO_lQyQ3F9KOJX2_7F2ts6cvBvLl1HWKk6KHfcNQ-9heDu2IB6LUPO7StDBG1V/exec';
     
     let dbClient = null;
+    let cachedRegistros = [];
+    let currentDocFile = null;
+    let currentWaFile = null;
+
     try {
         if (window.supabase && typeof window.supabase.createClient === 'function') {
             dbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -1258,11 +1238,11 @@
         console.error('Error al inicializar el cliente de Supabase:', err);
     }
 
-    // FUNCIÓN AUXILIAR DE SUBIDA DE ARCHIVOS A GOOGLE DRIVE
+    // SUBIDA DE ARCHIVOS A GOOGLE DRIVE
     async function uploadFileToDrive(fileInputId, folio, docType) {
         const fileInput = document.getElementById(fileInputId);
         if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
-            return null; // Si no hay archivo seleccionado, no realiza acción
+            return null;
         }
 
         const file = fileInput.files[0];
@@ -1305,25 +1285,27 @@
         });
     }
 
-    let cachedRegistros = [];
-
     // Auxiliares de Navegación y Modales
     function closeModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) modal.style.display = 'none';
-        if(modalId === 'ticketModal') {
+        if (modalId === 'ticketModal') {
             const form = document.getElementById('fullRegistrationForm');
-            if(form) form.reset();
+            if (form) form.reset();
             const fechaRegEl = document.getElementById('fechaRegistro');
             if (fechaRegEl) fechaRegEl.value = formattedFecha;
-            const preview = document.getElementById('photoPreview');
-            if (preview) preview.innerHTML = 'La foto aparecerá aquí cuando esté seleccionada.';
-            const pagoPrev = document.getElementById('pagoPreview');
-            if (pagoPrev) pagoPrev.innerHTML = 'El comprobante aparecerá aquí.';
-            const doc1Prev = document.getElementById('doc1Preview');
-            if (doc1Prev) doc1Prev.innerHTML = 'Documento 1 aparecerá aquí.';
-            const doc2Prev = document.getElementById('doc2Preview');
-            if (doc2Prev) doc2Prev.innerHTML = 'Documento 2 aparecerá aquí.';
+            
+            const resets = ['photoPreview', 'pagoPreview', 'doc1Preview', 'doc2Preview'];
+            const defaults = [
+                'La foto aparecerá aquí cuando esté seleccionada.',
+                'El comprobante aparecerá aquí.',
+                'Documento 1 aparecerá aquí.',
+                'Carta Responsiva DOC2 aparecerá aquí.'
+            ];
+            resets.forEach((id, idx) => {
+                const el = document.getElementById(id);
+                if (el) el.innerHTML = defaults[idx];
+            });
             updateFolio();
         }
     }
@@ -1335,8 +1317,20 @@
         if (status) status.innerText = '';
     }
 
+    function openWhatsAppModal() {
+        const modal = document.getElementById('whatsappExtractModal');
+        if (modal) modal.style.display = 'flex';
+    }
+
+    function openDocModal() {
+        const modal = document.getElementById('docExtractModal');
+        if (modal) modal.style.display = 'flex';
+    }
+
     function showSection(sectionId) {
-        console.log("Sección activa:", sectionId);
+        document.querySelectorAll('.container').forEach(c => c.style.display = 'none');
+        const target = document.getElementById(sectionId);
+        if (target) target.style.display = 'block';
     }
 
     function getSafeValue(id, defaultValue = '') {
@@ -1344,14 +1338,14 @@
         return el ? el.value : defaultValue;
     }
 
-    // 2. Fecha actual automática
+    // Fecha actual
     const hoy = new Date();
     const formattedFecha = hoy.toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' });
     const fechaRegEl = document.getElementById('fechaRegistro');
     if (fechaRegEl) fechaRegEl.value = formattedFecha;
 
-    // 3. Folio automático ajustado al registro 1026
-    let offlineCounter = 1026;
+    // Folio automático
+    let offlineCounter = 1048;
     try {
         const storedCounter = localStorage.getItem('metaX_offline_counter');
         if (storedCounter) {
@@ -1359,23 +1353,19 @@
             offlineCounter = (isNaN(val) || val < 1026) ? 1026 : val;
         }
     } catch (e) {
-        console.warn('localStorage no está accesible:', e);
+        console.warn('localStorage no disponible:', e);
     }
 
     function updateFolio() {
         const folioCode = `MM27OFF-RUN-MMO${offlineCounter}`;
         const folioDisplay = document.getElementById('nextFolioDisplay');
-        if (folioDisplay) {
-            folioDisplay.innerText = folioCode;
-        }
+        if (folioDisplay) folioDisplay.innerText = folioCode;
         const submitBtn = document.getElementById('submitBtn');
-        if (submitBtn) {
-            submitBtn.innerText = `Confirmar Pago en Efectivo y Generar Folio Oficial (${folioCode})`;
-        }
+        if (submitBtn) submitBtn.innerText = `Confirmar Pago en Efectivo y Generar Folio Oficial (${folioCode})`;
     }
     updateFolio();
 
-    // Catálogo RENAPO para Estados de Nacimiento
+    // Catálogo RENAPO
     const estadosCURP = {
         'AS': 'Aguascalientes', 'BC': 'Baja California', 'BS': 'Baja California Sur',
         'CC': 'Campeche', 'CL': 'Coahuila', 'CM': 'Colima', 'CS': 'Chiapas',
@@ -1388,7 +1378,7 @@
         'ZS': 'Zacatecas', 'NE': 'Nacido en el Extranjero'
     };
 
-    // 4. Lógica de lectura y cálculo con validación CURP
+    // Validación CURP
     const curpInput = document.getElementById('curp');
     if (curpInput) {
         curpInput.addEventListener('input', function(e) {
@@ -1443,104 +1433,85 @@
                     if (entEl) entEl.value = estadoNombre;
                 }
             } catch (err) {
-                console.error('Error al procesar la CURP:', err);
+                console.error('Error procesando CURP:', err);
             }
         });
     }
 
-    // Previsualización de imágenes adicionales
+    // Previsualizaciones de imagen
     function previewImage(event) {
-        try {
-            const container = document.getElementById('photoPreview');
-            if (!container) return;
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    container.innerHTML = `<img src="${e.target.result}" style="max-height: 100px; max-width: 100px; border-radius: 6px; object-fit: cover;">`;
-                }
-                reader.readAsDataURL(file);
-            }
-        } catch (err) {
-            console.error('Error en vista previa de imagen:', err);
+        const container = document.getElementById('photoPreview');
+        const file = event.target.files[0];
+        if (file && container) {
+            const reader = new FileReader();
+            reader.onload = e => container.innerHTML = `<img src="${e.target.result}" style="max-height: 100px; border-radius: 6px;">`;
+            reader.readAsDataURL(file);
         }
     }
 
     function previewPago(event) {
-        try {
-            const container = document.getElementById('pagoPreview');
-            if (!container) return;
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    if(file.type.includes('pdf')) {
-                        container.innerHTML = `<span style="font-size:0.75rem; color:#0284c7; font-weight:bold;">PDF Cargado Correctamente</span>`;
-                    } else {
-                        container.innerHTML = `<img src="${e.target.result}" style="max-height: 100px; max-width: 100px; border-radius: 6px; object-fit: cover;">`;
-                    }
+        const container = document.getElementById('pagoPreview');
+        const file = event.target.files[0];
+        if (file && container) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                if(file.type.includes('pdf')) {
+                    container.innerHTML = `<span style="font-size:0.75rem; color:#0284c7; font-weight:bold;">PDF Cargado</span>`;
+                } else {
+                    container.innerHTML = `<img src="${e.target.result}" style="max-height: 100px; border-radius: 6px;">`;
                 }
-                reader.readAsDataURL(file);
-            }
-        } catch (err) {
-            console.error('Error en vista previa de pago:', err);
+            };
+            reader.readAsDataURL(file);
         }
     }
 
     function previewDoc(event, targetId) {
-        try {
-            const container = document.getElementById(targetId);
-            if (!container) return;
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    if(file.type.includes('pdf')) {
-                        container.innerHTML = `<span style="font-size:0.75rem; color:#0284c7; font-weight:bold;">PDF Cargado Correctamente</span>`;
-                    } else {
-                        container.innerHTML = `<img src="${e.target.result}" style="max-height: 100px; max-width: 100px; border-radius: 6px; object-fit: cover;">`;
-                    }
+        const container = document.getElementById(targetId);
+        const file = event.target.files[0];
+        if (file && container) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                if(file.type.includes('pdf')) {
+                    container.innerHTML = `<span style="font-size:0.75rem; color:#0284c7; font-weight:bold;">PDF Cargado</span>`;
+                } else {
+                    container.innerHTML = `<img src="${e.target.result}" style="max-height: 100px; border-radius: 6px;">`;
                 }
-                reader.readAsDataURL(file);
-            }
-        } catch (err) {
-            console.error('Error en vista previa de documento:', err);
+            };
+            reader.readAsDataURL(file);
         }
     }
 
     function handleNinguno(checkbox) {
         if (checkbox && checkbox.checked) {
-            const list = document.querySelectorAll('input[name="padecimientos"]');
-            list.forEach(item => { if (item !== checkbox) item.checked = false; });
+            document.querySelectorAll('input[name="padecimientos"]').forEach(item => {
+                if (item !== checkbox) item.checked = false;
+            });
         }
     }
 
     function uncheckNinguno() {
-        const ninguno = document.querySelector('input[name="padecimientos"][value="Ninguno"]');
-        if (ninguno) ninguno.checked = false;
-        const ningunoEsp = document.querySelector('input[name="padecimientos"][value="No especifica"]');
-        if (ningunoEsp) ningunoEsp.checked = false;
+        const ning1 = document.querySelector('input[name="padecimientos"][value="Ninguno"]');
+        const ning2 = document.querySelector('input[name="padecimientos"][value="No especifica"]');
+        if (ning1) ning1.checked = false;
+        if (ning2) ning2.checked = false;
     }
 
-    // 5. ENVÍO Y REGISTRO EN FORMULARIO PRINCIPAL
+    // 5. REGISTRO EN FORMULARIO PRINCIPAL
     const formEl = document.getElementById('fullRegistrationForm');
     if (formEl) {
         formEl.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const submitBtn = document.getElementById('submitBtn');
             if (submitBtn) {
                 submitBtn.disabled = true;
                 submitBtn.innerText = 'Subiendo archivos a Google Drive...';
             }
 
             try {
-                if (!dbClient) {
-                    throw new Error('La biblioteca de Supabase no está disponible o no se inicializó correctamente.');
-                }
+                if (!dbClient) throw new Error('Cliente Supabase no disponible.');
                 const folio = `MM27OFF-RUN-MMO${offlineCounter}`;
 
-                // Subir archivos mediante uploadFileToDrive
                 const fotoUrl = await uploadFileToDrive('fotoFile', folio, 'FOTO') || '';
                 const pagoUrl = await uploadFileToDrive('pagoFile', folio, 'PAGO') || '';
                 const doc1Url = await uploadFileToDrive('doc1File', folio, 'INE') || '';
@@ -1588,15 +1559,12 @@
                     fecha_registro: new Date().toISOString()
                 };
 
-                const { data, error } = await dbClient
-                    .from('corredores')
-                    .insert([registrationData]);
-
+                const { data, error } = await dbClient.from('corredores').insert([registrationData]);
                 if (error) throw error;
 
                 const updateLabel = (id, val) => {
                     const label = document.getElementById(id);
-                    if (label) label.innerText = val;
+                    if (label) label.innerText = val || '';
                 };
 
                 updateLabel('lblFolio', folio);
@@ -1613,16 +1581,14 @@
                 offlineCounter++;
                 try {
                     localStorage.setItem('metaX_offline_counter', offlineCounter);
-                } catch (e) {
-                    console.warn('No se pudo guardar el nuevo folio en localStorage:', e);
-                }
+                } catch (e) { console.warn(e); }
 
                 const modal = document.getElementById('ticketModal');
                 if (modal) modal.style.display = 'flex';
 
             } catch (err) {
-                console.error('Error durante la inserción:', err);
-                alert(`Atención: No se pudo registrar la información.\nDetalle: ${err.message || err}`);
+                console.error('Error durante el registro:', err);
+                alert(`Error al registrar: ${err.message || err}`);
             } finally {
                 if (submitBtn) {
                     submitBtn.disabled = false;
@@ -1638,7 +1604,7 @@
         const statusDiv = document.getElementById('csvStatus');
         
         if (!fileInput.files || fileInput.files.length === 0) {
-            alert('Por favor selecciona un archivo CSV.');
+            alert('Selecciona un archivo CSV.');
             return;
         }
 
@@ -1649,10 +1615,6 @@
             skipEmptyLines: true,
             complete: async function(results) {
                 try {
-                    if (results.errors.length > 0) {
-                        console.warn('Advertencias CSV:', results.errors);
-                    }
-
                     const rows = results.data;
                     if (rows.length === 0) {
                         statusDiv.innerText = 'El archivo está vacío.';
@@ -1684,101 +1646,88 @@
                     const { error } = await dbClient.from('corredores').insert(formattedRows);
                     if (error) throw error;
 
-                    statusDiv.innerHTML = `<span style="color:var(--success);">¡Éxito! Se importaron ${formattedRows.length} registros correctamente.</span>`;
+                    statusDiv.innerHTML = `<span style="color:var(--success);">¡Éxito! Se importaron ${formattedRows.length} registros.</span>`;
                     setTimeout(() => closeModal('csvModal'), 2000);
 
                 } catch (err) {
-                    console.error('Error al importar CSV:', err);
+                    console.error('Error importando CSV:', err);
                     statusDiv.innerHTML = `<span style="color:var(--danger);">Error: ${err.message || err}</span>`;
                 }
             }
         });
     }
 
-    // 7. VER Y BUSCAR REGISTROS EN MODAL
-// Function a mang-lukat ken mang-serra ti modal
-function openRegistrosModal() {
-    const modal = document.getElementById('registrosModal');
-    if (modal) {
-        modal.style.display = 'block';
-        // No adda data-m, awagikato ti render function
-        if (typeof renderRegistrosTable === 'function' && window.registrosData) {
-            renderRegistrosTable(window.registrosData);
+    // 7. CONSULTA Y TABLA DE REGISTROS
+    async function fetchRegistros() {
+        try {
+            if (!dbClient) return;
+            const { data, error } = await dbClient.from('corredores').select('*').order('created_at', { ascending: false });
+            if (error) throw error;
+            cachedRegistros = data || [];
+            renderRegistrosTable(cachedRegistros);
+        } catch (err) {
+            console.error('Error consultando registros:', err);
         }
     }
-}
 
-function openCsvModal() {
-    const modal = document.getElementById('csvModal');
-    if (modal) modal.style.display = 'block';
-}
-
-function openMetricasModal() {
-    const modal = document.getElementById('metricasModal');
-    if (modal) modal.style.display = 'block';
-}
-
-function openWhatsAppModal() {
-    const modal = document.getElementById('whatsAppModal');
-    if (modal) modal.style.display = 'block';
-}
-
-function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    if (modal) modal.style.display = 'none';
-}
-
-function showSection(sectionId) {
-    // Implementasion para iti section visibility
-    const sections = document.querySelectorAll('.app-section');
-    sections.forEach(s => s.style.display = 'none');
-    const target = document.getElementById(sectionId);
-    if (target) target.style.display = 'block';
-}
-
-// Function a renderRegistrosTable a nadalus ti syntax-na
-function renderRegistrosTable(data) {
-    const tbody = document.getElementById('registrosTableBody');
-    if (!tbody) return;
-
-    if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No hay registros encontrados.</td></tr>';
-        return;
+    function openRegistrosModal() {
+        const modal = document.getElementById('registrosModal');
+        if (modal) modal.style.display = 'flex';
+        fetchRegistros();
     }
 
-    tbody.innerHTML = data.map(r => {
-        let fechaFormateada = '-';
-        const rawFecha = r.fecha_registro || r.created_at;
-        if (rawFecha) {
-            const dateObj = new Date(rawFecha);
-            if (!isNaN(dateObj.getTime())) {
-                fechaFormateada = dateObj.toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' });
+    function renderRegistrosTable(data) {
+        const tbody = document.getElementById('registrosTableBody');
+        if (!tbody) return;
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">No hay registros encontrados.</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = data.map(r => {
+            let fechaFormateada = '-';
+            const rawFecha = r.fecha_registro || r.created_at;
+            if (rawFecha) {
+                const dateObj = new Date(rawFecha);
+                if (!isNaN(dateObj.getTime())) {
+                    fechaFormateada = dateObj.toLocaleDateString('es-MX', { year: 'numeric', month: '2-digit', day: '2-digit' });
+                }
             }
-        }
-        
-        const nombreCompleto = r.nombre_completo || ((r.nombre || '') + ' ' + (r.primer_apellido || '')).trim();
+            
+            const nombreCompleto = r.nombre_completo || `${r.nombre || ''} ${r.primer_apellido || ''}`.trim();
 
-        return `
-        <tr>
-            <td>${fechaFormateada}</td>
-            <td><strong>${r.folio_oficial || 'N/A'}</strong></td>
-            <td>${nombreCompleto}</td>
-            <td>${r.curp || '-'}</td>
-            <td>${r.distancia || '-'}</td>
-            <td>${r.categoria || '-'}</td>
-            <td>${r.talla_playera || '-'}</td>
-            <td>$${r.monto_cobrado || 0}</td>
-            <td style="display: flex; gap: 6px;">
-                <button class="btn-action" onclick="openEditModal('${r.id}')">✏️ Editar</button>
-                <button class="btn-ticket" onclick="descargarTicketPorId('${r.id}')">📥 Ticket</button>
-                <button class="btn-action" style="background-color: #8b5cf6;" onclick="openSubmodalCarnet('${r.id}')">👁️ Mostrar carnet</button>
-            </td>
-        </tr>
-        `;
-    }).join('');
-}
-    
-      function descargarTicketPorId(id) {
+            return `
+            <tr>
+                <td>${fechaFormateada}</td>
+                <td><strong>${r.folio_oficial || 'N/A'}</strong></td>
+                <td>${nombreCompleto}</td>
+                <td>${r.curp || '-'}</td>
+                <td>${r.distancia || '-'}</td>
+                <td>${r.categoria || '-'}</td>
+                <td>${r.talla_playera || '-'}</td>
+                <td>$${r.monto_cobrado || 0}</td>
+                <td style="display: flex; gap: 6px;">
+                    <button class="btn-action" onclick="openEditModal('${r.id}')">✏️ Editar</button>
+                    <button class="btn-ticket" onclick="descargarTicketPorId('${r.id}')">📥 Ticket</button>
+                    <button class="btn-action" style="background-color: #8b5cf6;" onclick="openSubmodalCarnet('${r.id}')">👁️ Carnet</button>
+                </td>
+            </tr>
+            `;
+        }).join('');
+    }
+
+    function filterRegistrosTable() {
+        const query = document.getElementById('searchRegistrosInput').value.toLowerCase();
+        const filtered = cachedRegistros.filter(r => 
+            (r.nombre_completo && r.nombre_completo.toLowerCase().includes(query)) ||
+            (r.curp && r.curp.toLowerCase().includes(query)) ||
+            (r.folio_oficial && r.folio_oficial.toLowerCase().includes(query))
+        );
+        renderRegistrosTable(filtered);
+    }
+
+    function descargarTicketPorId(id) {
         const r = cachedRegistros.find(item => item.id == id);
         if (!r) return;
 
@@ -1802,17 +1751,40 @@ function renderRegistrosTable(data) {
         if (modal) modal.style.display = 'flex';
     }
 
-    function filterRegistros() {
-        const query = document.getElementById('searchRegistros').value.toLowerCase();
-        const filtered = cachedRegistros.filter(r => 
-            (r.nombre_completo && r.nombre_completo.toLowerCase().includes(query)) ||
-            (r.curp && r.curp.toLowerCase().includes(query)) ||
-            (r.folio_oficial && r.folio_oficial.toLowerCase().includes(query))
-        );
-        renderRegistrosTable(filtered);
+    // CARNET SUBMODAL
+    function openSubmodalCarnet(id) {
+        const r = cachedRegistros.find(item => item.id == id);
+        if (!r) return;
+
+        document.getElementById('carnetNombre').innerText = r.nombre_completo || `${r.nombre || ''} ${r.primer_apellido || ''}`;
+        document.getElementById('carnetFolio').innerText = r.folio_oficial || '-';
+        document.getElementById('carnetCurp').innerText = r.curp || '-';
+        document.getElementById('carnetDistancia').innerText = r.distancia || '-';
+        document.getElementById('carnetEdadNac').innerText = `${r.edad || '-'} (${r.fecha_nacimiento || '-'})`;
+        document.getElementById('carnetTalla').innerText = r.talla_playera || '-';
+        document.getElementById('carnetRama').innerText = r.rama || '-';
+
+        const fotoBox = document.getElementById('carnetFotoBox');
+        if (r.foto_url && r.foto_url.startsWith('http')) {
+            fotoBox.innerHTML = `<img src="${r.foto_url}" style="width:100%; height:100%; object-fit:cover;">`;
+        } else {
+            fotoBox.innerHTML = 'Sin Foto';
+        }
+
+        const setChk = (id, exists) => {
+            document.getElementById(id).innerText = exists ? '✅' : '❌';
+        };
+
+        setChk('chkFoto', r.foto_url);
+        setChk('chkINE', r.doc1_url);
+        setChk('chkPago', r.pago_url);
+        setChk('chkCarta', r.doc2_url);
+
+        const modal = document.getElementById('carnetVistaModal');
+        if (modal) modal.style.display = 'flex';
     }
 
-    // 8. APERTURA Y EDICIÓN DE REGISTROS EN MODAL (EXPEDIENTE Y UPDATE INTEGRADO)
+    // 8. EDICIÓN COMPLETA DE REGISTRO
     function openEditModal(id) {
         const registro = cachedRegistros.find(r => r.id == id);
         if (!registro) return;
@@ -1845,13 +1817,11 @@ function renderRegistrosTable(data) {
         document.getElementById('edit_operador').value = registro.operador_nombre || '';
         document.getElementById('edit_comentarios').value = registro.comentarios || '';
 
-        // Resetear inputs de archivos
-        document.getElementById('editFotoFile').value = '';
-        document.getElementById('editPagoFile').value = '';
-        document.getElementById('editIneFile').value = '';
-        document.getElementById('editCartaFile').value = '';
+        ['editFotoFile', 'editPagoFile', 'editIneFile', 'editCartaFile'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) el.value = '';
+        });
 
-        // Validar y construir enlaces válidos de expedientes preexistentes
         const makeDocLink = (url, label) => {
             if (url && typeof url === 'string' && url.trim().startsWith('http')) {
                 return `<a href="${url}" target="_blank" style="color:#2563eb; font-weight:bold;">${label}</a>`;
@@ -1862,15 +1832,15 @@ function renderRegistrosTable(data) {
             }
         };
 
-        document.getElementById('editFotoPreview').innerHTML = makeDocLink(registro.foto_url, '📸 Ver foto actual');
-        document.getElementById('editPagoPreview').innerHTML = makeDocLink(registro.pago_url, '💳 Ver pago actual');
-        document.getElementById('editInePreview').innerHTML = makeDocLink(registro.doc1_url, '📄 Ver INE actual');
-        document.getElementById('editCartaPreview').innerHTML = makeDocLink(registro.doc2_url, '📄 Ver Carta actual');
+        document.getElementById('editFotoPreview').innerHTML = makeDocLink(registro.foto_url, '📸 Ver foto');
+        document.getElementById('editPagoPreview').innerHTML = makeDocLink(registro.pago_url, '💳 Ver pago');
+        document.getElementById('editInePreview').innerHTML = makeDocLink(registro.doc1_url, '📄 Ver INE');
+        document.getElementById('editCartaPreview').innerHTML = makeDocLink(registro.doc2_url, '📄 Ver Carta');
 
-        document.getElementById('editModal').style.display = 'flex';
+        const modal = document.getElementById('editModal');
+        if (modal) modal.style.display = 'flex';
     }
 
-    // EVENT LISTENER DE GUARDAR CAMBIOS EN MODAL
     const editFormEl = document.getElementById('editForm');
     if (editFormEl) {
         editFormEl.addEventListener('submit', async function(e) {
@@ -1879,13 +1849,12 @@ function renderRegistrosTable(data) {
             const btnSave = document.getElementById('btnSaveEdit');
             const originalBtnText = btnSave.innerText;
             btnSave.disabled = true;
-            btnSave.innerText = '⏳ Subiendo archivos y guardando...';
+            btnSave.innerText = '⏳ Guardando...';
 
             try {
                 const id = document.getElementById('edit_id').value;
-                const folio = document.getElementById('edit_folio') ? document.getElementById('edit_folio').value : 'REGISTRO';
+                const folio = document.getElementById('edit_folio').value || 'REGISTRO';
 
-                // Subida de nuevos archivos a Google Drive
                 const newFotoUrl  = await uploadFileToDrive('editFotoFile', folio, 'FOTO');
                 const newPagoUrl  = await uploadFileToDrive('editPagoFile', folio, 'PAGO');
                 const newIneUrl   = await uploadFileToDrive('editIneFile', folio, 'INE');
@@ -1906,33 +1875,28 @@ function renderRegistrosTable(data) {
                     estado_residencia: document.getElementById('edit_estadoResidencia').value,
                     edad: document.getElementById('edit_edad').value,
                     fecha_nacimiento: document.getElementById('edit_fechaNacimiento').value,
-                    genero: document.getElementById('edit_genero') ? document.getElementById('edit_genero').value : '',
-                    entidad_origen: document.getElementById('edit_entidadOrigen') ? document.getElementById('edit_entidadOrigen').value : '',
-                    rama: document.getElementById('edit_rama') ? document.getElementById('edit_rama').value : '',
-                    categoria: document.getElementById('edit_categoria') ? document.getElementById('edit_categoria').value : '',
-                    talla_playera: document.getElementById('edit_talla') ? document.getElementById('edit_talla').value : '',
-                    perfil_corredor: document.getElementById('edit_perfilCorredor') ? document.getElementById('edit_perfilCorredor').value : '',
-                    tipo_sangre: document.getElementById('edit_tipoSangre') ? document.getElementById('edit_tipoSangre').value : '',
-                    contacto_nombre: document.getElementById('edit_contactoNombre') ? document.getElementById('edit_contactoNombre').value : '',
-                    contacto_telefono: document.getElementById('edit_contactoTelefono') ? document.getElementById('edit_contactoTelefono').value : '',
-                    alergias: document.getElementById('edit_alergias') ? document.getElementById('edit_alergias').value : '',
-                    situaciones_extra: document.getElementById('edit_situacionesExtra') ? document.getElementById('edit_situacionesExtra').value : '',
-                    monto_cobrado: parseFloat(document.getElementById('edit_monto') ? document.getElementById('edit_monto').value : 0) || 0,
-                    operador_nombre: document.getElementById('edit_operador') ? document.getElementById('edit_operador').value : '',
-                    comentarios: document.getElementById('edit_comentarios') ? document.getElementById('edit_comentarios').value : ''
+                    genero: document.getElementById('edit_genero').value,
+                    entidad_origen: document.getElementById('edit_entidadOrigen').value,
+                    rama: document.getElementById('edit_rama').value,
+                    categoria: document.getElementById('edit_categoria').value,
+                    talla_playera: document.getElementById('edit_talla').value,
+                    perfil_corredor: document.getElementById('edit_perfilCorredor').value,
+                    tipo_sangre: document.getElementById('edit_tipoSangre').value,
+                    contacto_nombre: document.getElementById('edit_contactoNombre').value,
+                    contacto_telefono: document.getElementById('edit_contactoTelefono').value,
+                    alergias: document.getElementById('edit_alergias').value,
+                    situaciones_extra: document.getElementById('edit_situacionesExtra').value,
+                    monto_cobrado: parseFloat(document.getElementById('edit_monto').value) || 0,
+                    operador_nombre: document.getElementById('edit_operador').value,
+                    comentarios: document.getElementById('edit_comentarios').value
                 };
 
-                // Asignar las URLs solo si se subió un nuevo archivo
                 if (newFotoUrl)  updatedData.foto_url = newFotoUrl;
                 if (newPagoUrl)  updatedData.pago_url = newPagoUrl;
                 if (newIneUrl)   updatedData.doc1_url = newIneUrl;
                 if (newCartaUrl) updatedData.doc2_url = newCartaUrl;
 
-                const { error } = await dbClient
-                    .from('corredores')
-                    .update(updatedData)
-                    .eq('id', id);
-
+                const { error } = await dbClient.from('corredores').update(updatedData).eq('id', id);
                 if (error) throw error;
 
                 alert('¡Registro actualizado con éxito!');
@@ -1941,7 +1905,7 @@ function renderRegistrosTable(data) {
 
             } catch (err) {
                 console.error('Error al actualizar:', err);
-                alert(`Error al actualizar el registro: ${err.message}`);
+                alert(`Error: ${err.message}`);
             } finally {
                 btnSave.disabled = false;
                 btnSave.innerText = originalBtnText;
@@ -1949,7 +1913,7 @@ function renderRegistrosTable(data) {
         });
     }
 
-    // 9. MÉTRICAS Y ANALÍTICA
+    // 9. MÉTRICAS
     async function openMetricasModal() {
         const modal = document.getElementById('metricasModal');
         if (modal) modal.style.display = 'flex';
@@ -2002,7 +1966,7 @@ function renderRegistrosTable(data) {
         }
     }
 
-    // Exportar tabla visualizada a archivo CSV
+    // EXPORTACIÓN A CSV
     function exportTableToCSV() {
         if (cachedRegistros.length === 0) {
             alert('No hay registros para exportar.');
@@ -2011,332 +1975,160 @@ function renderRegistrosTable(data) {
 
         const csv = Papa.unparse(cachedRegistros);
         const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
+        const link = document.createElement('a');
         const url = URL.createObjectURL(blob);
-        link.setAttribute("href", url);
-        link.setAttribute("download", `Registros_Moroleon_2027_${new Date().toISOString().slice(0,10)}.csv`);
+        link.setAttribute('href', url);
+        link.setAttribute('download', `registros_maraton_${new Date().toISOString().slice(0,10)}.csv`);
+        link.style.visibility = 'hidden';
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     }
 
-    // EXTRACCIÓN DE WHATSAPP Y DOCUMENTOS
-    function openWhatsAppModal() {
-        document.getElementById('whatsappExtractModal').style.display = 'flex';
+    // 10. HERRAMIENTAS WHATSAPP Y OCR DOCUMENTOS
+    function switchWaTab(type) {
+        document.getElementById('waTabImg').style.display = type === 'img' ? 'block' : 'none';
+        document.getElementById('waTabTxt').style.display = type === 'txt' ? 'block' : 'none';
+        document.getElementById('tabImgBtn').style.backgroundColor = type === 'img' ? 'var(--primary-blue)' : '#64748b';
+        document.getElementById('tabTxtBtn').style.backgroundColor = type === 'txt' ? 'var(--primary-blue)' : '#64748b';
     }
 
-    function openDocModal() {
-        document.getElementById('docExtractModal').style.display = 'flex';
-    }
-
-    function switchWaTab(tab) {
-        const tabImg = document.getElementById('waTabImg');
-        const tabTxt = document.getElementById('waTabTxt');
-        const btnImg = document.getElementById('tabImgBtn');
-        const btnTxt = document.getElementById('tabTxtBtn');
-
-        if (tab === 'img') {
-            tabImg.style.display = 'block';
-            tabTxt.style.display = 'none';
-            btnImg.style.backgroundColor = 'var(--primary-blue)';
-            btnTxt.style.backgroundColor = '#64748b';
-        } else {
-            tabImg.style.display = 'none';
-            tabTxt.style.display = 'block';
-            btnTxt.style.backgroundColor = 'var(--primary-blue)';
-            btnImg.style.backgroundColor = '#64748b';
-        }
-    }
-
-    let currentWaImageFile = null;
-
-    function processWaImage(event) {
-        const file = event.target ? event.target.files[0] : event;
+    function processWaImage(e) {
+        const file = e.target.files[0];
         if (file) {
-            currentWaImageFile = file;
+            currentWaFile = file;
             const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('waImgPreview').innerHTML = `<img id="waPreviewImgEl" src="${e.target.result}" style="max-height:160px; border-radius:6px;">`;
+            reader.onload = ev => {
+                document.getElementById('waImgPreview').innerHTML = `<img src="${ev.target.result}" style="max-height:160px;">`;
             };
             reader.readAsDataURL(file);
         }
     }
 
-    window.addEventListener('paste', e => {
-        const modal = document.getElementById('whatsappExtractModal');
-        if (modal && modal.style.display === 'flex') {
-            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-            for (let item of items) {
-                if (item.type.indexOf('image') === 0) {
-                    const blob = item.getAsFile();
-                    processWaImage(blob);
-                }
+    // Soporte Pegar Imagen por Portapapeles (Ctrl + V) en WhatsApp
+    document.addEventListener('paste', function(e) {
+        const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+        for (let item of items) {
+            if (item.kind === 'file' && item.type.includes('image')) {
+                const blob = item.getAsFile();
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const waPreview = document.getElementById('waImgPreview');
+                    if (waPreview && document.getElementById('whatsappExtractModal').style.display === 'flex') {
+                        currentWaFile = blob;
+                        waPreview.innerHTML = `<img src="${ev.target.result}" style="max-height:160px;">`;
+                    }
+                };
+                reader.readAsDataURL(blob);
             }
         }
     });
 
     async function applyWhatsAppExtraction() {
-        const isTabImgVisible = document.getElementById('waTabImg').style.display !== 'none';
-        let textToParse = '';
+        let textToParse = document.getElementById('waRawText').value;
 
-        if (isTabImgVisible) {
-            const imgEl = document.getElementById('waPreviewImgEl');
-            if (!imgEl) {
-                alert('Por favor selecciona o pega una imagen primero.');
-                return;
-            }
-
-            const btnSubmit = document.querySelector('#whatsappExtractModal .btn-submit');
-            const originalBtnText = btnSubmit.innerText;
-            btnSubmit.disabled = true;
-            btnSubmit.innerText = '⏳ Escaneando imagen (OCR)...';
-
+        if (document.getElementById('waTabImg').style.display !== 'none' && currentWaFile) {
+            const btn = event.target;
+            btn.innerText = '⏳ Leyendo imagen con OCR...';
             try {
-                const result = await Tesseract.recognize(imgEl.src, 'spa');
+                const result = await Tesseract.recognize(currentWaFile, 'spa');
                 textToParse = result.data.text;
             } catch (err) {
-                console.error('Error OCR:', err);
-                alert('No se pudo leer la imagen. Intenta pegar el texto directamente en la Opción B.');
-                btnSubmit.disabled = false;
-                btnSubmit.innerText = originalBtnText;
+                alert('Error al leer imagen: ' + err.message);
+                btn.innerText = '⚡ Trasladar Datos al Formulario Principal';
                 return;
-            } finally {
-                btnSubmit.disabled = false;
-                btnSubmit.innerText = originalBtnText;
             }
-        } else {
-            textToParse = document.getElementById('waRawText').value;
+            btn.innerText = '⚡ Trasladar Datos al Formulario Principal';
         }
 
-        if (!textToParse || !textToParse.trim()) {
-            alert('No se encontró información para procesar.');
+        if (!textToParse) {
+            alert('Proporciona un texto o imagen.');
             return;
         }
 
-        const getValue = (label) => {
-            const regex = new RegExp(`${label}:?\\s*([^\\n•]+)`, 'i');
-            const match = textToParse.match(regex);
-            return match ? match[1].trim() : '';
-        };
-
-        const extracted = {
-            curp: getValue('CURP'),
-            nombre: getValue('Nombre\\(s\\)'),
-            primerApellido: getValue('Primer apellido'),
-            segundoApellido: getValue('Segundo apellido'),
-            email: getValue('Correo electrónico'),
-            telefono: getValue('Teléfono celular'),
-            distancia: getValue('Distancia'),
-            paisResidencia: getValue('País de residencia'),
-            estadoResidencia: getValue('Estado de residencia'),
-            tallaPlayera: getValue('Talla de playera'),
-            tipoSangre: getValue('Tipo de sangre'),
-            contactoNombre: getValue('Contacto emergencia'),
-            contactoTelefono: getValue('Teléfono emergencia'),
-            alergias: getValue('Alergias conocidas')
-        };
-
-        let countInjected = 0;
-        Object.keys(extracted).forEach(key => {
-            const el = document.getElementById(key);
-            if (el && extracted[key]) {
-                el.value = extracted[key];
-                if (key === 'curp') el.dispatchEvent(new Event('input'));
-                countInjected++;
+        // Parseador simple regex
+        const extractField = (patterns) => {
+            for (let p of patterns) {
+                const match = textToParse.match(p);
+                if (match && match[1]) return match[1].trim();
             }
-        });
+            return '';
+        };
 
-        if (countInjected > 0) {
-            alert('¡Datos extraídos e inyectados exitosamente en el formulario!');
-            closeModal('whatsappExtractModal');
-        } else {
-            alert('No se detectaron campos coincidentes. Asegúrate de que la imagen sea legible o prueba pegando el texto en la Opción B.');
+        const curpVal = extractField([/CURP:?\s*([A-Z0-9]{18})/i, /([A-Z]{4}\d{6}[HM][A-Z]{5}[0-9A-Z]\d)/i]);
+        const nombreVal = extractField([/Nombre\(s\):?\s*([^\n]+)/i, /Nombre:?\s*([^\n]+)/i]);
+        const ape1Val = extractField([/Primer apellido:?\s*([^\n]+)/i, /Apellido Paterno:?\s*([^\n]+)/i]);
+        const ape2Val = extractField([/Segundo apellido:?\s*([^\n]+)/i, /Apellido Materno:?\s*([^\n]+)/i]);
+        const emailVal = extractField([/Correo:?\s*([^\s]+@[^\s]+)/i, /Email:?\s*([^\s]+@[^\s]+)/i]);
+        const telVal = extractField([/Teléfono:?\s*(\d{10})/i, /Celular:?\s*(\d{10})/i]);
+
+        if (curpVal) {
+            const inputCurp = document.getElementById('curp');
+            inputCurp.value = curpVal;
+            inputCurp.dispatchEvent(new Event('input'));
         }
+        if (nombreVal) document.getElementById('nombre').value = nombreVal;
+        if (ape1Val) document.getElementById('primerApellido').value = ape1Val;
+        if (ape2Val) document.getElementById('segundoApellido').value = ape2Val;
+        if (emailVal) document.getElementById('email').value = emailVal;
+        if (telVal) document.getElementById('telefono').value = telVal;
+
+        closeModal('whatsappExtractModal');
+        alert('Datos trasladados correctamente al formulario.');
     }
 
-    let currentDocImageSrc = null;
-
-    function processDocImage(event) {
-        const file = event.target ? event.target.files[0] : event;
+    // OCR IDENTIFICACIONES (INE)
+    function processDocImage(e) {
+        const file = e.target.files[0];
         if (file) {
+            currentDocFile = file;
             const reader = new FileReader();
-            reader.onload = function(e) {
-                currentDocImageSrc = e.target.result;
-                document.getElementById('docPreviewBox').innerHTML = `<img id="docPreviewImgEl" src="${e.target.result}" style="max-height:200px; max-width:100%; border-radius:6px; object-fit:contain;">`;
+            reader.onload = ev => {
+                document.getElementById('docPreviewBox').innerHTML = `<img src="${ev.target.result}" style="max-height:200px;">`;
             };
             reader.readAsDataURL(file);
         }
     }
 
     async function scanDocImage() {
-        if (!currentDocImageSrc) {
-            alert('Por favor selecciona una imagen de la credencial primero.');
+        if (!currentDocFile) {
+            alert('Por favor selecciona una imagen de identificación.');
             return;
         }
 
         const btn = document.getElementById('btnScanDoc');
-        const origText = btn.innerText;
+        btn.innerText = '⏳ Procesando OCR...';
         btn.disabled = true;
-        btn.innerText = '⏳ Procesando INE (OCR)...';
 
         try {
-            const result = await Tesseract.recognize(currentDocImageSrc, 'spa');
-            const text = result.data.text || '';
+            const result = await Tesseract.recognize(currentDocFile, 'spa');
+            const txt = result.data.text;
 
-            const curpMatch = text.match(/[A-Z]{4}\d{6}[HM][A-Z]{5}[A-Z0-9]{2}/i);
-            let curp = curpMatch ? curpMatch[0].toUpperCase() : '';
+            const curpMatch = txt.match(/([A-Z]{4}\d{6}[HM][A-Z]{5}[0-9A-Z]\d)/i);
+            const curpFound = curpMatch ? curpMatch[1].toUpperCase() : 'NO DETECTADO';
 
-            let fechaNacimiento = '';
-            let edadStr = '';
-            let genero = '';
-            let rama = '';
-            let entidadOrigen = '';
+            const formatted = `• 🆔 CURP: ${curpFound}\n• 👤 TEXTO COMPLETO OCR:\n${txt}`;
+            document.getElementById('docFormattedOutput').value = formatted;
 
-            if (curp.length === 18) {
-                let aa = curp.substring(4, 6);
-                let mm = curp.substring(6, 8);
-                let dd = curp.substring(8, 10);
-                
-                let anioNum = parseInt(aa, 10);
-                let siglo = (anioNum < 27) ? "20" : "19";
-                let anioNacimiento = parseInt(`${siglo}${aa}`, 10);
-                fechaNacimiento = `${dd}/${mm}/${siglo}${aa}`;
-
-                let edad = 2027 - anioNacimiento;
-                edadStr = `${edad} años`;
-
-                let sexoChar = curp.charAt(10);
-                if (sexoChar === 'H') {
-                    genero = 'Masculino';
-                    rama = 'Varonil';
-                } else if (sexoChar === 'M') {
-                    genero = 'Femenino';
-                    rama = 'Femenil';
-                }
-
-                let entCode = curp.substring(11, 13);
-                entidadOrigen = estadosCURP[entCode] || `Entidad (${entCode})`;
-            }
-
-            const formattedTemplate = `• 🆔 CURP: ${curp || 'No detectado'}
-• 👤 Nombre(s): 
-• 👤 Primer apellido: 
-• 👤 Segundo apellido: 
-• 📧 Correo electrónico: 
-• 📱 Teléfono celular: 
-• 🏃 Distancia: 10K Recreativa
-• 🇲🇽 País de residencia: México
-• 📍 Estado de residencia: Guanajuato
-• 🎂 Edad: ${edadStr}
-• 📅 Fecha de nacimiento: ${fechaNacimiento}
-• 👤 Género: ${genero}
-• 🏛️ Entidad / Estado de nacimiento: ${entidadOrigen}
-• 🎽 Talla de playera: M
-• 🩸 Tipo de sangre: O+
-• 🚑 Contacto emergencia: 
-• 📞 Teléfono emergencia: 
-• ⚠️ Alergias conocidas: Ninguna`;
-
-            document.getElementById('docFormattedOutput').value = formattedTemplate;
-
-            if (curp) {
-                const curpEl = document.getElementById('curp');
-                if (curpEl) {
-                    curpEl.value = curp;
-                    curpEl.dispatchEvent(new Event('input'));
-                }
+            if (curpMatch) {
+                const inputCurp = document.getElementById('curp');
+                inputCurp.value = curpFound;
+                inputCurp.dispatchEvent(new Event('input'));
             }
 
         } catch (err) {
-            console.error('Error durante la lectura OCR del documento:', err);
-            alert('Ocurrió un error al procesar la imagen del documento.');
+            alert('Error al escanear: ' + err.message);
         } finally {
+            btn.innerText = '🔍 Leer y Generar Plantilla';
             btn.disabled = false;
-            btn.innerText = origText;
         }
     }
 
     function copyFormattedDocText() {
-        const outputText = document.getElementById('docFormattedOutput');
-        if (!outputText || !outputText.value.trim()) {
-            alert('No hay texto para copiar.');
-            return;
-        }
-        
-        outputText.select();
-        outputText.setSelectionRange(0, 99999);
-        navigator.clipboard.writeText(outputText.value).then(() => {
-            alert('¡Texto copiado al portapapeles!');
-        }).catch(err => {
-            console.error('Error al copiar:', err);
-        });
-    }
-
-    function openCarnetFormModal(id) {
-        const r = cachedRegistros.find(item => item.id == id);
-        if (!r) return;
-
-        document.getElementById('curp').value = r.curp || '';
-        document.getElementById('nombre').value = r.nombre || '';
-        document.getElementById('primerApellido').value = r.primer_apellido || '';
-        document.getElementById('segundoApellido').value = r.segundo_apellido || '';
-        document.getElementById('email').value = r.email || '';
-        document.getElementById('telefono').value = r.telefono || '';
-        document.getElementById('distancia').value = r.distancia || '';
-        document.getElementById('tallaPlayera').value = r.talla_playera || '';
-        document.getElementById('perfilCorredor').value = r.perfil_corredor || '';
-        document.getElementById('tipoSangre').value = r.tipo_sangre || '';
-
-        if (r.foto_url) document.getElementById('photoPreview').innerHTML = `<img src="${r.foto_url}" style="max-height: 100px;">`;
-        if (r.pago_url) document.getElementById('pagoPreview').innerHTML = `<a href="${r.pago_url}" target="_blank">Ver Comprobante</a>`;
-        if (r.doc1_url) document.getElementById('doc1Preview').innerHTML = `<a href="${r.doc1_url}" target="_blank">Ver INE</a>`;
-        if (r.doc2_url) document.getElementById('doc2Preview').innerHTML = `<a href="${r.doc2_url}" target="_blank">Ver Responsiva</a>`;
-
-        closeModal('registrosModal');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-function openSubmodalCarnet(id) {
-        const r = cachedRegistros.find(item => item.id == id);
-        if (!r) return;
-
-        // 1. Cargar Datos Personales
-        document.getElementById('carnetNombre').innerText = r.nombre_completo || `${r.nombre || ''} ${r.primer_apellido || ''}`.trim();
-        document.getElementById('carnetFolio').innerText = r.folio_oficial || 'S/N';
-        document.getElementById('carnetCurp').innerText = r.curp || '-';
-        document.getElementById('carnetDistancia').innerText = r.distancia || '-';
-        
-        const edad = r.edad || '-';
-        const nac = r.fecha_nacimiento || '-';
-        document.getElementById('carnetEdadNac').innerText = `${edad} (${nac})`;
-        document.getElementById('carnetTalla').innerText = r.talla_playera || '-';
-        document.getElementById('carnetRama').innerText = r.rama || r.genero || '-';
-
-        // 2. Procesar y Visualizar Foto del Atleta
-        const fotoBox = document.getElementById('carnetFotoBox');
-        if (r.foto_url && typeof r.foto_url === 'string' && r.foto_url.trim().startsWith('http')) {
-            // Convertir links compartidos de Drive a vista previa si aplica
-            let displayUrl = r.foto_url;
-            if (displayUrl.includes('drive.google.com/file/d/')) {
-                const fileId = displayUrl.split('/d/')[1].split('/')[0];
-                displayUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
-            }
-            fotoBox.innerHTML = `<img src="${displayUrl}" style="width:100%; height:100%; object-fit:cover;" onerror="this.parentElement.innerHTML='⚠️ Error de Imagen'">`;
-        } else if (r.foto_url) {
-            fotoBox.innerHTML = '<span style="font-size:0.7rem; color:#eab308; padding:4px;">⚠️ Registrado sin link web</span>';
-        } else {
-            fotoBox.innerHTML = 'Sin Foto';
-        }
-
-        // 3. Evaluar Estatus de Documentos (Palomita Verde si existe cualquier registro)
-        const hasDoc = (val) => val && typeof val === 'string' && val.trim().length > 0;
-
-        document.getElementById('chkFoto').innerHTML = hasDoc(r.foto_url) ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
-        document.getElementById('chkINE').innerHTML = hasDoc(r.doc1_url) ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
-        document.getElementById('chkPago').innerHTML = hasDoc(r.pago_url) ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
-        document.getElementById('chkCarta').innerHTML = hasDoc(r.doc2_url) ? '<b style="color:green;">✅</b>' : '<b style="color:red;">❌</b>';
-
-        document.getElementById('carnetVistaModal').style.display = 'flex';
+        const area = document.getElementById('docFormattedOutput');
+        area.select();
+        document.execCommand('copy');
+        alert('Texto copiado al portapapeles.');
     }
 </script>
 
