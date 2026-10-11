@@ -548,7 +548,7 @@
           <div class="d-val" id="dash-m2-base" style="color: #38bdf8;">$0.00</div>
         </div>
         <div class="dash-card">
-          <div style="font-size: 0.8rem; color: var(--text-muted);">2. Costo Metax (Base + 17% Outsourcing)</div>
+          <div style="font-size: 0.8rem; color: var(--text-muted);">2. Costo Metax (Base + 18% Outsourcing)</div>
           <div class="d-val" id="dash-m2-metax" style="color: #10b981;">$0.00</div>
         </div>
         <div class="dash-card">
@@ -564,9 +564,11 @@
               <th style="width: 40px; text-align: center;">Sel.</th>
               <th>#</th>
               <th>Tipo</th>
-              <th>Concepto</th>
-              <th>Costo Base ($)</th>
-              <th>Comisión Outsourcing (17%)</th>
+             <th>Concepto</th>
+            <th>Costo Base ($)</th>
+            <th style="width: 80px;">Unidad</th>
+            <th>Costo Total A (Proveedor x Unidad)</th>
+            <th>Comisión Outsourcing (18%)</th>
               <th>IVA (16%)</th>
               <th>Detalle Técnico</th>
               <th>Propuesta Técnica</th>
@@ -574,15 +576,17 @@
             </tr>
           </thead>
           <tbody id="tbody-mod2"></tbody>
-          <tfoot>
-            <tr style="font-weight: bold; background: rgba(2, 132, 199, 0.1);">
-              <td colspan="4" style="text-align: right;">SUMATORIA SERVICIOS SELECCIONADOS:</td>
-              <td id="m2-sum-base">$0.00</td>
-              <td id="m2-sum-outsourcing" style="color: #10b981;">$0.00</td>
-              <td id="m2-sum-iva" style="color: #f59e0b;">$0.00</td>
-              <td colspan="3"></td>
-            </tr>
-          </tfoot>
+         <tfoot>
+  <tr style="font-weight: bold; background: rgba(2, 132, 199, 0.1);">
+    <td colspan="4" style="text-align: right;">SUMATORIA SERVICIOS SELECCIONADOS:</td>
+    <td id="m2-sum-base">$0.00</td>
+    <td></td>
+    <td id="m2-sum-total-a" style="color: #38bdf8;">$0.00</td>
+    <td id="m2-sum-outsourcing" style="color: #10b981;">$0.00</td>
+    <td id="m2-sum-iva" style="color: #f59e0b;">$0.00</td>
+    <td colspan="3"></td>
+  </tr>
+</tfoot>
         </table>
       </div>
     </div>
@@ -724,28 +728,28 @@
   <script>
     // BASE DE DATOS DE 22 SERVICIOS
     const catalogData = [
-      { num: "1", type: "Base", concept: "Cronometraje Base", cost: 18000, detail: "Medición electrónica central de tiempos con tecnología RFID.", proposal: "2 líneas de lectura de 8m y 4 personas de staff.", vis: "obligatorio", selectedAdmin: true, icon: "⏱️" },
-      { num: "2", type: "Base", concept: "Chip + Consumibles", cost: 62500, detail: "Etiqueta RFID de un solo uso adherida al dorsal.", proposal: "BibTag MYLAPS descartable ($25.00/u).", vis: "obligatorio", selectedAdmin: true, icon: "🏷️" },
-      { num: "3", type: "Base", concept: "Número de Competidor (Dorsal)", cost: 25000, detail: "Dorsal impreso e individualizado con número y gráfica.", proposal: "Número Full Color 19x22 cm.", vis: "obligatorio", selectedAdmin: true, icon: "🎽" },
-      { num: "4", type: "Base", concept: "Puntos Parciales (Ruta)", cost: 6000, detail: "Líneas de lectura intermedias en ruta (5k, 10k, 21k).", proposal: "Puntos intermedios con tapetes MyLaps.", vis: "visualizar", selectedAdmin: true, icon: "📍" },
-      { num: "5", type: "Base", concept: "Jueceo de Atletismo", cost: 10500, detail: "Supervisión, juzgamiento y validación de recorrido.", proposal: "8 jueces (6 meta, 2 ruta).", vis: "visualizar", selectedAdmin: true, icon: "👨‍⚖️" },
-      { num: "6", type: "Base", concept: "Resultados en Vivo (Live Tracking)", cost: 2000, detail: "Transmisión en tiempo real vía web/QR.", proposal: "Búsqueda por nombre y dorsal.", vis: "visualizar", selectedAdmin: true, icon: "📱" },
-      { num: "6A", type: "Base", concept: "Resultados Preliminares", cost: 0, detail: "Listados iniciales emitidos el mismo día.", proposal: "Incluido $0.00.", vis: "obligatorio", selectedAdmin: true, icon: "📋" },
-      { num: "6B", type: "Base", concept: "Resultados Oficiales", cost: 0, detail: "Listas finales validadas por jueces.", proposal: "Incluido $0.00.", vis: "obligatorio", selectedAdmin: true, icon: "🏆" },
-      { num: "7", type: "Base", concept: "Viáticos Completos (Personal + Jueces)", cost: 18450, detail: "Hospedaje, transporte y alimentación.", proposal: "Incluye 2 noches y viáticos.", vis: "obligatorio", selectedAdmin: true, icon: "🚗" },
-      { num: "8", type: "Adicional", concept: "Fotofinish / Identificación Visual", cost: 6000, detail: "Cámara de alta velocidad en meta.", proposal: "Cámara IdentiLynx frontal 4K.", vis: "visualizar", selectedAdmin: true, icon: "📷" },
-      { num: "9", type: "Adicional", concept: "Fotos por Reconocimiento Facial y Dorsal", cost: 20000, detail: "Galería interactiva con biometría.", proposal: "Búsqueda biométrica ($8.00/u).", vis: "visualizar", selectedAdmin: true, icon: "🤳" },
-      { num: "10", type: "Adicional", concept: "APP de Seguimiento (Live App)", cost: 39000, detail: "Aplicación móvil para seguimiento.", proposal: "App avanzada para 2,500 corredores.", vis: "visualizar", selectedAdmin: true, icon: "📲" },
-      { num: "12", type: "Adicional", concept: "Certificación Oficial de Ruta", cost: 18000, detail: "Medición con Contador Jones AIMS.", proposal: "Medidor Clase A en bicicleta.", vis: "visualizar", selectedAdmin: true, icon: "📐" },
-      { num: "13", type: "Adicional", concept: "Promociones y Difusión Comercial", cost: 0, detail: "Difusión en plataformas masivas.", proposal: "Cortesías técnicas incluidas.", vis: "visualizar", selectedAdmin: true, icon: "📢" },
-      { num: "14", type: "Adicional", concept: "Módulo 'Verifica tus Datos'", cost: 0, detail: "Estación con lectores RFID en Expo.", proposal: "Lectores autónomos sin internet.", vis: "visualizar", selectedAdmin: true, icon: "🔍" },
-      { num: "15", type: "Adicional", concept: "Portal de Resultados / Certificados", cost: 0, detail: "Consulta de tiempos y certificados.", proposal: "Alta en portal digital.", vis: "visualizar", selectedAdmin: true, icon: "🌐" },
-      { num: "16", type: "Adicional", concept: "Papelería y Consumibles Operativos", cost: 4500, detail: "Materiales de oficina para meta.", proposal: "$1.80 por participante.", vis: "visualizar", selectedAdmin: true, icon: "📦" },
-      { num: "17", type: "Adicional", concept: "Sobres / Integración de Kits", cost: 3600, detail: "Empacado de dorsal y chip.", proposal: "Sobre celofán.", vis: "visualizar", selectedAdmin: true, icon: "✉️" },
-      { num: "18", type: "Adicional", concept: "Certificado / Constancia de Participación", cost: 0, detail: "Emisión de constancias digitales.", proposal: "Incluido en plataforma.", vis: "visualizar", selectedAdmin: true, icon: "📜" },
-      { num: "19", type: "Adicional", concept: "Base de Datos y Respaldo", cost: 0, detail: "Entrega de bases de datos finales.", proposal: "Archivos digitales completos.", vis: "visualizar", selectedAdmin: true, icon: "💾" },
-      { num: "20", type: "Adicional", concept: "Protocolo de Contingencia Técnica", cost: 3000, detail: "Planes de respaldo ante fallas.", proposal: "Equipos con batería y Starlink.", vis: "visualizar", selectedAdmin: true, icon: "🛡️" },
-      { num: "21", type: "Adicional", concept: "Personal de Operación Dedicado", cost: 1600, detail: "Staff técnico especializado.", proposal: "Coordinadores y técnicos.", vis: "visualizar", selectedAdmin: true, icon: "👥" }
+      { num: "1", type: "Base", concept: "Cronometraje Base", cost: 18000, units: 1, detail: "Medición electrónica central de tiempos con tecnología RFID.", proposal: "2 líneas de lectura de 8m y 4 personas de staff.", vis: "obligatorio", selectedAdmin: true, icon: "⏱️" },
+      { num: "2", type: "Base", concept: "Chip + Consumibles", cost: 62500, units: 1, detail: "Etiqueta RFID de un solo uso adherida al dorsal.", proposal: "BibTag MYLAPS descartable ($25.00/u).", vis: "obligatorio", selectedAdmin: true, icon: "🏷️" },
+      { num: "3", type: "Base", concept: "Número de Competidor (Dorsal)", cost: 25000, units: 1, detail: "Dorsal impreso e individualizado con número y gráfica.", proposal: "Número Full Color 19x22 cm.", vis: "obligatorio", selectedAdmin: true, icon: "🎽" },
+      { num: "4", type: "Base", concept: "Puntos Parciales (Ruta)", cost: 6000, units: 1, detail: "Líneas de lectura intermedias en ruta (5k, 10k, 21k).", proposal: "Puntos intermedios con tapetes MyLaps.", vis: "visualizar", selectedAdmin: true, icon: "📍" },
+      { num: "5", type: "Base", concept: "Jueceo de Atletismo", cost: 10500, units: 1, detail: "Supervisión, juzgamiento y validación de recorrido.", proposal: "8 jueces (6 meta, 2 ruta).", vis: "visualizar", selectedAdmin: true, icon: "👨‍⚖️" },
+      { num: "6", type: "Base", concept: "Resultados en Vivo (Live Tracking)", cost: 2000, units: 1, detail: "Transmisión en tiempo real vía web/QR.", proposal: "Búsqueda por nombre y dorsal.", vis: "visualizar", selectedAdmin: true, icon: "📱" },
+      { num: "6A", type: "Base", concept: "Resultados Preliminares", cost: 0, units: 1, detail: "Listados iniciales emitidos el mismo día.", proposal: "Incluido $0.00.", vis: "obligatorio", selectedAdmin: true, icon: "📋" },
+      { num: "6B", type: "Base", concept: "Resultados Oficiales", cost: 0, units: 1, detail: "Listas finales validadas por jueces.", proposal: "Incluido $0.00.", vis: "obligatorio", selectedAdmin: true, icon: "🏆" },
+      { num: "7", type: "Base", concept: "Viáticos Completos (Personal + Jueces)", cost: 18450, units: 1, detail: "Hospedaje, transporte y alimentación.", proposal: "Incluye 2 noches y viáticos.", vis: "obligatorio", selectedAdmin: true, icon: "🚗" },
+      { num: "8", type: "Adicional", concept: "Fotofinish / Identificación Visual", cost: 6000, units: 1, detail: "Cámara de alta velocidad en meta.", proposal: "Cámara IdentiLynx frontal 4K.", vis: "visualizar", selectedAdmin: true, icon: "📷" },
+      { num: "9", type: "Adicional", concept: "Fotos por Reconocimiento Facial y Dorsal", cost: 20000, units: 1, detail: "Galería interactiva con biometría.", proposal: "Búsqueda biométrica ($8.00/u).", vis: "visualizar", selectedAdmin: true, icon: "🤳" },
+      { num: "10", type: "Adicional", concept: "APP de Seguimiento (Live App)", cost: 39000, units: 1, detail: "Aplicación móvil para seguimiento.", proposal: "App avanzada para 2,500 corredores.", vis: "visualizar", selectedAdmin: true, icon: "📲" },
+      { num: "12", type: "Adicional", concept: "Certificación Oficial de Ruta", cost: 18000, units: 1, detail: "Medición con Contador Jones AIMS.", proposal: "Medidor Clase A en bicicleta.", vis: "visualizar", selectedAdmin: true, icon: "📐" },
+      { num: "13", type: "Adicional", concept: "Promociones y Difusión Comercial", cost: 0, units: 1, detail: "Difusión en plataformas masivas.", proposal: "Cortesías técnicas incluidas.", vis: "visualizar", selectedAdmin: true, icon: "📢" },
+      { num: "14", type: "Adicional", concept: "Módulo 'Verifica tus Datos'", cost: 0, units: 1, detail: "Estación con lectores RFID en Expo.", proposal: "Lectores autónomos sin internet.", vis: "visualizar", selectedAdmin: true, icon: "🔍" },
+      { num: "15", type: "Adicional", concept: "Portal de Resultados / Certificados", cost: 0, units: 1, detail: "Consulta de tiempos y certificados.", proposal: "Alta en portal digital.", vis: "visualizar", selectedAdmin: true, icon: "🌐" },
+      { num: "16", type: "Adicional", concept: "Papelería y Consumibles Operativos", cost: 4500, units: 1, detail: "Materiales de oficina para meta.", proposal: "$1.80 por participante.", vis: "visualizar", selectedAdmin: true, icon: "📦" },
+      { num: "17", type: "Adicional", concept: "Sobres / Integración de Kits", cost: 3600, units: 1, detail: "Empacado de dorsal y chip.", proposal: "Sobre celofán.", vis: "visualizar", selectedAdmin: true, icon: "✉️" },
+      { num: "18", type: "Adicional", concept: "Certificado / Constancia de Participación", cost: 0, units: 1, detail: "Emisión de constancias digitales.", proposal: "Incluido en plataforma.", vis: "visualizar", selectedAdmin: true, icon: "📜" },
+      { num: "19", type: "Adicional", concept: "Base de Datos y Respaldo", cost: 0, units: 1, detail: "Entrega de bases de datos finales.", proposal: "Archivos digitales completos.", vis: "visualizar", selectedAdmin: true, icon: "💾" },
+      { num: "20", type: "Adicional", concept: "Protocolo de Contingencia Técnica", cost: 3000, units: 1, detail: "Planes de respaldo ante fallas.", proposal: "Equipos con batería y Starlink.", vis: "visualizar", selectedAdmin: true, icon: "🛡️" },
+      { num: "21", type: "Adicional", concept: "Personal de Operación Dedicado", cost: 1600, units: 1, detail: "Staff técnico especializado.", proposal: "Coordinadores y técnicos.", vis: "visualizar", selectedAdmin: true, icon: "👥" }
     ];
 
     const organizerConsiderations = [
@@ -1062,56 +1066,74 @@
 
     // Render Módulo 2
     function renderMod2() {
-      const tbody = document.getElementById('tbody-mod2');
-      tbody.innerHTML = '';
-      let sumBase = 0, sumOutsourcing = 0, sumIva = 0;
+  const tbody = document.getElementById('tbody-mod2');
+  tbody.innerHTML = '';
+  let sumBase = 0, sumTotalA = 0, sumOutsourcing = 0, sumIva = 0;
 
-      catalogData.forEach((item, index) => {
-        const costBase = item.cost || 0;
-        const outsourcing = costBase * 0.17;
-        const iva = costBase * 0.16;
+  catalogData.forEach((item, index) => {
+    const costBase = item.cost || 0;
+    const units = item.units !== undefined ? item.units : 1;
+    const costoTotalA = costBase * units; // <--- Multiplicación requerida
+    
+    // Si la comisión y el IVA se calculan sobre el costo total con unidades:
+    const outsourcing = costoTotalA * 0.17;
+    const iva = costoTotalA * 0.16;
 
-        if (item.selectedAdmin) {
-          sumBase += costBase;
-          sumOutsourcing += outsourcing;
-          sumIva += iva;
-        }
-
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td style="text-align:center;">
-            <input type="checkbox" ${item.selectedAdmin ? 'checked' : ''} onchange="catalogData[${index}].selectedAdmin = this.checked; renderMod2(); renderMod3();">
-          </td>
-          <td>${item.num}</td>
-          <td>${item.type}</td>
-          <td><input type="text" value="${item.concept}" onchange="catalogData[${index}].concept = this.value; renderMod3();"></td>
-          <td><input type="number" value="${item.cost}" onchange="catalogData[${index}].cost = parseFloat(this.value)||0; renderMod2(); renderMod3();"></td>
-          <td style="color: #10b981; font-weight: 600;">$${outsourcing.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td>
-          <td style="color: #f59e0b; font-weight: 600;">$${iva.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td>
-          <td><input type="text" value="${item.detail}" onchange="catalogData[${index}].detail = this.value; renderMod3();"></td>
-          <td><input type="text" value="${item.proposal || ''}" onchange="catalogData[${index}].proposal = this.value; renderMod3();"></td>
-          <td>
-            <select onchange="catalogData[${index}].vis = this.value; renderMod3();">
-              <option value="obligatorio" ${item.vis==='obligatorio'?'selected':''}>Obligatorio</option>
-              <option value="visualizar" ${item.vis==='visualizar'?'selected':''}>Visualizar</option>
-              <option value="ocultar" ${item.vis==='ocultar'?'selected':''}>Ocultar</option>
-            </select>
-          </td>
-        `;
-        tbody.appendChild(tr);
-      });
-
-      document.getElementById('m2-sum-base').innerText = `$${sumBase.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
-      document.getElementById('m2-sum-outsourcing').innerText = `$${sumOutsourcing.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
-      document.getElementById('m2-sum-iva').innerText = `$${sumIva.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
-
-      const costoMetax = sumBase + sumOutsourcing;
-      const costoTotalIva = costoMetax + sumIva;
-      document.getElementById('dash-m2-base').innerText = `$${sumBase.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
-      document.getElementById('dash-m2-metax').innerText = `$${costoMetax.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
-      document.getElementById('dash-m2-total').innerText = `$${costoTotalIva.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+    if (item.selectedAdmin) {
+      sumBase += costBase;
+      sumTotalA += costoTotalA;
+      sumOutsourcing += outsourcing;
+      sumIva += iva;
     }
 
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="text-align:center;">
+        <input type="checkbox" ${item.selectedAdmin ? 'checked' : ''} onchange="catalogData[${index}].selectedAdmin = this.checked; renderMod2(); renderMod3();">
+      </td>
+      <td>${item.num}</td>
+      <td>${item.type}</td>
+      <td><input type="text" value="${item.concept}" onchange="catalogData[${index}].concept = this.value; renderMod3();"></td>
+      <td><input type="number" value="${item.cost}" onchange="catalogData[${index}].cost = parseFloat(this.value)||0; renderMod2(); renderMod3();"></td>
+      
+      <!-- NUEVAS COLUMNAS -->
+      <td>
+        <input type="number" min="0" value="${units}" onchange="catalogData[${index}].units = parseFloat(this.value)||0; renderMod2(); renderMod3();">
+      </td>
+      <td style="color: #38bdf8; font-weight: 600;">
+        $${costoTotalA.toLocaleString('es-MX', {minimumFractionDigits: 2})}
+      </td>
+      
+      <td style="color: #10b981; font-weight: 600;">$${outsourcing.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td>
+      <td style="color: #f59e0b; font-weight: 600;">$${iva.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td>
+      <td><input type="text" value="${item.detail}" onchange="catalogData[${index}].detail = this.value; renderMod3();"></td>
+      <td><input type="text" value="${item.proposal || ''}" onchange="catalogData[${index}].proposal = this.value; renderMod3();"></td>
+      <td>
+        <select onchange="catalogData[${index}].vis = this.value; renderMod3();">
+          <option value="obligatorio" ${item.vis==='obligatorio'?'selected':''}>Obligatorio</option>
+          <option value="visualizar" ${item.vis==='visualizar'?'selected':''}>Visualizar</option>
+          <option value="ocultar" ${item.vis==='ocultar'?'selected':''}>Ocultar</option>
+        </select>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Totales al pie de tabla y dashboard
+  document.getElementById('m2-sum-base').innerText = `$${sumBase.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+  if(document.getElementById('m2-sum-total-a')) {
+    document.getElementById('m2-sum-total-a').innerText = `$${sumTotalA.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+  }
+  document.getElementById('m2-sum-outsourcing').innerText = `$${sumOutsourcing.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+  document.getElementById('m2-sum-iva').innerText = `$${sumIva.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+
+  const costoMetax = sumTotalA + sumOutsourcing;
+  const costoTotalIva = costoMetax + sumIva;
+  document.getElementById('dash-m2-base').innerText = `$${sumTotalA.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+  document.getElementById('dash-m2-metax').innerText = `$${costoMetax.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+  document.getElementById('dash-m2-total').innerText = `$${costoTotalIva.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
+}
+    
     function renderConsiderationsAdmin() {
       const tbody = document.getElementById('tbody-considerations');
       tbody.innerHTML = '';
@@ -1186,7 +1208,8 @@
         const isReq = item.vis === 'obligatorio';
         if (isReq) userSelections[item.num] = true;
         const isChecked = userSelections[item.num] || false;
-        const costoMetaxItem = (item.cost || 0) * 1.17;
+        const units = item.units !== undefined ? item.units : 1;
+        const costoMetaxItem = ((item.cost || 0) * units) * 1.17;
 
         if (isChecked) {
           currentTotalMetax += costoMetaxItem;
