@@ -394,6 +394,78 @@
       border-radius: 8px;
       margin-top: 20px;
     }
+    /* Estilos Modal Ficha Técnica e Infografía */
+    .btn-ficha {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid #38bdf8;
+      color: #38bdf8;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+    .btn-ficha:hover {
+      background: #0284c7;
+      color: #fff;
+    }
+    .modal-ficha-box {
+      background: var(--panel-bg);
+      border: 1px solid var(--panel-border);
+      border-radius: 14px;
+      max-width: 680px;
+      width: 95%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      position: relative;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+    }
+    .close-modal-btn {
+      position: absolute;
+      top: 15px;
+      right: 18px;
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .close-modal-btn:hover { color: #fff; }
+    .infografia-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .infografia-item {
+      background: rgba(2, 132, 199, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .infografia-item .info-icon { font-size: 1.4rem; margin-bottom: 4px; }
+    .infografia-item .info-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: bold; }
+    .infografia-item .info-val { font-size: 0.85rem; color: #38bdf8; font-weight: 600; }
+    .sheet-bullets { list-style: none; padding: 0; }
+    .sheet-bullets li {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 8px;
+      font-size: 0.9rem;
+      color: #cbd5e1;
+    }
+    .sheet-bullets li::before {
+      content: "✔";
+      position: absolute;
+      left: 0;
+      color: #10b981;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -627,13 +699,14 @@
           </div>
           <div class="table-responsive">
             <table>
-              <thead>
+             <thead>
                 <tr>
                   <th>Sel.</th>
                   <th>#</th>
                   <th>Servicio / Concepto</th>
                   <th>Detalle Técnico</th>
                   <th>Propuesta Técnica</th>
+                  <th style="text-align: center;">Ficha Técnica</th>
                 </tr>
               </thead>
               <tbody id="tbody-mod3"></tbody>
@@ -758,6 +831,441 @@
       { id: "C3", concept: "Vallado de Zona de Meta", spec: "100m de vallas metálicas para canal de meta.", vis: "visualizar" },
       { id: "C4", concept: "Permisos y Licencias Municipales", spec: "Trámite ante autoridades locales.", vis: "obligatorio" }
     ];
+
+    // BASE DE DATOS DE FICHAS TÉCNICAS E INFOGRAFÍAS (1 AL 24)
+    const technicalSheetsData = {
+      "1": {
+        title: "1. Cronometraje Base",
+        badge: "Base Obligatorio",
+        info: [
+          { icon: "📡", title: "Tecnología", val: "RFID UHF" },
+          { icon: "🏁", title: "Líneas de Lectura", val: "8 Metros" },
+          { icon: "🛡️", title: "Respaldo", val: "Doble Sistema" },
+          { icon: "👥", title: "Personal", val: "Staff Certificado" }
+        ],
+        bullets: [
+          "Cronometraje electrónico con tecnología RFID para registro exacto de tiempos.",
+          "Tapetes receptores y antenas en salida y meta para captura de chips al cruce.",
+          "Sistema de respaldo y contingencia activo durante todo el evento.",
+          "Personal técnico certificado para monitoreo y operación en tiempo real."
+        ]
+      },
+      "2": {
+        title: "2. Chip + Consumibles",
+        badge: "Base Obligatorio",
+        info: [
+          { icon: "🏷️", title: "Tipo", val: "Descartable UHF" },
+          { icon: "🎽", title: "Ubicación", val: "Adherido a Dorsal" },
+          { icon: "⚡", title: "Flujo", val: "Sin Recuperación" },
+          { icon: "💾", title: "Asignación", val: "Base Sincronizada" }
+        ],
+        bullets: [
+          "Chip descartable RFID UHF adherido al dorsal del competidor.",
+          "Sin necesidad de recuperación post-carrera; agiliza el flujo de competidores.",
+          "Rango de lectura óptimo garantizado en salida y meta.",
+          "Codificación previa vinculada a la base de datos de inscritos."
+        ]
+      },
+      "3": {
+        title: "3. Número de Competidor (Dorsal)",
+        badge: "Base Obligatorio",
+        info: [
+          { icon: "📄", title: "Material", val: "Tyvek Antirrasgadura" },
+          { icon: "🎨", title: "Acabado", val: "Full Color HD" },
+          { icon: "📎", title: "Sujeción", val: "Perforado c/ Imperdibles" },
+          { icon: "📱", title: "Validación", val: "QR / Código de Barras" }
+        ],
+        bullets: [
+          "Dorsal impreso en material sintético resistente al agua y desgarres (Tyvek).",
+          "Impresión a color con número visible, categoría y logotipos de patrocinadores.",
+          "Perforaciones para colocación con imperdibles.",
+          "Incluye código de barras o QR para validación rápida en entrega de kits."
+        ]
+      },
+      "4": {
+        title: "4. Puntos Parciales (Ruta)",
+        badge: "Opcional / Ruta",
+        info: [
+          { icon: "📍", title: "Ubicación", val: "Puntos Intermedios" },
+          { icon: "⏱️", title: "Registro", val: "Split Times" },
+          { icon: "🔍", title: "Control", val: "Anti-Corte de Ruta" },
+          { icon: "📶", title: "Enlace", val: "Live Sync" }
+        ],
+        bullets: [
+          "Puntos de control intermedio en ruta con antenas receptoras.",
+          "Registro de tiempos parciales para validación de recorrido completo.",
+          "Detección de cortes de ruta o anomalías de paso.",
+          "Enlace de datos para alimentación de resultados en vivo."
+        ]
+      },
+      "5": {
+        title: "5. Jueceo de Atletismo",
+        badge: "Arbitraje Deportivo",
+        info: [
+          { icon: "👨‍⚖️", title: "Cuerpo Técnico", val: "Jueces Avalados" },
+          { icon: "📐", title: "Supervisión", val: "Salida, Ruta y Meta" },
+          { icon: "⚖️", title: "Reglamento", val: "Resolución Oficial" },
+          { icon: "📝", title: "Actas", val: "Firma y Validación" }
+        ],
+        bullets: [
+          "Cuerpo de jueces acreditados para la supervisión deportiva de la prueba.",
+          "Validación de salida, recorrido reglamentario y orden de llegada en meta.",
+          "Resolución de controversias técnicas y descalificaciones conforme a reglamento.",
+          "Emisión y firma de actas de resultados oficiales para premiación."
+        ]
+      },
+      "6": {
+        title: "6. Pantalla de Premiación",
+        badge: "Visual / Protocolo",
+        info: [
+          { icon: "🖥️", title: "Hardware", val: "Pantalla LED" },
+          { icon: "⚡", title: "Tiempos", val: "En Tiempo Real" },
+          { icon: "🏆", title: "Despliegue", val: "Podios por Categoría" },
+          { icon: "🎨", title: "Diseño", val: "Branding del Evento" }
+        ],
+        bullets: [
+          "Pantalla LED o módulo visual en zona de premiación.",
+          "Despliegue de ganadores por categoría en tiempo real.",
+          "Visualización de tiempos preliminares para agilizar la ceremonia de premiación.",
+          "Personalización gráfica con la identidad del evento y patrocinadores."
+        ]
+      },
+      "6A": {
+        title: "6A. Resultados Preliminares",
+        badge: "Inmediato",
+        info: [
+          { icon: "⏱️", title: "Publicación", val: "Instantánea en Meta" },
+          { icon: "📲", title: "Acceso", val: "Vía Web y Código QR" },
+          { icon: "🏃", title: "Métricas", val: "Tiempo y Ritmo / km" },
+          { icon: "❓", title: "Aclaraciones", val: "Ventana Técnica Activa" }
+        ],
+        bullets: [
+          "Publicación digital inmediata tras el cruce del competidor por meta.",
+          "Consulta vía web o código QR disponible al instante para participantes y público.",
+          "Despliegue de tiempos extraoficiales y ritmo por kilómetro.",
+          "Apertura de periodo de aclaraciones técnicas para competidores."
+        ]
+      },
+      "6B": {
+        title: "6B. Resultados Oficiales",
+        badge: "Oficial Definitivo",
+        info: [
+          { icon: "🏆", title: "Dictamen", val: "Validado por Jueces" },
+          { icon: "📊", title: "Clasificación", val: "General y Categorías" },
+          { icon: "📁", title: "Archivos", val: "PDF y Excel Certificados" },
+          { icon: "🌐", title: "Histórico", val: "Consulta Permanente" }
+        ],
+        bullets: [
+          "Consolidación final avalada y firmada por el cuerpo de jueces.",
+          "Listados definitivos por rama, categoría, edad y clasificación general.",
+          "Generación de archivos oficiales en formatos estándar (PDF, Excel).",
+          "Disponibilidad en plataforma web para consulta histórica."
+        ]
+      },
+      "7": {
+        title: "7. Viáticos Completos",
+        badge: "Logística Operativa",
+        info: [
+          { icon: "🚗", title: "Traslado", val: "Transporte Especializado" },
+          { icon: "🏨", title: "Hospedaje", val: "Staff y Jueces" },
+          { icon: "🍽️", title: "Alimentación", val: "100% Cubierta" },
+          { icon: "⏰", title: "Disponibilidad", val: "Montaje Previo y Retiro" }
+        ],
+        bullets: [
+          "Cobertura de traslado, hospedaje y alimentación del staff técnico y operativo.",
+          "Garantía de arribo, montaje y pruebas técnicas con anticipación al evento.",
+          "Permanencia del equipo durante todo el desarrollo y desmontaje."
+        ]
+      },
+      "8": {
+        title: "8. Fotofinish / Identificación Visual",
+        badge: "Alta Precisión",
+        info: [
+          { icon: "📷", title: "Cámara", val: "Alta Velocidad en Meta" },
+          { icon: "🎯", title: "Precisión", val: "Llegadas Cerradas" },
+          { icon: "👁️", title: "Verificación", val: "Visual de Dorsales" },
+          { icon: "🔗", title: "Sincronía", val: "Enlazada a Chips" }
+        ],
+        bullets: [
+          "Sistema de captura fotográfica o de video sincronizado en línea de meta.",
+          "Respaldo visual de alta precisión para llegadas cerradas o empates.",
+          "Validación visual ante dudas en números de competidor.",
+          "Integración con el sistema de cronometraje para verificación inmediata."
+        ]
+      },
+      "9": {
+        title: "9. Fotos por Reconocimiento Facial y Dorsal",
+        badge: "Experiencia Digital",
+        info: [
+          { icon: "🤳", title: "Algoritmo", val: "Biometría Facial + Dorsal" },
+          { icon: "⚡", title: "Búsqueda", val: "Automática en Segundos" },
+          { icon: "🖼️", title: "Galería", val: "Álbum Personalizado" },
+          { icon: "📈", title: "Impacto", val: "Mayor Alcance Comercial" }
+        ],
+        bullets: [
+          "Plataforma automatizada de búsqueda fotográfica para el competidor.",
+          "Algoritmo de reconocimiento biométrico facial y detección de número de dorsal.",
+          "Galería personalizada por corredor disponible tras el evento.",
+          "Incremento de valor para participantes y patrocinadores."
+        ]
+      },
+      "10": {
+        title: "10. APP de Seguimiento (Live App)",
+        badge: "App Móvil",
+        info: [
+          { icon: "📲", title: "Seguimiento", val: "Live Tracking en Mapa" },
+          { icon: "🔔", title: "Alertas", val: "Notificación de Paso" },
+          { icon: "⏱️", title: "Cálculo", val: "Tiempos Estimados" },
+          { icon: "📊", title: "Estadísticas", val: "Ficha del Corredor" }
+        ],
+        bullets: [
+          "Aplicación móvil para seguimiento en vivo de competidores (Live Tracking).",
+          "Consulta de progreso en ruta mediante tiempos parciales estimados.",
+          "Notificaciones de paso en puntos de control y llegada a meta.",
+          "Ficha técnica del corredor con estadísticas de ritmo y posiciones."
+        ]
+      },
+      "12": {
+        title: "12. Certificación Oficial de Ruta",
+        badge: "Aval Reglamentario",
+        info: [
+          { icon: "🚴", title: "Método", val: "Jones Counter Calibrado" },
+          { icon: "👨‍🏫", title: "Perito", val: "Agrimensor Acreditado" },
+          { icon: "📜", title: "Dictamen", val: "Certificado de Distancia" },
+          { icon: "🏅", title: "Récords", val: "Marcas Válidas AIMS/FMAA" }
+        ],
+        bullets: [
+          "Medición de distancia reglamentaria avalada por agrimensor certificado.",
+          "Utilización del método oficial de rueda calibrada (Jones Counter).",
+          "Emisión del certificado oficial de homologación de distancia.",
+          "Validez de marcas para clasificaciones o récords oficiales."
+        ]
+      },
+      "13": {
+        title: "13. Promociones y Difusión Comercial",
+        badge: "Marketing Deportivo",
+        info: [
+          { icon: "📢", title: "Canales", val: "Portales de Carreras" },
+          { icon: "🎟️", title: "Inscripciones", val: "Impulso de Registros" },
+          { icon: "🤝", title: "Alianzas", val: "Comunidades Running" },
+          { icon: "💡", title: "Branding", val: "Presencia de Marca" }
+        ],
+        bullets: [
+          "Difusión del evento en plataformas aliadas y canales del gremio deportivo.",
+          "Integración de promociones comerciales para captación de inscritos.",
+          "Exposición de marca en canales de cronometraje y resultados."
+        ]
+      },
+      "14": {
+        title: "14. Módulo 'Verifica tus Datos'",
+        badge: "Entrega de Kits",
+        info: [
+          { icon: "🔍", title: "Estación", val: "Lectores RFID en Expo" },
+          { icon: "📋", title: "Validación", val: "Nombre, Rama y Distancia" },
+          { icon: "⚡", title: "Soporte", val: "Sin Necesidad de Internet" },
+          { icon: "🛡️", title: "Prevención", val: "0% Quejas el Día D" }
+        ],
+        bullets: [
+          "Estación técnica con lectores RFID durante la entrega de kits.",
+          "Lectura del chip para comprobar asignación correcta de nombre, categoría y distancia.",
+          "Corrección oportuna de inconsistencias en la base de datos previo al arranque.",
+          "Reducción de reclamos e incidencias el día del evento."
+        ]
+      },
+      "15": {
+        title: "15. Portal de Resultados / Certificados",
+        badge: "Plataforma Digital",
+        info: [
+          { icon: "🌐", title: "Plataforma", val: "Web 100% Responsiva" },
+          { icon: "📜", title: "Diploma", val: "Descarga Digital PDF" },
+          { icon: "⏱️", title: "Desglose", val: "Chip vs Oficial" },
+          { icon: "📲", title: "Social", val: "Compartir en Redes" }
+        ],
+        bullets: [
+          "Sitio web responsivo para consulta individual de resultados.",
+          "Descarga de diploma o certificado digital de participación personalizado.",
+          "Detalle de tiempo chip, tiempo oficial, ritmo promedio y posiciones.",
+          "Botones de compartición en redes sociales."
+        ]
+      },
+      "16": {
+        title: "16. Papelería y Consumibles Operativos",
+        badge: "Material Físico",
+        info: [
+          { icon: "📦", title: "Insumos", val: "Sobres, Bolsas y Cintas" },
+          { icon: "📎", title: "Imperdibles", val: "4 por Competidor" },
+          { icon: "🖨️", title: "Listados", val: "Copias Impresas Jueces" },
+          { icon: "📑", title: "Control", val: "Hojas de Pista y Meta" }
+        ],
+        bullets: [
+          "Suministros para entrega de kits: sobres, etiquetas y bolsas.",
+          "Imperdibles para sujeción de dorsales de competidores.",
+          "Listados impresos para jueces y zona de premiación.",
+          "Material técnico operativo para mesas de control."
+        ]
+      },
+      "17": {
+        title: "17. Sobres / Integración de Kits",
+        badge: "Armado Previo",
+        info: [
+          { icon: "✉️", title: "Empaque", val: "Sobre Transparente" },
+          { icon: "🎽", title: "Ensamble", val: "Dorsal + Chip + Guía" },
+          { icon: "🔢", title: "Secuencia", val: "Numérica Estricta" },
+          { icon: "⚡", title: "Velocidad", val: "Entrega Fluida en Expo" }
+        ],
+        bullets: [
+          "Servicio de empaque y armado previo de kits para competidores.",
+          "Ensobrado individual de dorsal, chip y materiales informativos.",
+          "Clasificación y etiquetado ordenado por número y categoría para entrega rápida."
+        ]
+      },
+      "18": {
+        title: "18. Certificado / Constancia de Participación",
+        badge: "Reconocimiento",
+        info: [
+          { icon: "🏅", title: "Formato", val: "Digital Imprimible" },
+          { icon: "🎨", title: "Diseño", val: "Personalizado al Evento" },
+          { icon: "⏱️", title: "Datos", val: "Tiempos Oficial y Chip" },
+          { icon: "💾", title: "Archivo", val: "PDF de Alta Calidad" }
+        ],
+        bullets: [
+          "Generación automatizada de certificado en formato digital.",
+          "Diseño personalizado con imagen del evento, organizador y patrocinadores.",
+          "Datos del atleta: nombre, tiempo oficial, tiempo chip y lugar obtenido."
+        ]
+      },
+      "19": {
+        title: "19. Base de Datos y Respaldo Estadístico",
+        badge: "Gestión de Datos",
+        info: [
+          { icon: "💾", title: "Entregables", val: "Bases en Excel y CSV" },
+          { icon: "📊", title: "Reportes", val: "Estadística de Finalistas" },
+          { icon: "📉", title: "Métricas", val: "Deserciones y Promedios" },
+          { icon: "🔒", title: "Seguridad", val: "Respaldo en la Nube" }
+        ],
+        bullets: [
+          "Entrega de base de datos completa de participantes y finalistas.",
+          "Reporte estadístico del evento: deserciones, finalistas, tiempos promedio por categoría.",
+          "Respaldo digital seguro de la información histórica del evento."
+        ]
+      },
+      "20": {
+        title: "20. Protocolo de Contingencia Técnica",
+        badge: "Seguridad y Redundancia",
+        info: [
+          { icon: "🔋", title: "Energía", val: "Baterías / Inversores UPS" },
+          { icon: "🛰️", title: "Red", val: "Internet Satelital / Red 5G" },
+          { icon: "🌧️", title: "Clima", val: "Protección Contra Agua" },
+          { icon: "🛡️", title: "Garantía", val: "Cero Pérdida de Tiempos" }
+        ],
+        bullets: [
+          "Equipamiento de respaldo con alimentación ininterrumpida (baterías/inversores).",
+          "Canales de comunicación técnica redundantes.",
+          "Procedimientos operativos ante lluvia, corte de energía o fallas de red.",
+          "Garantía de continuidad operativa y resguardo total de datos."
+        ]
+      },
+      "21": {
+        title: "21. Personal de Operación Dedicado",
+        badge: "Equipo Humano",
+        info: [
+          { icon: "👥", title: "Staff", val: "Especialistas en Sitio" },
+          { icon: "🧭", title: "Liderazgo", val: "Coordinador de Cronometraje" },
+          { icon: "📍", title: "Puntos", val: "Asignados en Salida y Meta" },
+          { icon: "🤝", title: "Atención", val: "Mesa Técnica de Dudas" }
+        ],
+        bullets: [
+          "Staff técnico capacitado asignado en salida, meta y puntos de control.",
+          "Coordinador técnico general para enlace con el comité organizador.",
+          "Asistencia en mesas de información e incidencias técnicas."
+        ]
+      },
+      "22": {
+        title: "22. Protocolo de Contingencia y Revisión",
+        badge: "Auditoría en Sitio",
+        info: [
+          { icon: "📝", title: "Checklist", val: "Inspección Previa a Salida" },
+          { icon: "📡", title: "Antenas", val: "Pruebas de Sincronía" },
+          { icon: "🔄", title: "Reemplazo", val: "Equipos Backup Listos" },
+          { icon: "🟢", title: "Aprobación", val: "Luz Verde Oficial" }
+        ],
+        bullets: [
+          "Checklist técnico previo al arranque de la carrera.",
+          "Supervisión en tiempo real de antenas, lectores y conectividad.",
+          "Plan de respuesta inmediata para sustitución de equipos en sitio."
+        ]
+      },
+      "23": {
+        title: "23. Formato Oficial",
+        badge: "Estandarización",
+        info: [
+          { icon: "📄", title: "Formatos", val: "PDF, Excel y CSV" },
+          { icon: "🏛️", title: "Aval", val: "Listo para Asociaciones" },
+          { icon: "📰", title: "Prensa", val: "Boletines de Ganadores" },
+          { icon: "✅", title: "Estructura", val: "Columnas Reglamentarias" }
+        ],
+        bullets: [
+          "Estructuración y entrega de reportes en formatos estándar solicitados (PDF, CSV, Excel).",
+          "Compatibilidad para envío a federaciones, asociaciones o medios de prensa."
+        ]
+      },
+      "24": {
+        title: "24. Asesoría Integral METAX Pro",
+        badge: "Consultoría Experta",
+        info: [
+          { icon: "💡", title: "Consultoría", val: "Planeación Estratégica" },
+          { icon: "🗺️", title: "Rutas", val: "Optimización de Embudo/Meta" },
+          { icon: "🏃", title: "Flujo", val: "Diseño para Evitar Cuellos" },
+          { icon: "🤝", title: "Soporte", val: "Acompañamiento Total a Usuarios" }
+        ],
+        bullets: [
+          "Acompañamiento y consultoría técnica en planeación logística y deportiva.",
+          "Recomendaciones sobre trazado de rutas, dinámicas de meta y flujos de corredores.",
+          "Soporte integral antes, durante y después del evento."
+        ]
+      }
+    };
+
+    function openTechnicalSheet(serviceNum) {
+      const sheet = technicalSheetsData[serviceNum];
+      if (!sheet) {
+        alert("Ficha técnica en preparación para este servicio.");
+        return;
+      }
+
+      document.getElementById('sheet-icon').innerText = catalogData.find(c => c.num === serviceNum)?.icon || "📋";
+      document.getElementById('sheet-title').innerText = sheet.title;
+      document.getElementById('sheet-badge').innerText = sheet.badge;
+
+      // Renderizar infografía visual
+      const infoContainer = document.getElementById('sheet-infografia');
+      infoContainer.innerHTML = '';
+      sheet.info.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'infografia-item';
+        div.innerHTML = `
+          <div class="info-icon">${item.icon}</div>
+          <div class="info-title">${item.title}</div>
+          <div class="info-val">${item.val}</div>
+        `;
+        infoContainer.appendChild(div);
+      });
+
+      // Renderizar lista de especificaciones
+      const listContainer = document.getElementById('sheet-list');
+      listContainer.innerHTML = '';
+      sheet.bullets.forEach(text => {
+        const li = document.createElement('li');
+        li.innerText = text;
+        listContainer.appendChild(li);
+      });
+
+      document.getElementById('modal-ficha').style.display = 'flex';
+    }
+
+    function closeTechnicalSheet() {
+      document.getElementById('modal-ficha').style.display = 'none';
+    }
 
     // Estructura para Análisis Multiproveedor (Subsección 1.2)
     // Inicializamos con 2 proveedores por defecto
@@ -1227,13 +1735,16 @@
           summaryList.appendChild(li);
         }
 
-        const tr = document.createElement('tr');
+      const tr = document.createElement('tr');
         tr.innerHTML = `
           <td><input type="checkbox" ${isChecked ? 'checked' : ''} ${isReq ? 'disabled' : ''} onchange="userSelections['${item.num}'] = this.checked; renderMod3();"></td>
           <td>${item.num}</td>
           <td><span class="icon-box">${item.icon || '⚙️'}</span><strong>${item.concept}</strong><br>${isReq ? '<span class="badge-req">Obligatorio</span>' : '<span class="badge-opt">Opcional</span>'}</td>
           <td style="font-size:0.8rem; color: var(--text-muted);">${item.detail}</td>
           <td style="font-size:0.8rem; color: var(--text-muted);">${item.proposal || ''}</td>
+          <td style="text-align: center;">
+            <button class="btn-ficha" onclick="openTechnicalSheet('${item.num}')">📄 Ver Ficha</button>
+          </td>
         `;
         tbody.appendChild(tr);
       });
@@ -1327,5 +1838,29 @@
       });
     }
   </script>
+  <!-- MODAL DE FICHA TÉCNICA E INFOGRAFÍA -->
+  <div id="modal-ficha" class="modal-overlay" style="display: none;">
+    <div class="modal-ficha-box">
+      <button class="close-modal-btn" onclick="closeTechnicalSheet()">&times;</button>
+      <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px;">
+        <span id="sheet-icon" style="font-size: 2rem;">⏱️</span>
+        <div>
+          <span id="sheet-badge" class="badge-opt">Servicio</span>
+          <h2 id="sheet-title" style="color: #38bdf8; font-size: 1.3rem; margin-top: 4px;">Ficha Técnica</h2>
+        </div>
+      </div>
+
+      <!-- Infografía Visual -->
+      <div id="sheet-infografia" class="infografia-grid"></div>
+
+      <!-- Descripción Técnica Punto por Punto -->
+      <h4 style="color: #f8fafc; margin-bottom: 10px; font-size: 0.95rem;">Especificaciones Técnicas Detalladas:</h4>
+      <ul id="sheet-list" class="sheet-bullets"></ul>
+
+      <div style="text-align: right; margin-top: 20px;">
+        <button class="btn btn-outline btn-sm" onclick="closeTechnicalSheet()">Cerrar Ficha</button>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
