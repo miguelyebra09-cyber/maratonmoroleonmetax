@@ -466,9 +466,202 @@
       color: #10b981;
       font-weight: bold;
     }
+
+/* --- LOGIN DE ACCESO PRINCIPAL --- */
+.login-overlay {
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at center, #1e293b 0%, #0a0f1d 100%);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.login-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 440px;
+  width: 100%;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  text-align: center;
+}
+.login-roles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 20px 0;
+}
+.role-btn {
+  background: rgba(255,255,255,0.05);
+  border: 2px solid #334155;
+  color: #94a3b8;
+  padding: 14px 10px;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.role-btn.active {
+  border-color: #38bdf8;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.1);
+}
+
+/* --- SECCIÓN MENÚ RESTAURANTE --- */
+#mod4-menu {
+  display: none;
+  padding-bottom: 120px;
+}
+.menu-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+.menu-header h2 {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #38bdf8;
+}
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 18px;
+}
+.menu-dish-card {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+.menu-dish-card:hover {
+  transform: translateY(-3px);
+  border-color: #0284c7;
+  box-shadow: 0 8px 24px rgba(2, 132, 199, 0.2);
+}
+.menu-dish-card.selected {
+  border-color: #10b981;
+  background: rgba(16, 185, 129, 0.05);
+}
+.dish-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.dish-icon {
+  font-size: 1.8rem;
+  background: rgba(255,255,255,0.05);
+  border-radius: 10px;
+  padding: 6px;
+  min-width: 48px;
+  text-align: center;
+}
+.dish-desc {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin-bottom: 15px;
+}
+.dish-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #334155;
+  padding-top: 12px;
+  margin-top: auto;
+}
+.dish-price {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #10b981;
+  font-family: monospace;
+}
+.dish-price small {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-weight: normal;
+  display: block;
+}
+
+/* BARRA FLOTANTE TIPO COMANDA */
+.floating-order-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(12px);
+  border-top: 2px solid #0284c7;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  z-index: 1000;
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+  flex-wrap: wrap;
+}
+.floating-total-box {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.floating-total-box .total-amt {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #38bdf8;
+  font-family: monospace;
+}
+    
   </style>
 </head>
 <body>
+
+  <!-- LOGIN DE CONTROL DE ACCESO OBLIGATORIO -->
+<div id="login-modal-entry" class="login-overlay">
+  <div class="login-card">
+    <h2 style="color: #38bdf8; font-size: 1.5rem; margin-bottom: 6px;">METAX PRO TIMING</h2>
+    <p style="font-size: 0.85rem; color: var(--text-muted);">Seleccione el tipo de perfil para ingresar:</p>
+    
+    <div class="login-roles">
+      <button type="button" class="role-btn active" id="btn-role-client" onclick="setLoginRole('cliente')">👤 CLIENTE</button>
+      <button type="button" class="role-btn" id="btn-role-admin" onclick="setLoginRole('admin')">🔐 ADMINISTRADOR</button>
+    </div>
+
+    <div style="text-align: left; margin-bottom: 14px;">
+      <label style="font-size: 0.75rem; color: #94a3b8; font-weight: bold; text-transform: uppercase;">Palabra Clave</label>
+      <input type="text" id="login-keyword" placeholder="Ingresa palabra clave..." style="margin-top: 4px;">
+    </div>
+
+    <div style="text-align: left; margin-bottom: 18px;">
+      <label style="font-size: 0.75rem; color: #94a3b8; font-weight: bold; text-transform: uppercase;">Contraseña</label>
+      <input type="password" id="login-password" placeholder="Ingresa contraseña..." style="margin-top: 4px;">
+    </div>
+
+    <button class="btn" style="width: 100%; padding: 12px; font-size: 1rem;" onclick="processEntryLogin()">Ingresar al Sistema</button>
+    <p id="entry-error-msg" style="color: #ef4444; font-size: 0.8rem; margin-top: 10px; display: none;"></p>
+  </div>
+</div>
+
+<!-- MODAL PARA REGRESAR DE MENÚ CLIENTE A ADMIN -->
+<div id="modal-unlock-admin" class="modal-overlay" style="display: none;">
+  <div class="modal-box">
+    <h3 style="color:#38bdf8; margin-bottom: 12px;">Acceso Maestro</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px;">Ingresa la contraseña para desbloquear los módulos administrativos:</p>
+    <input type="password" id="unlock-admin-pass" placeholder="Contraseña Maestra" style="margin-bottom: 15px;">
+    <button class="btn" style="width: 100%;" onclick="confirmUnlockAdmin()">Desbloquear Administrador</button>
+    <button class="btn btn-outline" style="width: 100%; margin-top: 6px;" onclick="document.getElementById('modal-unlock-admin').style.display='none'">Cancelar</button>
+    <p id="unlock-error" style="color: #ef4444; font-size: 0.8rem; margin-top: 10px; display:none;">Contraseña incorrecta</p>
+  </div>
+</div>
 
   <header>
     <h1>METAX Pro - Sistema Integrado de Presupuestos</h1>
@@ -797,6 +990,51 @@
       </div>
     </div>
   </section>
+
+  <!-- MÓDULO 4: MENÚ INTERACTIVO TIPO RESTAURANTE (VISTA CLIENTE) -->
+<section id="mod4-menu">
+  <div class="menu-header">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <span class="badge-opt" style="font-size: 0.8rem; padding: 4px 10px;">Modo Selección Asistida</span>
+      <button class="btn btn-outline btn-sm" onclick="promptUnlockAdmin()">🔒 Modo Admin / Salir</button>
+    </div>
+    <h2>Menú de Servicios para su Evento</h2>
+    <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto; font-size: 0.9rem;">
+      Arme su paquete agregando o retirando platillos técnicos. Visualice la ficha técnica completa y conozca la inversión calculada exactamente <strong>por cada atleta</strong>.
+    </p>
+  </div>
+
+  <!-- Rejilla Interactiva de los 23 Servicios -->
+  <div class="menu-grid" id="menu-dishes-container"></div>
+
+  <!-- Barra Flotante de Pedido / Comanda -->
+  <div class="floating-order-bar">
+    <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+      <div>
+        <label style="font-size: 0.75rem; color: var(--text-muted); display: block;">Pronóstico:</label>
+        <select id="select-corredores-menu" onchange="syncCorredoresFromMenu(this.value)" style="width: auto; padding: 6px 10px;">
+          <option value="2000">2,000 Atletas</option>
+          <option value="2500" selected>2,500 Atletas</option>
+          <option value="3000">3,000 Atletas</option>
+          <option value="3500">3,500 Atletas</option>
+          <option value="4000">4,000 Atletas</option>
+        </select>
+      </div>
+      <div class="floating-total-box">
+        <div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Inversión por Corredor:</span>
+          <div class="total-amt" id="menu-floating-per-athlete">$0.00 MXN</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 12px; align-items: center;">
+      <button class="btn btn-accent" style="padding: 12px 24px; font-size: 0.95rem; font-weight: 700; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);" onclick="triggerContractRequest()">
+        📝 Solicitar Cotización y Contratar
+      </button>
+    </div>
+  </div>
+</section>
 
   <script>
     // BASE DE DATOS DE 22 SERVICIOS
@@ -1827,6 +2065,153 @@
         }
       });
     }
+let selectedLoginRole = 'cliente';
+
+    function setLoginRole(role) {
+      selectedLoginRole = role;
+      document.getElementById('btn-role-client').classList.toggle('active', role === 'cliente');
+      document.getElementById('btn-role-admin').classList.toggle('active', role === 'admin');
+      document.getElementById('entry-error-msg').style.display = 'none';
+      document.getElementById('login-keyword').value = '';
+      document.getElementById('login-password').value = '';
+    }
+
+    function processEntryLogin() {
+      const keyword = document.getElementById('login-keyword').value.trim();
+      const password = document.getElementById('login-password').value.trim();
+      const errorMsg = document.getElementById('entry-error-msg');
+
+      if (selectedLoginRole === 'cliente') {
+        if (keyword === 'METAX27' && password === '2027metax') {
+          // Acceso Cliente: Bloquear módulos 1, 2, 3 y mostrar menú
+          document.getElementById('login-modal-entry').style.display = 'none';
+          document.querySelector('header').style.display = 'none';
+          document.querySelector('.nav-tabs').style.display = 'none';
+          document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+          
+          document.getElementById('mod4-menu').style.display = 'block';
+          renderRestaurantMenu();
+        } else {
+          errorMsg.innerText = 'Credenciales de Cliente incorrectas (Valide Palabra Clave y Contraseña)';
+          errorMsg.style.display = 'block';
+        }
+      } else {
+        if (keyword === 'TECNO' && password === 'Metax Pro 260290') {
+          // Acceso Admin: Desbloquear todo el sistema normal
+          isAdminAuthenticated = true;
+          document.getElementById('login-modal-entry').style.display = 'none';
+          document.querySelector('header').style.display = 'block';
+          document.querySelector('.nav-tabs').style.display = 'flex';
+          switchTab('mod2', document.querySelectorAll('.tab-btn')[1]);
+        } else {
+          errorMsg.innerText = 'Credenciales de Administrador incorrectas';
+          errorMsg.style.display = 'block';
+        }
+      }
+    }
+
+    function promptUnlockAdmin() {
+      document.getElementById('modal-unlock-admin').style.display = 'flex';
+      document.getElementById('unlock-admin-pass').value = '';
+      document.getElementById('unlock-error').style.display = 'none';
+    }
+
+    function confirmUnlockAdmin() {
+      const pass = document.getElementById('unlock-admin-pass').value;
+      if (pass === 'Metax Pro 260290') {
+        isAdminAuthenticated = true;
+        document.getElementById('modal-unlock-admin').style.display = 'none';
+        document.getElementById('mod4-menu').style.display = 'none';
+        document.querySelector('header').style.display = 'block';
+        document.querySelector('.nav-tabs').style.display = 'flex';
+        switchTab('mod2', document.querySelectorAll('.tab-btn')[1]);
+      } else {
+        document.getElementById('unlock-error').style.display = 'block';
+      }
+    }
+
+    function renderRestaurantMenu() {
+      const container = document.getElementById('menu-dishes-container');
+      container.innerHTML = '';
+      const numCorredores = parseInt(document.getElementById('select-corredores-menu').value) || 2500;
+      let totalMetaxAcumulado = 0;
+
+      catalogData.forEach(item => {
+        if (item.vis === 'ocultar') return;
+        const isReq = item.vis === 'obligatorio';
+        if (isReq) userSelections[item.num] = true;
+        const isSelected = !!userSelections[item.num];
+
+        const units = item.units !== undefined ? item.units : 1;
+        const totalServicio = ((item.cost || 0) * units) * 1.17;
+        const costoPorAtletaItem = totalServicio / numCorredores;
+
+        if (isSelected) {
+          totalMetaxAcumulado += totalServicio;
+        }
+
+        const card = document.createElement('div');
+        card.className = `menu-dish-card ${isSelected ? 'selected' : ''}`;
+        card.innerHTML = `
+          <div>
+            <div class="dish-top">
+              <div class="dish-icon">${item.icon || '⏱️'}</div>
+              <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                  <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold;">#${item.num}</span>
+                  ${isReq ? '<span class="badge-req">Obligatorio</span>' : '<span class="badge-opt">Opcional</span>'}
+                </div>
+                <h4 style="color: #f8fafc; font-size: 1rem; margin-top: 2px;">${item.concept}</h4>
+              </div>
+            </div>
+            <p class="dish-desc">${item.detail}</p>
+          </div>
+
+          <div>
+            <div style="margin-bottom: 10px;">
+              <button class="btn-ficha" style="width: 100%;" onclick="openTechnicalSheet('${item.num}')">📄 Ver Ficha Técnica</button>
+            </div>
+            <div class="dish-footer">
+              <div class="dish-price">
+                <small>Por Corredor</small>
+                $${costoPorAtletaItem.toFixed(2)} MXN
+              </div>
+              <div>
+                ${isReq ? 
+                  '<button class="btn btn-sm" disabled style="opacity: 0.6; background: #334155; cursor: not-allowed;">Incluido</button>' : 
+                  `<button class="btn btn-sm ${isSelected ? 'btn-outline' : 'btn-accent'}" onclick="toggleMenuSelection('${item.num}')">
+                    ${isSelected ? 'Quitar' : '+ Agregar'}
+                  </button>`
+                }
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+
+      const totalPorAtleta = totalMetaxAcumulado / numCorredores;
+      document.getElementById('menu-floating-per-athlete').innerText = `$${totalPorAtleta.toFixed(2)} MXN`;
+    }
+
+    function toggleMenuSelection(num) {
+      userSelections[num] = !userSelections[num];
+      renderRestaurantMenu();
+      if(document.getElementById('tbody-mod3')) renderMod3(); // sincronizar vista original
+    }
+
+    function syncCorredoresFromMenu(val) {
+      document.getElementById('select-corredores').value = val;
+      renderRestaurantMenu();
+      if(document.getElementById('tbody-mod3')) renderMod3();
+    }
+
+    function triggerContractRequest() {
+      const numCorredores = document.getElementById('select-corredores-menu').value;
+      const costoAtleta = document.getElementById('menu-floating-per-athlete').innerText;
+      alert(`¡Solicitud iniciada con éxito!\n\nBase calculada para ${numCorredores} atletas.\nInversión final por atleta: ${costoAtleta}.\n\nRedirigiendo a formalización de contrato con METAX Pro...`);
+    }
+    
   </script>
   <!-- MODAL DE FICHA TÉCNICA E INFOGRAFÍA -->
   <div id="modal-ficha" class="modal-overlay" style="display: none;">
