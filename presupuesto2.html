@@ -525,6 +525,111 @@
   font-weight: 800;
   color: #38bdf8;
 }
+
+/* --- LAYOUT MENÚ + CARRITO A LA DERECHA --- */
+.restaurant-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1080px) {
+  .restaurant-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Panel del Carrito */
+.cart-sidebar {
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 16px;
+  padding: 20px;
+  position: sticky;
+  top: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+}
+
+.cart-items-list {
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Scrollbar personalizado para el carrito */
+.cart-items-list::-webkit-scrollbar {
+  width: 5px;
+}
+.cart-items-list::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 4px;
+}
+
+.cart-item-card {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.cart-item-card:hover {
+  border-color: #0284c7;
+}
+
+.cart-item-remove {
+  background: transparent;
+  border: none;
+  color: #ef4444;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+  padding: 2px 5px;
+  margin-left: auto;
+}
+.cart-item-remove:hover {
+  color: #f87171;
+}
+
+.cart-item-desc {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cart-summary {
+  border-top: 1px solid #334155;
+  padding-top: 14px;
+  margin-top: 14px;
+}
+
+.cart-total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 8px;
+}
+    
 .menu-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
@@ -992,51 +1097,65 @@
     </div>
   </section>
 
-  <!-- MÓDULO 4: MENÚ INTERACTIVO TIPO RESTAURANTE (VISTA CLIENTE) -->
-<section id="mod4-menu">
+  <!-- MÓDULO 4: MENÚ INTERACTIVO CON CARRITO A LA DERECHA -->
+<section id="mod4-menu" style="display: none; padding-bottom: 40px;">
   <div class="menu-header">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
       <span class="badge-opt" style="font-size: 0.8rem; padding: 4px 10px;">Modo Selección Asistida</span>
       <button class="btn btn-outline btn-sm" onclick="promptUnlockAdmin()">🔒 Modo Admin / Salir</button>
     </div>
     <h2>Menú de Servicios para su Evento</h2>
-    <p style="color: var(--text-muted); max-width: 600px; margin: 0 auto; font-size: 0.9rem;">
-      Arme su paquete agregando o retirando platillos técnicos. Visualice la ficha técnica completa y conozca la inversión calculada exactamente <strong>por cada atleta</strong>.
+    <p style="color: var(--text-muted); max-width: 650px; margin: 0 auto; font-size: 0.9rem;">
+      Arme su paquete agregando o retirando platillos técnicos. Visualice la ficha técnica completa y revise su comanda en tiempo real.
     </p>
   </div>
 
-  <!-- Rejilla Interactiva de los 23 Servicios -->
-  <div class="menu-grid" id="menu-dishes-container"></div>
+  <div class="restaurant-layout">
+    <!-- COLUMNA IZQUIERDA: MENÚ DE SERVICIOS -->
+    <div class="menu-grid" id="menu-dishes-container"></div>
 
-  <!-- Barra Flotante de Pedido / Comanda -->
-  <div class="floating-order-bar">
-    <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
-      <div>
-        <label style="font-size: 0.75rem; color: var(--text-muted); display: block;">Pronóstico:</label>
-        <select id="select-corredores-menu" onchange="syncCorredoresFromMenu(this.value)" style="width: auto; padding: 6px 10px;">
-          <option value="2000">2,000 Atletas</option>
-          <option value="2500" selected>2,500 Atletas</option>
-          <option value="3000">3,000 Atletas</option>
-          <option value="3500">3,500 Atletas</option>
-          <option value="4000">4,000 Atletas</option>
-        </select>
+    <!-- COLUMNA DERECHA: CARRITO / COMANDA DE SERVICIOS -->
+    <aside class="cart-sidebar">
+      <div class="cart-header">
+        <h3 style="color: #38bdf8; font-size: 1.15rem; display: flex; align-items: center; gap: 8px;">
+          🛒 Su Paquete
+        </h3>
+        <span id="cart-counter-badge" class="badge-opt" style="font-weight: 700;">0 servicios</span>
       </div>
-      <div class="floating-total-box">
-        <div>
-          <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Inversión por Corredor:</span>
-          <div class="total-amt" id="menu-floating-per-athlete">$0.00 MXN</div>
+
+      <!-- Lista dinámica de productos agregados -->
+      <div class="cart-items-list" id="cart-items-container"></div>
+
+      <!-- Resumen y Totales -->
+      <div class="cart-summary">
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 0.75rem; color: var(--text-muted); font-weight: bold; text-transform: uppercase;">Pronóstico de Atletas:</label>
+          <select id="select-corredores-menu" onchange="syncCorredoresFromMenu(this.value)" style="margin-top: 4px; padding: 8px 10px;">
+            <option value="2000">2,000 Atletas</option>
+            <option value="2500" selected>2,500 Atletas</option>
+            <option value="3000">3,000 Atletas</option>
+            <option value="3500">3,500 Atletas</option>
+            <option value="4000">4,000 Atletas</option>
+          </select>
         </div>
-      </div>
-    </div>
 
-    <div style="display: flex; gap: 12px; align-items: center;">
-      <button class="btn btn-accent" style="padding: 12px 24px; font-size: 0.95rem; font-weight: 700; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);" onclick="triggerContractRequest()">
-        📝 Solicitar Cotización y Contratar
-      </button>
-    </div>
+        <div class="cart-total-row">
+          <span style="font-size: 0.85rem; color: var(--text-muted);">Inversión / Corredor:</span>
+          <span id="menu-cart-per-athlete" style="font-size: 1.35rem; font-weight: 800; color: #10b981; font-family: monospace;">$0.00 MXN</span>
+        </div>
+
+        <div class="cart-total-row" style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 15px;">
+          <span>Total Evento (+ Outsourcing):</span>
+          <span id="menu-cart-total-event" style="font-weight: 600; color: #38bdf8;">$0.00 MXN</span>
+        </div>
+
+        <button class="btn btn-accent" style="width: 100%; padding: 12px; font-size: 0.95rem; font-weight: 700; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4);" onclick="triggerContractRequest()">
+          📝 Solicitar Cotización y Contratar
+        </button>
+      </div>
+    </aside>
   </div>
 </section>
-
   <script>
     // BASE DE DATOS DE 22 SERVICIOS
     const catalogData = [
@@ -2131,11 +2250,15 @@ let selectedLoginRole = 'cliente';
       }
     }
 
-    function renderRestaurantMenu() {
-      const container = document.getElementById('menu-dishes-container');
-      container.innerHTML = '';
+   function renderRestaurantMenu() {
+      const dishesContainer = document.getElementById('menu-dishes-container');
+      const cartContainer = document.getElementById('cart-items-container');
+      dishesContainer.innerHTML = '';
+      cartContainer.innerHTML = '';
+
       const numCorredores = parseInt(document.getElementById('select-corredores-menu').value) || 2500;
       let totalMetaxAcumulado = 0;
+      let selectedCount = 0;
 
       catalogData.forEach(item => {
         if (item.vis === 'ocultar') return;
@@ -2147,10 +2270,7 @@ let selectedLoginRole = 'cliente';
         const totalServicio = ((item.cost || 0) * units) * 1.17;
         const costoPorAtletaItem = totalServicio / numCorredores;
 
-        if (isSelected) {
-          totalMetaxAcumulado += totalServicio;
-        }
-
+        // 1. Tarjeta del Platillo en el Menú (Izquierda)
         const card = document.createElement('div');
         card.className = `menu-dish-card ${isSelected ? 'selected' : ''}`;
         card.innerHTML = `
@@ -2188,13 +2308,41 @@ let selectedLoginRole = 'cliente';
             </div>
           </div>
         `;
-        container.appendChild(card);
+        dishesContainer.appendChild(card);
+
+        // 2. Elemento en el Carrito (Derecha) si está seleccionado
+        if (isSelected) {
+          totalMetaxAcumulado += totalServicio;
+          selectedCount++;
+
+          const cartItem = document.createElement('div');
+          cartItem.className = 'cart-item-card';
+          cartItem.innerHTML = `
+            <span style="font-size: 1.3rem;">${item.icon || '📦'}</span>
+            <div style="flex: 1; min-width: 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <strong style="font-size: 0.85rem; color: #38bdf8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 190px;">
+                  ${item.concept}
+                </strong>
+                ${!isReq ? `<button class="cart-item-remove" title="Quitar del carrito" onclick="toggleMenuSelection('${item.num}')">&times;</button>` : ''}
+              </div>
+              <p class="cart-item-desc">${item.detail}</p>
+              <div style="font-size: 0.8rem; font-weight: 700; color: #10b981; margin-top: 4px;">
+                $${costoPorAtletaItem.toFixed(2)} MXN <span style="font-weight: normal; color: var(--text-muted); font-size: 0.7rem;">/ atleta</span>
+              </div>
+            </div>
+          `;
+          cartContainer.appendChild(cartItem);
+        }
       });
 
+      // Actualizar Contadores y Totales del Carrito
+      document.getElementById('cart-counter-badge').innerText = `${selectedCount} servicios`;
       const totalPorAtleta = totalMetaxAcumulado / numCorredores;
-      document.getElementById('menu-floating-per-athlete').innerText = `$${totalPorAtleta.toFixed(2)} MXN`;
+      document.getElementById('menu-cart-per-athlete').innerText = `$${totalPorAtleta.toFixed(2)} MXN`;
+      document.getElementById('menu-cart-total-event').innerText = `$${totalMetaxAcumulado.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN`;
     }
-
+    
     function toggleMenuSelection(num) {
       userSelections[num] = !userSelections[num];
       renderRestaurantMenu();
