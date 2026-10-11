@@ -668,10 +668,11 @@
     <p>Gestión de Cotizaciones, Administración de Catálogo y Cotizador para Clientes</p>
   </header>
 
-  <nav class="nav-tabs">
+<nav class="nav-tabs">
     <button class="tab-btn" onclick="requestAdminAccess('mod1', this)">1. Comparativa (Admin)</button>
-    <button class="tab-btn" onclick="requestAdminAccess('mod2', this)">2. Cotización Final (Admin)</button>
-    <button class="tab-btn active" onclick="switchTab('mod3', this)">3. Cotizador para Cliente</button>
+    <button class="tab-btn active" onclick="requestAdminAccess('mod2', this)">2. Cotización Final (Admin)</button>
+    <button class="tab-btn" onclick="switchTab('mod3', this)">3. Cotizador para Cliente</button>
+    <button class="tab-btn" style="border-color: #10b981; color: #10b981;" onclick="openMenuFromAdmin(this)">🍽️ 4. Menú Interactivo</button>
   </nav>
 
   <!-- MÓDULO 1: COMPARATIVA Y ANÁLISIS MULTIPROVEEDOR (ADMIN) -->
@@ -2211,6 +2212,15 @@ let selectedLoginRole = 'cliente';
       const costoAtleta = document.getElementById('menu-floating-per-athlete').innerText;
       alert(`¡Solicitud iniciada con éxito!\n\nBase calculada para ${numCorredores} atletas.\nInversión final por atleta: ${costoAtleta}.\n\nRedirigiendo a formalización de contrato con METAX Pro...`);
     }
+
+    function openMenuFromAdmin(btnElement) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  if (btnElement) btnElement.classList.add('active');
+  
+  document.getElementById('mod4-menu').style.display = 'block';
+  renderRestaurantMenu();
+}
     
   </script>
   <!-- MODAL DE FICHA TÉCNICA E INFOGRAFÍA -->
