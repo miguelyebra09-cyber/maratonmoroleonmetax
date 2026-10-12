@@ -756,19 +756,29 @@
   font-weight: 600;
   text-transform: uppercase;
 }
-.contrato-preview-paper {
+
+    .contrato-preview-paper {
   background: #ffffff;
   color: #111827;
-  padding: 40px;
+  padding: 45px 50px;
   border-radius: 8px;
   font-family: 'Times New Roman', Times, serif;
   font-size: 11pt;
   line-height: 1.6;
   text-align: justify;
-  margin-top: 20px;
-  box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
-  display: none;
+  margin-top: 15px;
+  box-shadow: 0 4px 25px rgba(0,0,0,0.4);
+  outline: none;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  border: 2px solid transparent;
 }
+
+/* Indicador visual cuando haces clic para escribir/editar */
+.contrato-preview-paper[contenteditable="true"]:focus {
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25), 0 8px 30px rgba(0,0,0,0.5);
+}
+
 .contrato-preview-paper h3, 
 .contrato-preview-paper h4 {
   text-align: center;
@@ -776,21 +786,41 @@
   color: #000;
   margin-bottom: 12px;
 }
+
 .contrato-preview-paper table {
   width: 100%;
   border-collapse: collapse;
   margin: 15px 0;
   font-size: 10pt;
 }
+
 .contrato-preview-paper th, 
 .contrato-preview-paper td {
   border: 1px solid #4b5563;
   padding: 6px 8px;
   color: #111827;
 }
+
 .contrato-preview-paper th {
   background-color: #e5e7eb;
 }
+
+/* Barra de aviso de edición */
+.editor-banner-info {
+  background: rgba(2, 132, 199, 0.15);
+  border: 1px dashed #38bdf8;
+  color: #e0f2fe;
+  padding: 10px 15px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+    
 @media print {
   body * { visibility: hidden; }
   #contrato-document-printable, #contrato-document-printable * { visibility: visible; }
@@ -2670,6 +2700,14 @@ function triggerContractRequest() {
       document.getElementById('contrato-form-view').style.display = 'none';
       document.getElementById('contrato-preview-container').style.display = 'block';
     }
+
+// Permite restaurar el texto generado a partir del formulario si se sobreescribió algo por error
+    function resetContratoOriginal() {
+      if (confirm("¿Deseas restablecer el texto del contrato y anexo al borrador generado automáticamente? Los cambios manuales no guardados se perderán.")) {
+        generateContratoDocument();
+      }
+    }
+
     
   </script>
   <!-- MODAL DE FICHA TÉCNICA E INFOGRAFÍA -->
@@ -2789,20 +2827,31 @@ function triggerContractRequest() {
       </div>
     </div>
 
-    <!-- SECCIÓN 2: DOCUMENTO LEGAL COMPILADO -->
+ <!-- SECCIÓN 2: DOCUMENTO LEGAL COMPILADO CON MODO EDITOR -->
     <div id="contrato-preview-container" style="display: none;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <button class="btn btn-outline btn-sm" onclick="backToContratoForm()">⬅ Modificar Datos del Formulario</button>
-        <div style="display: flex; gap: 8px;">
-          <button class="btn btn-sm" onclick="window.print()">🖨️ Imprimir / Guardar en PDF</button>
-          <button class="btn btn-sm btn-outline" onclick="closeContratoModal()">Cerrar</button>
+      <!-- Barra de herramientas del editor -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+        <button class="btn btn-outline btn-sm" onclick="backToContratoForm()">⬅ Volver al Formulario</button>
+        
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button class="btn btn-sm btn-outline" style="border-color: #f59e0b; color: #f59e0b;" onclick="resetContratoOriginal()" title="Vuelve a compilar el contrato original">🔄 Restaurar Texto Original</button>
+          <button class="btn btn-sm btn-accent" onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
+          <button class="btn btn-sm btn-outline" onclick="closeContratoModal()">✕ Cerrar</button>
         </div>
       </div>
+
+      <!-- Notificación interactiva de edición -->
+      <div class="editor-banner-info">
+        <span>✏️ <strong>Modo Edición Activado:</strong> Puedes hacer clic en cualquier parte del texto o tablas para modificar, agregar cláusulas o corregir nombres antes de imprimir.</span>
+        <span style="font-size: 0.75rem; color: #94a3b8;">(Los cambios se reflejan al instante)</span>
+      </div>
       
-      <div class="contrato-preview-paper" id="contrato-document-printable">
-        <!-- Contenido generado dinámicamente -->
+      <!-- Contenedor editable del Contrato y Anexo -->
+      <div class="contrato-preview-paper" id="contrato-document-printable" contenteditable="true" spellcheck="false">
+        <!-- El contrato y anexo se inyectan aquí -->
       </div>
     </div>
+  
 
   </div>
 </div>
