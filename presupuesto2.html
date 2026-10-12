@@ -2500,14 +2500,14 @@ function triggerContractRequest() {
       const pNombre = document.getElementById('c_prestador_nombre').value || "JUAN CARLOS YEBRA PRIETO";
       const pRfc = document.getElementById('c_prestador_rfc').value || "[RFC / CURP]";
       const pDom = document.getElementById('c_prestador_domicilio').value || "Estado de Guanajuato, México";
-      const pBanco = document.getElementById('c_prestador_cuenta').value || "Cuenta Bancaria y CLABE Interbancaria autorizada";
+      const pBanco = document.getElementById('c_prestador_cuenta').value || "Banco X - CLABE: 012345678901234567";
 
-      const evNombre = document.getElementById('c_evento_nombre').value || "EVENTO DEPORTIVO";
+      const evNombre = document.getElementById('c_evento_nombre').value || "MARATÓN INTERNACIONAL MOROLEÓN 2027";
       const r1Nombre = document.getElementById('c_rep1_nombre').value || "[REPRESENTANTE 1 COMITÉ]";
       const r1Id = document.getElementById('c_rep1_id').value || "[INE/ID REP 1]";
       const r2Nombre = document.getElementById('c_rep2_nombre').value.trim();
       const r2Id = document.getElementById('c_rep2_id').value.trim();
-      const cDom = document.getElementById('c_cliente_domicilio').value || "Moroleón, Guanajuato";
+      const cDom = document.getElementById('c_cliente_domicilio').value || "Moroleón / Uriangato, Guanajuato";
 
       const evFecha = document.getElementById('c_fecha_evento').value || "10 de enero de 2027";
       const fLugar = document.getElementById('c_lugar_firma').value || "Moroleón, Guanajuato";
@@ -2524,7 +2524,6 @@ function triggerContractRequest() {
           const costoMetaxItem = ((item.cost || 0) * units) * 1.17;
           totalContrato += costoMetaxItem;
           
-          // Clasificar outsourcing (1 al 22) vs propio de METAX (23 en adelante)
           const numInt = parseInt(item.num);
           const isDirect = (item.num === "23" || numInt >= 23);
           selectedItems.push({
@@ -2532,17 +2531,18 @@ function triggerContractRequest() {
             concept: item.concept,
             detail: item.detail,
             costo: costoMetaxItem,
-            origen: isDirect ? "PROVISIÓN DIRECTA METAX PRO" : "COORDINACIÓN Y SUBCONTRATACIÓN OUTSOURCING"
+            origen: isDirect ? "PROVISIÓN DIRECTA METAX PRO" : "COORDINACIÓN OUTSOURCING"
           });
         }
       });
 
-     // Cálculo de exhibiciones de pago ajustadas (50% - 40% - 10%)
+      // Cálculo de parcialidades ajustadas (50% - 40% - 10%)
       const pago1 = totalContrato * 0.50;
       const pago2 = totalContrato * 0.40;
       const pago3 = totalContrato * 0.10;
+      const saldoInsolutoPagare = pago2 + pago3;
 
-      // 3. Renderizar Filas de Servicios para el Anexo Técnico
+      // Generación de filas para el Anexo Técnico A
       let rowsServiciosHtml = '';
       selectedItems.forEach(s => {
         rowsServiciosHtml += `
@@ -2555,120 +2555,153 @@ function triggerContractRequest() {
         `;
       });
 
-      // Representantes del Comité redacción
-      let repTexto = `el C. <strong>${r1Nombre}</strong> (identificado con ${r1Id})`;
+      // Representantes redacción
+      let repTexto = `el C. <strong>${r1Nombre}</strong> (identificado con clave de elector INE ${r1Id})`;
       if (r2Nombre) {
-        repTexto += ` en mancomún con el C. <strong>${r2Nombre}</strong> (identificado con ${r2Id})`;
+        repTexto += ` en mancomún con el C. <strong>${r2Nombre}</strong> (identificado con clave de elector INE ${r2Id})`;
       }
 
-      // 4. Compilación del Texto del Contrato
+      // 3. Compilación de texto legal íntegro
       const docHtml = `
         <h3>CONTRATO PRIVADO DE PRESTACIÓN DE SERVICIOS TÉCNICOS, ADMINISTRATIVOS Y DE LOGÍSTICA DEPORTIVA ENTRE PARTICULARES</h3>
         
         <p>
-          En la ciudad de ${fLugar}, con fecha de <strong>${fFecha}</strong>, celebran el presente Contrato Privado de Prestación de Servicios, por una parte:
+          En la ciudad de ${fLugar}, a los <strong>${fFecha}</strong>, celebran el presente Contrato Privado de Prestación de Servicios:
         </p>
         <p>
-          El C. <strong>${pNombre}</strong>, persona física sin actividad empresarial formal corporativa, actuando como particular titular de la denominación comercial y operativa <strong>"METAX PRO"</strong>, a quien en lo sucesivo se le denominará <strong>"EL PRESTADOR"</strong>; y por la otra parte:
+          Por una parte, el C. <strong>${pNombre}</strong>, persona física, actuando como particular titular de la denominación comercial y operativa <strong>"METAX PRO"</strong>, a quien en lo sucesivo se le denominará <strong>"EL PRESTADOR"</strong>; y por la otra parte:
         </p>
         <p>
-          El <strong>COMITÉ ORGANIZADOR DEL EVENTO "${evNombre.toUpperCase()}"</strong>, representado por ${repTexto}, a quienes en lo sucesivo y de manera conjunta y solidaria se les denominará <strong>"EL CLIENTE"</strong> o <strong>"EL COMITÉ ORGANIZADOR"</strong>; sujetándose al tenor de las siguientes:
+          El <strong>COMITÉ ORGANIZADOR DEL EVENTO "${evNombre.toUpperCase()}"</strong>, representado en este acto por ${repTexto}, quienes comparecen tanto en representación del citado Comité como en su <strong>propio carácter personal como OBLIGADOS SOLIDARIOS Y MANCOMUNADOS</strong>, a quienes en lo sucesivo y de manera conjunta se les denominará <strong>"EL CLIENTE"</strong> o <strong>"EL COMITÉ ORGANIZADOR"</strong>; sujetándose al tenor de las siguientes:
         </p>
 
         <h4>DECLARACIONES</h4>
         <p><strong>I. DECLARA "EL PRESTADOR":</strong></p>
         <p>
-          a) Ser persona física de nacionalidad mexicana, mayor de edad, con plena capacidad jurídica para obligarse y contratar conforme a las leyes vigentes del Estado de Guanajuato y de los Estados Unidos Mexicanos.<br>
-          b) Que cuenta con los conocimientos técnicos, experiencia operativa, vínculos logísticos y pericia en coordinación de plataformas de tecnología deportiva bajo el nombre comercial "METAX PRO".<br>
-          c) <strong>BLINDAJE CIVIL Y NO SUBORDINACIÓN:</strong> Que la presente contratación constituye estrictamente un <em>acuerdo entre particulares</em> regulado por el Código Civil para el Estado de Guanajuato, sin que exista relación de subordinación laboral, sociedad mercantil formal constituida ni asociación en participación entre las partes, deslindando expresamente cualquier obligación de carácter corporativo patronal ajena a los alcances estrictos de este acto privado.<br>
-          d) Que señala como domicilio para oír y recibir notificaciones el ubicado en ${pDom}.
+          a) Ser persona física de nacionalidad mexicana, mayor de edad, con plena capacidad legal para obligarse y contratar conforme a las leyes vigentes del Estado de Guanajuato y de los Estados Unidos Mexicanos.<br>
+          b) Que cuenta con los conocimientos técnicos, infraestructura tecnológica y enlaces de proveeduría especializada en cronometraje electrónico y logística deportiva bajo la marca "METAX PRO".<br>
+          c) <strong>Régimen Civil y Ausencia de Subordinación:</strong> Que la presente contratación constituye estrictamente un <em>acuerdo entre particulares</em> regulado por el Código Civil para el Estado de Guanajuato, sin que exista subordinación laboral, consorcio ni sociedad mercantil formal constituida entre las partes, deslindando expresamente a "EL PRESTADOR" de cualquier obligación patronal, corporativa o fiscal propia del evento.<br>
+          d) Que señala como domicilio legal el ubicado en ${pDom}.
         </p>
 
-        <p><strong>II. DECLARA "EL CLIENTE" (COMITÉ ORGANIZADOR):</strong></p>
+        <p><strong>II. DECLARA "EL CLIENTE" (COMITÉ ORGANIZADOR Y OBLIGADOS SOLIDARIOS):</strong></p>
         <p>
-          a) Que sus representantes comparecen con facultades suficientes, capacidad legal y pleno poder de decisión y pago para obligar al Comité Organizador de la competencia "${evNombre}".<br>
-          b) Que asumen responsabilidad civil, económica y mancomunada respecto al cumplimiento irrestricto de las obligaciones económicas pactadas en este instrumento.<br>
-          c) Que cuenta con el presupuesto, avales y solvencia económica para solventar el costo total pactado derivado de los servicios requeridos.<br>
+          a) Que sus representantes comparecen con facultades suficientes para obligar al Comité Organizador de la competencia "${evNombre}".<br>
+          b) <strong>Obligación Solidaria Personal:</strong> Que las personas físicas que firman asumen formalmente el carácter de <strong>Obligados Solidarios y Mancomunados</strong>, respondiendo con sus patrimonios personales presentes y futuros del cumplimiento puntual de las obligaciones de pago y penalizaciones convenidas.<br>
+          c) Que cuenta con la solvencia económica para solventar el costo total pactado derivado de los servicios contratados.<br>
           d) Que señala como domicilio legal y operativo el ubicado en ${cDom}.
         </p>
 
         <p><strong>III. DECLARAN AMBAS PARTES:</strong></p>
         <p>
-          Que se reconocen recíprocamente su personalidad y legitimación jurídica, y que manifiestan que en la celebración de este acto no media dolo, error, violencia, lesión ni vicio alguno del consentimiento, rigiéndose por el principio de autonomía de la voluntad y las siguientes:
+          Que se reconocen recíprocamente su personalidad y capacidad legal, declarando que no media dolo, error, violencia ni lesión patrimonial, rigiéndose por las siguientes:
         </p>
 
         <h4>CLÁUSULAS</h4>
 
         <p><strong>PRIMERA. OBJETO DEL CONTRATO Y DISTINCIÓN OPERATIVA (ANEXO TÉCNICO A).</strong><br>
-        "EL PRESTADOR" se compromete a coordinar, integrar y proveer en favor de "EL CLIENTE" los servicios seleccionados y especificados en el <strong>ANEXO TÉCNICO A</strong> del presente contrato para el desarrollo de la justa atlética programada para el <strong>${evFecha}</strong> sobre un pronóstico base de <strong>${numCorredores.toLocaleString('es-MX')} atletas</strong>.<br>
-        <strong>Régimen de Prestación y Outsourcing:</strong> Las partes acuerdan expresamente que los servicios numerados del 1 al 22 del Anexo Técnico corresponden a tecnología, suministros y logística subcontratada por "EL PRESTADOR" bajo el modelo de <em>Outsourcing Especializado</em> (servicios provistos por terceros proveedores aliados). El servicio marcado con el numeral 23 corresponde de manera exclusiva a la provisión y consultoría directa de "METAX PRO".
+        "EL PRESTADOR" se compromete a coordinar, integrar y suministrar en beneficio de "EL CLIENTE" los servicios seleccionados en el <strong>ANEXO TÉCNICO A</strong> para el desarrollo de la justa atlética programada para el <strong>${evFecha}</strong>.<br>
+        <strong>Régimen de Operación de Outsourcing (Puntos 1 al 22):</strong> Corresponden a tecnología, chips RFID, dorsales, jueceo y equipamiento coordinados y subcontratados con terceros aliados calificados.<br>
+        <strong>Régimen de Provisión Directa METAX PRO (Punto 23):</strong> El concepto 23 (Paquete Integral METAX Pro: plataforma de inscripciones online y offline, diseño de artes, soporte WhatsApp y supervisión con viáticos de staff incluidos) constituye un servicio intelectual y técnico provisto directamente por "EL PRESTADOR".
         </p>
 
-        <p><strong>SEGUNDA. PRECIO Y CONTRAPRESTACIÓN.</strong><br>
-        "EL CLIENTE" se obliga a pagar a "EL PRESTADOR" por concepto de honorarios, suministros y coordinación técnica la cantidad total neta acumulada de <strong>$${totalContrato.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN (Moneda Nacional Mexicana)</strong>.
+        <p><strong>SEGUNDA. PRECIO BASE CALCULADO SOBRE 2,500 CORREDORES.</strong><br>
+        El importe convenido se establece sobre un aforo base inicial de <strong>2,500 (dos mil quinientos) corredores inscritos</strong>, fijándose una contraprestación total neta de: <strong>$${totalContrato.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN (Moneda Nacional Mexicana)</strong>.
         </p>
 
-        <p><strong>TERCERA. ESQUEMA ESTRICTO Y CALENDARIO DE PAGOS.</strong><br>
-        "EL CLIENTE" liquidará el importe pactado en tres exhibiciones inaplazables mediante transferencia bancaria a la cuenta designada (${pBanco}), desglosadas como sigue:
+        <p><strong>TERCERA. REGLA DE INCREMENTO DE AFORO MEDIANTE ADÉNDUM (AJUSTE HACIA ARRIBA).</strong><br>
+        La cifra de 2,500 atletas representa el límite máximo de cobertura para la cotización de este contrato. Si "EL CLIENTE" decide incrementar las inscripciones en fechas previas:<br>
+        a) Deberá solicitarlo por escrito con al menos <strong>12 (doce) días naturales</strong> de anticipación a la entrega de kits.<br>
+        b) Se formalizará forzosamente mediante un <strong>Adéndum Económico</strong> calculando el costo unitario por atleta extra más gastos de fletes o maquila urgente.<br>
+        c) "EL CLIENTE" deberá liquidar el <strong>100% anticipado</strong> del valor de dicho Adéndum a su firma. "EL PRESTADOR" no estará obligado a suministrar material para corredores que rebasen los 2,500 sin adéndum suscrito y pagado.
+        </p>
+
+        <p><strong>CUARTA. CALENDARIO DE PAGOS EN TRES PARCIALIDADES Y FECHAS LÍMITE FATALES.</strong><br>
+        "EL CLIENTE" liquidará el importe mediante transferencia a la cuenta de "EL PRESTADOR" (${pBanco}) conforme al siguiente calendario forzoso:
         </p>
         <ul>
-        <li><strong>Primer Pago (50% - Anticipo de Reserva y Garantía de Consumibles):</strong> Por la cantidad de <strong>$${pago1.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong>, pagadero a más tardar dentro de los 3 días hábiles posteriores al día siguiente de la firma en octubre de 2026.</li>
-        <li><strong>Segundo Pago (40% - Liquidación de Proveedores y Avance Operativo):</strong> Por la cantidad de <strong>$${pago2.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong>, pagadero a más tardar el <strong>15 de diciembre de 2026</strong>.</li>
-        <li><strong>Tercer Pago (10% - Saldo Final Operativo):</strong> Por la cantidad de <strong>$${pago3.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong>, pagadero a más tardar el <strong>8 de enero de 2027</strong>.</li>
-      </ul>
+          <li><strong>Primer Pago (50% - Anticipo de Reserva y Garantía de Consumibles):</strong> Por la cantidad de <strong>$${pago1.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong>, pagadero a más tardar el día <strong>miércoles 14 de octubre de 2026 a las 18:00 horas</strong> (plazo fatal de 3 días hábiles posteriores a la fecha de emisión del presente contrato).</li>
+          <li><strong>Segundo Pago (40% - Liquidación de Proveedores y Avance Operativo):</strong> Por la cantidad de <strong>$${pago2.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong>, pagadero a más tardar el <strong>15 de diciembre de 2026</strong>.</li>
+          <li><strong>Tercer Pago (10% - Saldo Final y Finiquito Operativo):</strong> Por la cantidad de <strong>$${pago3.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong>, pagadero a más tardar el <strong>8 de enero de 2027</strong> (previo al inicio del evento).</li>
+        </ul>
         <p>
-          <em>Condición Suspensiva de Servicio:</em> Si "EL CLIENTE" no cubre el 100% de los pagos estipulados a las fechas límites, "EL PRESTADOR" quedará facultado de pleno derecho para suspender el montaje técnico y el cronometraje sin responsabilidad legal alguna a su cargo.
+          <em>Condición Suspensiva de Servicio:</em> La falta de pago en cualesquiera de las fechas estipuladas facultará a "EL PRESTADOR" a suspender el servicio en sitio y la entrega de dorsales/chips sin responsabilidad jurídica alguna y sin devolución de anticipos.
         </p>
 
-        <p><strong>CUARTA. BLINDAJE ANTE MODIFICACIONES DEL COMITÉ, CASO FORTUITO Y FUERZA MAYOR.</strong><br>
-        a) <strong>Cambios Imprevistos del Comité:</strong> Cualquier cambio en la ruta, sedes de entrega de kits, horarios de salida, distancias o número de competidores realizado con posterioridad a la firma de este contrato deberá notificarse por escrito con al menos 15 días de anticipación y generará un presupuesto adicional vinculante para "EL CLIENTE". "EL PRESTADOR" no asume responsabilidad técnica por fallas generadas por cambios no consensuados de último minuto dictados por el Comité Organizador.<br>
-        b) <strong>Causas Ajenas y Fuerza Mayor:</strong> "EL PRESTADOR" queda liberado de responsabilidad por suspensión o retraso imputable a fenómenos meteorológicos extremos, actos vandálicos, bloqueo de vialidades ajeno al operativo, cancelación de permisos por dependencias gubernamentales, cortes intempestivos del suministro de energía municipal o fallas de señal satelital/red celular generalizada. En tales casos no habrá reembolso de anticipos ya erogados para la compra de consumibles personalizados (dorsales, chips codificados y viáticos comprometidos).
+        <p><strong>QUINTA. RECONOCIMIENTO DE OPERACIÓN PREVIA DE BUENA FE, PLAZO RESOLUTIVO Y DERECHO DE RETENCIÓN TÉCNICA.</strong><br>
+        1. <strong>Operación Previa de Buena Fe:</strong> Se reconoce que desde el <strong>15 de julio de 2026</strong> "EL PRESTADOR" ha mantenido activa la plataforma web y atención a inscripciones en favor del Comité, actuando de buena fe para captar participantes de manera temprana.<br>
+        2. <strong>Plazo Fatal de Formalización y Pago:</strong> "EL CLIENTE" se compromete a entregar firmado el contrato y acreditar el 50% inicial a más tardar el <strong>14 de octubre de 2026 a las 18:00 horas</strong>.<br>
+        3. <strong>Suspensión y Cobro Devengado:</strong> De vencer el plazo sin firma ni pago, "EL PRESTADOR" suspenderá de inmediato la plataforma digital y se generará a cargo del Comité y sus obligados solidarios el cobro exigible del <strong>60% del Paquete Integral METAX Pro (numeral 23)</strong> por los servicios devengados desde julio.<br>
+        4. <strong>Derecho Expreso de Retención Técnica:</strong> "EL PRESTADOR" ejercerá el derecho de retención técnica sobre las bases de datos de competidores, llaves y pasarelas de registro, sin obligación de entrega al Comité hasta la liquidación total de los adeudos devengados.
         </p>
 
-        <p><strong>QUINTA. DELIMITACIÓN DE RESPONSABILIDAD EN OUTSOURCING (PUNTOS 1 AL 22).</strong><br>
-        En virtud de que los conceptos 1 al 22 son operados mediante proveedores externos especializados bajo gestión de METAX PRO, "EL PRESTADOR" responderá de la debida diligencia en su contratación y enlace; no obstante, eventuales defectos de fábrica en consumibles cerrados o fallas imputables exclusivamente al fabricante de tecnología o prestador de hardware mayor no constituirán incumplimiento directo personal de "EL PRESTADOR", colaborando activamente en la ejecución de los protocolos de contingencia técnica estipulados.
+        <p><strong>SEXTA. CONSIDERACIONES Y REQUERIMIENTOS OBLIGATORIOS DEL ORGANIZADOR (LOGÍSTICA EXTERNA).</strong><br>
+        "EL CLIENTE" asume bajo su costo y responsabilidad exclusiva las siguientes condiciones técnicas indispensables[cite: 14]:<br>
+        * <strong>C1. Planta de Luz e Iluminación:</strong> Suministro regulado de 110V a pie de meta[cite: 14], con voltaje estable 3 horas antes del arranque[cite: 14].<br>
+        * <strong>C2. Tránsito y Seguridad Pública:</strong> Cierre total de vialidades y custodia con patrullas durante montaje, desarrollo y retiro[cite: 14].<br>
+        * <strong>C3. Vallado de Zona de Meta:</strong> Mínimo 100m lineales de vallas metálicas para canal de meta[cite: 14], impidiendo el paso de público a tapetes y antenas[cite: 14].<br>
+        * <strong>C4. Permisos Municipales:</strong> Trámite y pago de todas las anuencias oficiales y de Protección Civil[cite: 14].<br>
+        <em>Deslinde Técnico:</em> Fallas o daños derivados de variaciones de voltaje, falta de vallas[cite: 14] o invasión del área técnica serán responsabilidad exclusiva del Comité[cite: 14].
         </p>
 
-        <p><strong>SEXTA. CLÁUSULA PENAL E INCUMPLIMIENTO.</strong><br>
-        En caso de incumplimiento de las obligaciones convenidas en este instrumento, las partes pactan como indemnización convencional compensatoria las siguientes penalidades:
-        </p>
-        <p>
-          a) <strong>Incumplimiento de "EL CLIENTE":</strong> Si "EL COMITÉ ORGANIZADOR" cancela el evento unilateralmente, suspende injustificadamente la contratación o incurre en mora superior a 5 días hábiles en cualquiera de los pagos programados, se aplicará una <strong>pena convencional del 40% (cuarenta por ciento)</strong> sobre el valor total del contrato, facultando a "EL PRESTADOR" a retener los anticipos entregados hasta el monto de la pena y de los gastos devengados.<br>
-          b) <strong>Incumplimiento de "EL PRESTADOR":</strong> Si "EL PRESTADOR" no se presenta a la cobertura del evento sin causa justificada o de fuerza mayor demostrable, reintegrará el 100% de las cantidades efectivamente cobradas no aplicadas, más una penalización equivalente al 15% sobre el valor neto del servicio pactado.
+        <p><strong>SÉPTIMA. TRATAMIENTO DE DATOS PERSONALES, DESLINDE DE RESPONSIVAS Y EXENCIÓN TOTAL POR ACCIDENTES O LESIONES.</strong><br>
+        a) <strong>Confidencialidad Técnica:</strong> "EL PRESTADOR" tratará los datos de los corredores con estricta confidencialidad para fines técnicos de cronometraje y registro.<br>
+        b) <strong>Deslinde por Manejo del Comité:</strong> "EL PRESTADOR" no se hace responsable del uso, resguardo o destino que "EL COMITÉ ORGANIZADOR" dé a las bases de datos una vez entregadas o consultadas.<br>
+        c) <strong>Deslinde de Cartas Responsivas:</strong> "EL PRESTADOR" queda legalmente deslindado de la recopilación, autenticidad y resguardo de cartas responsivas o certificados médicos, siendo esta una obligación exclusiva del Comité.<br>
+        d) <strong>Exención por Accidentes o Lesiones:</strong> "EL COMITÉ ORGANIZADOR" asume total responsabilidad civil, médica y deportiva del evento, deslindando a "EL PRESTADOR" de cualquier reclamo por percances, accidentes, lesiones físicas o fallecimiento de los participantes durante o después de la justa deportiva.
         </p>
 
-        <p><strong>SÉPTIMA. JURISDICCIÓN Y COMPETENCIA LEGAL.</strong><br>
-        Para la interpretación, cumplimiento y solución de cualquier controversia derivada del presente contrato civil privado, las partes se someten expresamente a las disposiciones relativas del <strong>Código Civil para el Estado de Guanajuato</strong> y a la jurisdicción de los Juzgados Civiles competentes del <strong>Partido Judicial de Uriangato / Moroleón, Guanajuato</strong>, renunciando a cualquier otro fuero que por razón de sus domicilios presentes o futuros pudiera corresponderles.
+        <p><strong>OCTAVA. EXCLUYENTES DE RESPONSABILIDAD (CASO FORTUITO Y FUERZA MAYOR).</strong><br>
+        "EL PRESTADOR" queda exento de responsabilidad por suspensión o retraso imputable a clima severo, negativa de permisos municipales, cierres viales ajenos o cortes masivos de energía/red pública. Anticipos invertidos en compras de consumibles personalizados no serán reembolsables.
+        </p>
+
+        <p><strong>NOVENA. ALCANCES EN SUBCONTRATACIÓN (OUTSOURCING PUNTOS 1 AL 22).</strong><br>
+        En los servicios 1 al 22 la función de "EL PRESTADOR" es de gestión y enlace. Defectos de fábrica en consumibles cerrados o fallas intrínsecas de hardware de proveedores externos no constituirán negligencia personal de "EL PRESTADOR", ejecutándose los protocolos de contingencia técnica.
+        </p>
+
+        <p><strong>DÉCIMA. CLÁUSULA PENAL COMPENSATORIA POR INCUMPLIMIENTO.</strong><br>
+        a) <strong>Incumplimiento de "EL CLIENTE":</strong> Si el Comité cancela injustificadamente el evento, recurre a otro proveedor tras la firma o incurre en mora superior a 5 días hábiles, se aplicará una <strong>Pena Convencional del 40% del valor total del contrato</strong>, porcentaje pactado como proporcional y necesario para absorber los anticipos comprometidos a proveedores, importación de chips RFID, maquila anticipada de números dorsales y viáticos devengados no reembolsables.<br>
+        b) <strong>Incumplimiento de "EL PRESTADOR":</strong> Si mediando negligencia comprobable y sin mediar fuerza mayor o falta de pago no prestase los servicios, restituirá los importes no aplicados a insumos más una penalización del <strong>15%</strong> sobre el valor neto del servicio omitido.
+        </p>
+
+        <p><strong>DÉCIMA PRIMERA. TÍTULO EJECUTIVO DE RESPALDO (PAGARÉ MERCANTIL).</strong><br>
+        Para garantizar el saldo insoluto restante ($${saldoInsolutoPagare.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN), los Obligados Solidarios suscriben a la firma de este acto un <strong>Pagaré Mercantil</strong> vinculado al contrato, el cual será devuelto y cancelado al cubrirse el saldo final previo a la carrera.
+        </p>
+
+        <p><strong>DÉCIMA SEGUNDA. JURISDICCIÓN Y COMPETENCIA LEGAL.</strong><br>
+        Para la interpretación y solución de controversias, las partes se someten expresamente a las normas aplicables del <strong>Código Civil para el Estado de Guanajuato</strong> y a la jurisdicción de los Juzgados Civiles del <strong>Partido Judicial de Uriangato / Moroleón, Guanajuato</strong>, renunciando a cualquier otro fuero.
         </p>
 
         <p style="margin-top: 30px;">
-          Leído que fue el presente instrumento y enteradas las partes de su contenido, fuerza y alcance legal, lo firman por duplicado de común acuerdo al margen y al calce en la fecha y lugar señalados en el proemio.
+          Leído que fue el presente instrumento y enteradas las partes de su fuerza legal, lo firman por duplicado al margen y al calce de conformidad.
         </p>
 
-        <!-- SECCIÓN DE FIRMAS -->
+        <!-- FIRMAS -->
         <table style="border: none; margin-top: 50px;">
           <tr style="border: none;">
             <td style="border: none; text-align: center; width: 50%; vertical-align: top;">
               ___________________________________________<br>
               <strong>"EL PRESTADOR"</strong><br>
               <strong>${pNombre}</strong><br>
-              Titular Operativo de METAX PRO<br>
+              Titular de METAX PRO<br>
               Persona Física (Particular)
             </td>
             <td style="border: none; text-align: center; width: 50%; vertical-align: top;">
               ___________________________________________<br>
               <strong>"EL CLIENTE" / COMITÉ ORGANIZADOR</strong><br>
               <strong>${r1Nombre}</strong><br>
-              Representante del Comité
-              ${r2Nombre ? `<br><br><br>___________________________________________<br><strong>${r2Nombre}</strong><br>Co-Representante Mancomunado` : ''}
+              Representante Principal / Obligado Solidario<br>
+              INE: ${r1Id}
+              ${r2Nombre ? `<br><br><br>___________________________________________<br><strong>${r2Nombre}</strong><br>Co-Representante / Obligado Solidario<br>INE:${r2Id}` : ''}
             </td>
           </tr>
         </table>
 
+        <!-- ANEXO TÉCNICO A -->
         <div style="page-break-before: always; margin-top: 40px; border-top: 2px dashed #9ca3af; padding-top: 20px;">
           <h4>ANEXO TÉCNICO "A"</h4>
-          <h5 style="text-align: center; margin-bottom: 10px; color: #4b5563;">CATÁLOGO DE SERVICIOS INTEGRADOS Y DESGLOSE OPERATIVO</h5>
-          <p style="font-size: 9.5pt;"><strong>Evento:</strong> ${evNombre} | <strong>Aforo Base:</strong> ${numCorredores.toLocaleString('es-MX')} Corredores</p>
+          <h5 style="text-align: center; margin-bottom: 10px; color: #4b5563;">CATÁLOGO DE SERVICIOS INTEGRADOS Y ESPECIFICACIÓN OPERATIVA</h5>
+          <p style="font-size: 9.5pt;"><strong>Evento:</strong> ${evNombre} | <strong>Aforo Base:</strong> ${numCorredores.toLocaleString('es-MX')} Corredores (Excedente sujeto a Adéndum previo liquidado al 100%)</p>
           
           <table>
             <thead>
@@ -2681,6 +2714,12 @@ function triggerContractRequest() {
             </thead>
             <tbody>
               ${rowsServiciosHtml}
+              <tr style="background-color: #f9fafb;">
+                <td style="text-align: center; font-weight: bold;">C1-C4</td>
+                <td><strong>Requerimientos Logísticos Críticos:</strong> Planta de luz 110V[cite: 14], Vallas 100m[cite: 14], Seguridad vial[cite: 14] y Permisos oficiales[cite: 14].</td>
+                <td style="font-size: 8.5pt; font-weight: bold; color: #d97706;">A CARGO EXCLUSIVO DEL COMITÉ[cite: 14]</td>
+                <td style="text-align: right; font-weight: bold;">$0.00 (Comité)</td>
+              </tr>
             </tbody>
             <tfoot>
               <tr style="background-color: #f3f4f6; font-size: 11pt;">
@@ -2690,17 +2729,53 @@ function triggerContractRequest() {
             </tfoot>
           </table>
           <p style="font-size: 8.5pt; color: #6b7280; margin-top: 10px;">
-            * Nota: Los puntos 1 al 22 corresponden a tecnología, juzgamiento y suministros coordinados vía subcontratación técnica externa (outsourcing). El punto 23 representa la consultoría, soporte al usuario y dirección técnica propia de METAX PRO.
+            * Nota: Los puntos 1 al 22 corresponden a tecnología y juzgamiento provistos vía outsourcing coordinado. El punto 23 representa la consultoría, dirección técnica y plataforma propia de METAX PRO activa desde el 15/julio/2026.
           </p>
+        </div>
+
+        <!-- PAGARÉ MERCANTIL ANEXO -->
+        <div style="page-break-before: always; margin-top: 40px; border-top: 2px dashed #9ca3af; padding-top: 20px;">
+          <h4>PAGARÉ MERCANTIL DE GARANTÍA</h4>
+          <p style="font-size: 10pt; text-align: right;"><strong>BUENO POR: $${saldoInsolutoPagare.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong><br>Moroleón, Guanajuato, a ${fFecha}</p>
+          
+          <p style="font-size: 10pt;">
+            Por el presente Pagaré mercantil, los suscritos <strong>${r1Nombre}</strong> ${r2Nombre ? `en mancomún con <strong>${r2Nombre}</strong>` : ''}, por nuestro propio derecho y en nuestro carácter personal y solidario, prometemos y nos obligamos a pagar incondicionalmente a la orden del C. <strong>${pNombre}</strong>, en la plaza de Moroleón, Guanajuato, la cantidad de:
+          </p>
+          <p style="text-align: center; font-size: 11pt; font-weight: bold;">
+            $${saldoInsolutoPagare.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN (Moneda Nacional Mexicana)
+          </p>
+          <p style="font-size: 9.5pt;">
+            Dicho importe corresponde al saldo insoluto convenido en el Contrato de fecha ${fFecha}, pagadero en los siguientes vencimientos sucesivos:<br>
+            * La cantidad de <strong>$${pago2.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong> a más tardar el <strong>15 de diciembre de 2026</strong>.<br>
+            * La cantidad de <strong>$${pago3.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong> a más tardar el <strong>8 de enero de 2027</strong>.<br>
+            La falta de pago puntual causará que el saldo se declare vencido anticipadamente, devengando un interés moratorio del 3% mensual a partir de la mora.
+          </p>
+          <table style="border: none; margin-top: 40px;">
+            <tr style="border: none;">
+              <td style="border: none; text-align: center; width: 50%; vertical-align: top;">
+                ___________________________________________<br>
+                <strong>SUSCRIPTOR / OBLIGADO SOLIDARIO 1</strong><br>
+                ${r1Nombre}<br>
+                INE: ${r1Id}
+              </td>
+              ${r2Nombre ? `
+              <td style="border: none; text-align: center; width: 50%; vertical-align: top;">
+                ___________________________________________<br>
+                <strong>SUSCRIPTOR / OBLIGADO SOLIDARIO 2</strong><br>
+                ${r2Nombre}<br>
+                INE: ${r2Id}
+              </td>` : '<td style="border: none;"></td>'}
+            </tr>
+          </table>
         </div>
       `;
 
-      // 5. Inyectar documento y cambiar vista
+      // 4. Inyectar documento en la vista previa
       document.getElementById('contrato-document-printable').innerHTML = docHtml;
       document.getElementById('contrato-form-view').style.display = 'none';
       document.getElementById('contrato-preview-container').style.display = 'block';
     }
-
+    
 // Permite restaurar el texto generado a partir del formulario si se sobreescribió algo por error
     function resetContratoOriginal() {
       if (confirm("¿Deseas restablecer el texto del contrato y anexo al borrador generado automáticamente? Los cambios manuales no guardados se perderán.")) {
