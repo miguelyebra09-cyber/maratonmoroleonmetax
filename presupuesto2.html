@@ -725,6 +725,85 @@
   color: #38bdf8;
   font-family: monospace;
 }
+
+/* --- MODAL Y FORMULARIO DE CONTRATO --- */
+.modal-contrato-box {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 14px;
+  max-width: 900px;
+  width: 95%;
+  max-height: 92vh;
+  overflow-y: auto;
+  padding: 28px;
+  position: relative;
+  box-shadow: 0 15px 50px rgba(0,0,0,0.8);
+}
+.form-grid-contrato {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.form-group-c {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.form-group-c label {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+}
+.contrato-preview-paper {
+  background: #ffffff;
+  color: #111827;
+  padding: 40px;
+  border-radius: 8px;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 11pt;
+  line-height: 1.6;
+  text-align: justify;
+  margin-top: 20px;
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+  display: none;
+}
+.contrato-preview-paper h3, 
+.contrato-preview-paper h4 {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  color: #000;
+  margin-bottom: 12px;
+}
+.contrato-preview-paper table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+  font-size: 10pt;
+}
+.contrato-preview-paper th, 
+.contrato-preview-paper td {
+  border: 1px solid #4b5563;
+  padding: 6px 8px;
+  color: #111827;
+}
+.contrato-preview-paper th {
+  background-color: #e5e7eb;
+}
+@media print {
+  body * { visibility: hidden; }
+  #contrato-document-printable, #contrato-document-printable * { visibility: visible; }
+  #contrato-document-printable {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 20mm;
+    box-shadow: none;
+  }
+}
     
   </style>
 </head>
@@ -2369,6 +2448,228 @@ let selectedLoginRole = 'cliente';
   document.getElementById('mod4-menu').style.display = 'block';
   renderRestaurantMenu();
 }
+
+function triggerContractRequest() {
+      // Abre el modal del contrato y precarga el formulario
+      document.getElementById('contrato-form-view').style.display = 'block';
+      document.getElementById('contrato-preview-container').style.display = 'none';
+      document.getElementById('modal-contrato').style.display = 'flex';
+    }
+
+    function closeContratoModal() {
+      document.getElementById('modal-contrato').style.display = 'none';
+    }
+
+    function backToContratoForm() {
+      document.getElementById('contrato-form-view').style.display = 'block';
+      document.getElementById('contrato-preview-container').style.display = 'none';
+    }
+
+    function generateContratoDocument() {
+      // 1. Recolección de datos del formulario
+      const pNombre = document.getElementById('c_prestador_nombre').value || "JUAN CARLOS YEBRA PRIETO";
+      const pRfc = document.getElementById('c_prestador_rfc').value || "[RFC / CURP]";
+      const pDom = document.getElementById('c_prestador_domicilio').value || "Estado de Guanajuato, México";
+      const pBanco = document.getElementById('c_prestador_cuenta').value || "Cuenta Bancaria y CLABE Interbancaria autorizada";
+
+      const evNombre = document.getElementById('c_evento_nombre').value || "EVENTO DEPORTIVO";
+      const r1Nombre = document.getElementById('c_rep1_nombre').value || "[REPRESENTANTE 1 COMITÉ]";
+      const r1Id = document.getElementById('c_rep1_id').value || "[INE/ID REP 1]";
+      const r2Nombre = document.getElementById('c_rep2_nombre').value.trim();
+      const r2Id = document.getElementById('c_rep2_id').value.trim();
+      const cDom = document.getElementById('c_cliente_domicilio').value || "Moroleón, Guanajuato";
+
+      const evFecha = document.getElementById('c_fecha_evento').value || "10 de enero de 2027";
+      const fLugar = document.getElementById('c_lugar_firma').value || "Moroleón, Guanajuato";
+      const fFecha = document.getElementById('c_fecha_firma').value || "11 de octubre de 2026";
+
+      // 2. Extraer servicios seleccionados en el carrito
+      const numCorredores = parseInt(document.getElementById('select-corredores-menu').value) || 2500;
+      let totalContrato = 0;
+      let selectedItems = [];
+
+      catalogData.forEach(item => {
+        if (userSelections[item.num] && item.vis !== 'ocultar') {
+          const units = item.units !== undefined ? item.units : 1;
+          const costoMetaxItem = ((item.cost || 0) * units) * 1.17;
+          totalContrato += costoMetaxItem;
+          
+          // Clasificar outsourcing (1 al 22) vs propio de METAX (23 en adelante)
+          const numInt = parseInt(item.num);
+          const isDirect = (item.num === "23" || numInt >= 23);
+          selectedItems.push({
+            num: item.num,
+            concept: item.concept,
+            detail: item.detail,
+            costo: costoMetaxItem,
+            origen: isDirect ? "PROVISIÓN DIRECTA METAX PRO" : "COORDINACIÓN Y SUBCONTRATACIÓN OUTSOURCING"
+          });
+        }
+      });
+
+      // Cálculo de exhibiciones de pago
+      const pago1 = totalContrato * 0.50;
+      const pago2 = totalContrato * 0.30;
+      const pago3 = totalContrato * 0.20;
+
+      // 3. Renderizar Filas de Servicios para el Anexo Técnico
+      let rowsServiciosHtml = '';
+      selectedItems.forEach(s => {
+        rowsServiciosHtml += `
+          <tr>
+            <td style="text-align: center; font-weight: bold;">${s.num}</td>
+            <td><strong>${s.concept}</strong><br><span style="font-size: 8.5pt; color: #4b5563;">${s.detail}</span></td>
+            <td style="font-size: 8.5pt; font-weight: bold; color: ${s.origen.includes('DIRECTA') ? '#065f46' : '#1e3a8a'};">${s.origen}</td>
+            <td style="text-align: right; font-weight: bold;">$${s.costo.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</td>
+          </tr>
+        `;
+      });
+
+      // Representantes del Comité redacción
+      let repTexto = `el C. <strong>${r1Nombre}</strong> (identificado con ${r1Id})`;
+      if (r2Nombre) {
+        repTexto += ` en mancomún con el C. <strong>${r2Nombre}</strong> (identificado con ${r2Id})`;
+      }
+
+      // 4. Compilación del Texto del Contrato
+      const docHtml = `
+        <h3>CONTRATO PRIVADO DE PRESTACIÓN DE SERVICIOS TÉCNICOS, ADMINISTRATIVOS Y DE LOGÍSTICA DEPORTIVA ENTRE PARTICULARES</h3>
+        
+        <p>
+          En la ciudad de ${fLugar}, con fecha de <strong>${fFecha}</strong>, celebran el presente Contrato Privado de Prestación de Servicios, por una parte:
+        </p>
+        <p>
+          El C. <strong>${pNombre}</strong>, persona física sin actividad empresarial formal corporativa, actuando como particular titular de la denominación comercial y operativa <strong>"METAX PRO"</strong>, a quien en lo sucesivo se le denominará <strong>"EL PRESTADOR"</strong>; y por la otra parte:
+        </p>
+        <p>
+          El <strong>COMITÉ ORGANIZADOR DEL EVENTO "${evNombre.toUpperCase()}"</strong>, representado por ${repTexto}, a quienes en lo sucesivo y de manera conjunta y solidaria se les denominará <strong>"EL CLIENTE"</strong> o <strong>"EL COMITÉ ORGANIZADOR"</strong>; sujetándose al tenor de las siguientes:
+        </p>
+
+        <h4>DECLARACIONES</h4>
+        <p><strong>I. DECLARA "EL PRESTADOR":</strong></p>
+        <p>
+          a) Ser persona física de nacionalidad mexicana, mayor de edad, con plena capacidad jurídica para obligarse y contratar conforme a las leyes vigentes del Estado de Guanajuato y de los Estados Unidos Mexicanos.<br>
+          b) Que cuenta con los conocimientos técnicos, experiencia operativa, vínculos logísticos y pericia en coordinación de plataformas de tecnología deportiva bajo el nombre comercial "METAX PRO".<br>
+          c) <strong>BLINDAJE CIVIL Y NO SUBORDINACIÓN:</strong> Que la presente contratación constituye estrictamente un <em>acuerdo entre particulares</em> regulado por el Código Civil para el Estado de Guanajuato, sin que exista relación de subordinación laboral, sociedad mercantil formal constituida ni asociación en participación entre las partes, deslindando expresamente cualquier obligación de carácter corporativo patronal ajena a los alcances estrictos de este acto privado.<br>
+          d) Que señala como domicilio para oír y recibir notificaciones el ubicado en ${pDom}.
+        </p>
+
+        <p><strong>II. DECLARA "EL CLIENTE" (COMITÉ ORGANIZADOR):</strong></p>
+        <p>
+          a) Que sus representantes comparecen con facultades suficientes, capacidad legal y pleno poder de decisión y pago para obligar al Comité Organizador de la competencia "${evNombre}".<br>
+          b) Que asumen responsabilidad civil, económica y mancomunada respecto al cumplimiento irrestricto de las obligaciones económicas pactadas en este instrumento.<br>
+          c) Que cuenta con el presupuesto, avales y solvencia económica para solventar el costo total pactado derivado de los servicios requeridos.<br>
+          d) Que señala como domicilio legal y operativo el ubicado en ${cDom}.
+        </p>
+
+        <p><strong>III. DECLARAN AMBAS PARTES:</strong></p>
+        <p>
+          Que se reconocen recíprocamente su personalidad y legitimación jurídica, y que manifiestan que en la celebración de este acto no media dolo, error, violencia, lesión ni vicio alguno del consentimiento, rigiéndose por el principio de autonomía de la voluntad y las siguientes:
+        </p>
+
+        <h4>CLÁUSULAS</h4>
+
+        <p><strong>PRIMERA. OBJETO DEL CONTRATO Y DISTINCIÓN OPERATIVA (ANEXO TÉCNICO A).</strong><br>
+        "EL PRESTADOR" se compromete a coordinar, integrar y proveer en favor de "EL CLIENTE" los servicios seleccionados y especificados en el <strong>ANEXO TÉCNICO A</strong> del presente contrato para el desarrollo de la justa atlética programada para el <strong>${evFecha}</strong> sobre un pronóstico base de <strong>${numCorredores.toLocaleString('es-MX')} atletas</strong>.<br>
+        <strong>Régimen de Prestación y Outsourcing:</strong> Las partes acuerdan expresamente que los servicios numerados del 1 al 22 del Anexo Técnico corresponden a tecnología, suministros y logística subcontratada por "EL PRESTADOR" bajo el modelo de <em>Outsourcing Especializado</em> (servicios provistos por terceros proveedores aliados). El servicio marcado con el numeral 23 corresponde de manera exclusiva a la provisión y consultoría directa de "METAX PRO".
+        </p>
+
+        <p><strong>SEGUNDA. PRECIO Y CONTRAPRESTACIÓN.</strong><br>
+        "EL CLIENTE" se obliga a pagar a "EL PRESTADOR" por concepto de honorarios, suministros y coordinación técnica la cantidad total neta acumulada de <strong>$${totalContrato.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN (Moneda Nacional Mexicana)</strong>.
+        </p>
+
+        <p><strong>TERCERA. ESQUEMA ESTRICTO Y CALENDARIO DE PAGOS.</strong><br>
+        "EL CLIENTE" liquidará el importe pactado en tres exhibiciones inaplazables mediante transferencia bancaria a la cuenta designada (${pBanco}), desglosadas como sigue:
+        </p>
+        <ul>
+          <li><strong>Primer Pago (50% - Anticipo de Reserva y Garantía de Insumos):</strong> Por la cantidad de <strong>$${pago1.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong>, pagadero a la firma del presente contrato.</li>
+          <li><strong>Segundo Pago (30% - Liquidación de Consumibles y Subcontrataciones):</strong> Por la cantidad de <strong>$${pago2.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong>, pagadero a más tardar el <strong>10 de diciembre de 2026</strong>.</li>
+          <li><strong>Tercer Pago (20% - Saldo Final Operativo):</strong> Por la cantidad de <strong>$${pago3.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong>, pagadero a más tardar el <strong>8 de enero de 2027</strong> (previo al inicio del evento).</li>
+        </ul>
+        <p>
+          <em>Condición Suspensiva de Servicio:</em> Si "EL CLIENTE" no cubre el 100% de los pagos estipulados a las fechas límites, "EL PRESTADOR" quedará facultado de pleno derecho para suspender el montaje técnico y el cronometraje sin responsabilidad legal alguna a su cargo.
+        </p>
+
+        <p><strong>CUARTA. BLINDAJE ANTE MODIFICACIONES DEL COMITÉ, CASO FORTUITO Y FUERZA MAYOR.</strong><br>
+        a) <strong>Cambios Imprevistos del Comité:</strong> Cualquier cambio en la ruta, sedes de entrega de kits, horarios de salida, distancias o número de competidores realizado con posterioridad a la firma de este contrato deberá notificarse por escrito con al menos 15 días de anticipación y generará un presupuesto adicional vinculante para "EL CLIENTE". "EL PRESTADOR" no asume responsabilidad técnica por fallas generadas por cambios no consensuados de último minuto dictados por el Comité Organizador.<br>
+        b) <strong>Causas Ajenas y Fuerza Mayor:</strong> "EL PRESTADOR" queda liberado de responsabilidad por suspensión o retraso imputable a fenómenos meteorológicos extremos, actos vandálicos, bloqueo de vialidades ajeno al operativo, cancelación de permisos por dependencias gubernamentales, cortes intempestivos del suministro de energía municipal o fallas de señal satelital/red celular generalizada. En tales casos no habrá reembolso de anticipos ya erogados para la compra de consumibles personalizados (dorsales, chips codificados y viáticos comprometidos).
+        </p>
+
+        <p><strong>QUINTA. DELIMITACIÓN DE RESPONSABILIDAD EN OUTSOURCING (PUNTOS 1 AL 22).</strong><br>
+        En virtud de que los conceptos 1 al 22 son operados mediante proveedores externos especializados bajo gestión de METAX PRO, "EL PRESTADOR" responderá de la debida diligencia en su contratación y enlace; no obstante, eventuales defectos de fábrica en consumibles cerrados o fallas imputables exclusivamente al fabricante de tecnología o prestador de hardware mayor no constituirán incumplimiento directo personal de "EL PRESTADOR", colaborando activamente en la ejecución de los protocolos de contingencia técnica estipulados.
+        </p>
+
+        <p><strong>SEXTA. CLÁUSULA PENAL E INCUMPLIMIENTO.</strong><br>
+        En caso de incumplimiento de las obligaciones convenidas en este instrumento, las partes pactan como indemnización convencional compensatoria las siguientes penalidades:
+        </p>
+        <p>
+          a) <strong>Incumplimiento de "EL CLIENTE":</strong> Si "EL COMITÉ ORGANIZADOR" cancela el evento unilateralmente, suspende injustificadamente la contratación o incurre en mora superior a 5 días hábiles en cualquiera de los pagos programados, se aplicará una <strong>pena convencional del 40% (cuarenta por ciento)</strong> sobre el valor total del contrato, facultando a "EL PRESTADOR" a retener los anticipos entregados hasta el monto de la pena y de los gastos devengados.<br>
+          b) <strong>Incumplimiento de "EL PRESTADOR":</strong> Si "EL PRESTADOR" no se presenta a la cobertura del evento sin causa justificada o de fuerza mayor demostrable, reintegrará el 100% de las cantidades efectivamente cobradas no aplicadas, más una penalización equivalente al 15% sobre el valor neto del servicio pactado.
+        </p>
+
+        <p><strong>SÉPTIMA. JURISDICCIÓN Y COMPETENCIA LEGAL.</strong><br>
+        Para la interpretación, cumplimiento y solución de cualquier controversia derivada del presente contrato civil privado, las partes se someten expresamente a las disposiciones relativas del <strong>Código Civil para el Estado de Guanajuato</strong> y a la jurisdicción de los Juzgados Civiles competentes del <strong>Partido Judicial de Uriangato / Moroleón, Guanajuato</strong>, renunciando a cualquier otro fuero que por razón de sus domicilios presentes o futuros pudiera corresponderles.
+        </p>
+
+        <p style="margin-top: 30px;">
+          Leído que fue el presente instrumento y enteradas las partes de su contenido, fuerza y alcance legal, lo firman por duplicado de común acuerdo al margen y al calce en la fecha y lugar señalados en el proemio.
+        </p>
+
+        <!-- SECCIÓN DE FIRMAS -->
+        <table style="border: none; margin-top: 50px;">
+          <tr style="border: none;">
+            <td style="border: none; text-align: center; width: 50%; vertical-align: top;">
+              ___________________________________________<br>
+              <strong>"EL PRESTADOR"</strong><br>
+              <strong>${pNombre}</strong><br>
+              Titular Operativo de METAX PRO<br>
+              Persona Física (Particular)
+            </td>
+            <td style="border: none; text-align: center; width: 50%; vertical-align: top;">
+              ___________________________________________<br>
+              <strong>"EL CLIENTE" / COMITÉ ORGANIZADOR</strong><br>
+              <strong>${r1Nombre}</strong><br>
+              Representante del Comité
+              ${r2Nombre ? `<br><br><br>___________________________________________<br><strong>${r2Nombre}</strong><br>Co-Representante Mancomunado` : ''}
+            </td>
+          </tr>
+        </table>
+
+        <div style="page-break-before: always; margin-top: 40px; border-top: 2px dashed #9ca3af; padding-top: 20px;">
+          <h4>ANEXO TÉCNICO "A"</h4>
+          <h5 style="text-align: center; margin-bottom: 10px; color: #4b5563;">CATÁLOGO DE SERVICIOS INTEGRADOS Y DESGLOSE OPERATIVO</h5>
+          <p style="font-size: 9.5pt;"><strong>Evento:</strong> ${evNombre} | <strong>Aforo Base:</strong> ${numCorredores.toLocaleString('es-MX')} Corredores</p>
+          
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 40px;">#</th>
+                <th>Concepto / Especificación del Servicio</th>
+                <th style="width: 220px;">Modalidad de Provisión</th>
+                <th style="width: 140px; text-align: right;">Costo Metax Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsServiciosHtml}
+            </tbody>
+            <tfoot>
+              <tr style="background-color: #f3f4f6; font-size: 11pt;">
+                <td colspan="3" style="text-align: right; font-weight: bold;">TOTAL INTEGRADO CONTRATADO:</td>
+                <td style="text-align: right; font-weight: bold; color: #059669;">$${totalContrato.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</td>
+              </tr>
+            </tfoot>
+          </table>
+          <p style="font-size: 8.5pt; color: #6b7280; margin-top: 10px;">
+            * Nota: Los puntos 1 al 22 corresponden a tecnología, juzgamiento y suministros coordinados vía subcontratación técnica externa (outsourcing). El punto 23 representa la consultoría, soporte al usuario y dirección técnica propia de METAX PRO.
+          </p>
+        </div>
+      `;
+
+      // 5. Inyectar documento y cambiar vista
+      document.getElementById('contrato-document-printable').innerHTML = docHtml;
+      document.getElementById('contrato-form-view').style.display = 'none';
+      document.getElementById('contrato-preview-container').style.display = 'block';
+    }
     
   </script>
   <!-- MODAL DE FICHA TÉCNICA E INFOGRAFÍA -->
@@ -2395,5 +2696,116 @@ let selectedLoginRole = 'cliente';
       </div>
     </div>
   </div>
+
+<!-- MODAL DE FORMULARIO Y BORRADOR DE CONTRATO -->
+<div id="modal-contrato" class="modal-overlay" style="display: none;">
+  <div class="modal-contrato-box">
+    <button class="close-modal-btn" onclick="closeContratoModal()">&times;</button>
+    
+    <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px; margin-bottom: 20px;">
+      <h3 style="color: #38bdf8; margin: 0;">Generador de Borrador de Contrato de Prestación de Servicios</h3>
+      <span class="badge-opt">Guanajuato / Civil Particular</span>
+    </div>
+
+    <!-- SECCIÓN 1: FORMULARIO DE CAPTURA DE DATOS -->
+    <div id="contrato-form-view">
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 15px;">
+        Complete los datos de acreditación de las partes para generar y compilar el borrador legal con base en los servicios seleccionados en el carrito.
+      </p>
+
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+        <h4 style="color: #10b981; margin-bottom: 10px; font-size: 0.95rem;">1. Declaraciones de METAX PRO (Prestador Civil Particular)</h4>
+        <div class="form-grid-contrato">
+          <div class="form-group-c">
+            <label>Nombre Completo (Persona Física)</label>
+            <input type="text" id="c_prestador_nombre" value="Juan Carlos Yebra Prieto">
+          </div>
+          <div class="form-group-c">
+            <label>RFC / CURP</label>
+            <input type="text" id="c_prestador_rfc" placeholder="YEPJ...">
+          </div>
+          <div class="form-group-c">
+            <label>Domicilio Legal (Municipio, Guanajuato)</label>
+            <input type="text" id="c_prestador_domicilio" placeholder="Calle, Número, Colonia, C.P., Municipio, Gto.">
+          </div>
+          <div class="form-group-c">
+            <label>Datos Bancarios (Banco / CLABE)</label>
+            <input type="text" id="c_prestador_cuenta" placeholder="Banco X - CLABE: 012345678901234567">
+          </div>
+        </div>
+      </div>
+
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+        <h4 style="color: #38bdf8; margin-bottom: 10px; font-size: 0.95rem;">2. Declaraciones del Comité Organizador (El Cliente)</h4>
+        <div class="form-grid-contrato">
+          <div class="form-group-c">
+            <label>Denominación del Evento / Carrera</label>
+            <input type="text" id="c_evento_nombre" value="Maratón Internacional Moroleón 2027">
+          </div>
+          <div class="form-group-c">
+            <label>Representante 1 del Comité</label>
+            <input type="text" id="c_rep1_nombre" placeholder="Nombre completo representante 1">
+          </div>
+          <div class="form-group-c">
+            <label>INE / Identificación Oficial Rep. 1</label>
+            <input type="text" id="c_rep1_id" placeholder="Clave de Elector / INE Rep 1">
+          </div>
+          <div class="form-group-c">
+            <label>Representante 2 (Opcional)</label>
+            <input type="text" id="c_rep2_nombre" placeholder="Nombre completo representante 2 (opcional)">
+          </div>
+          <div class="form-group-c">
+            <label>INE / Identificación Oficial Rep. 2</label>
+            <input type="text" id="c_rep2_id" placeholder="Clave de Elector / INE Rep 2">
+          </div>
+          <div class="form-group-c">
+            <label>Domicilio Legal del Comité</label>
+            <input type="text" id="c_cliente_domicilio" placeholder="Calle, Número, Moroleón / Uriangato, Gto.">
+          </div>
+        </div>
+      </div>
+
+      <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--panel-border); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+        <h4 style="color: #f59e0b; margin-bottom: 10px; font-size: 0.95rem;">3. Datos del Evento y Celebración</h4>
+        <div class="form-grid-contrato">
+          <div class="form-group-c">
+            <label>Fecha de Celebración del Evento</label>
+            <input type="text" id="c_fecha_evento" value="10 de enero de 2027">
+          </div>
+          <div class="form-group-c">
+            <label>Lugar / Ciudad de Celebración</label>
+            <input type="text" id="c_lugar_firma" value="Moroleón, Guanajuato">
+          </div>
+          <div class="form-group-c">
+            <label>Fecha de Firma del Contrato</label>
+            <input type="text" id="c_fecha_firma" value="11 de octubre de 2026">
+          </div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: flex-end; gap: 10px;">
+        <button class="btn btn-outline" onclick="closeContratoModal()">Cancelar</button>
+        <button class="btn btn-accent" onclick="generateContratoDocument()">📄 Redactar y Visualizar Borrador</button>
+      </div>
+    </div>
+
+    <!-- SECCIÓN 2: DOCUMENTO LEGAL COMPILADO -->
+    <div id="contrato-preview-container" style="display: none;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <button class="btn btn-outline btn-sm" onclick="backToContratoForm()">⬅ Modificar Datos del Formulario</button>
+        <div style="display: flex; gap: 8px;">
+          <button class="btn btn-sm" onclick="window.print()">🖨️ Imprimir / Guardar en PDF</button>
+          <button class="btn btn-sm btn-outline" onclick="closeContratoModal()">Cerrar</button>
+        </div>
+      </div>
+      
+      <div class="contrato-preview-paper" id="contrato-document-printable">
+        <!-- Contenido generado dinámicamente -->
+      </div>
+    </div>
+
+  </div>
+</div>
+  
 </body>
 </html>
