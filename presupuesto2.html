@@ -2537,10 +2537,10 @@ function triggerContractRequest() {
         }
       });
 
-      // Cálculo de exhibiciones de pago
+     // Cálculo de exhibiciones de pago ajustadas (50% - 40% - 10%)
       const pago1 = totalContrato * 0.50;
-      const pago2 = totalContrato * 0.30;
-      const pago3 = totalContrato * 0.20;
+      const pago2 = totalContrato * 0.40;
+      const pago3 = totalContrato * 0.10;
 
       // 3. Renderizar Filas de Servicios para el Anexo Técnico
       let rowsServiciosHtml = '';
@@ -2612,10 +2612,10 @@ function triggerContractRequest() {
         "EL CLIENTE" liquidará el importe pactado en tres exhibiciones inaplazables mediante transferencia bancaria a la cuenta designada (${pBanco}), desglosadas como sigue:
         </p>
         <ul>
-          <li><strong>Primer Pago (50% - Anticipo de Reserva y Garantía de Insumos):</strong> Por la cantidad de <strong>$${pago1.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong>, pagadero a la firma del presente contrato.</li>
-          <li><strong>Segundo Pago (30% - Liquidación de Consumibles y Subcontrataciones):</strong> Por la cantidad de <strong>$${pago2.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong>, pagadero a más tardar el <strong>10 de diciembre de 2026</strong>.</li>
-          <li><strong>Tercer Pago (20% - Saldo Final Operativo):</strong> Por la cantidad de <strong>$${pago3.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong>, pagadero a más tardar el <strong>8 de enero de 2027</strong> (previo al inicio del evento).</li>
-        </ul>
+        <li><strong>Primer Pago (50% - Anticipo de Reserva y Garantía de Consumibles):</strong> Por la cantidad de <strong>$${pago1.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong>, pagadero a más tardar dentro de los 3 días hábiles posteriores al día siguiente de la firma en octubre de 2026.</li>
+        <li><strong>Segundo Pago (40% - Liquidación de Proveedores y Avance Operativo):</strong> Por la cantidad de <strong>$${pago2.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong>, pagadero a más tardar el <strong>15 de diciembre de 2026</strong>.</li>
+        <li><strong>Tercer Pago (10% - Saldo Final Operativo):</strong> Por la cantidad de <strong>$${pago3.toLocaleString('es-MX', {minimumFractionDigits: 2})} MXN</strong>, pagadero a más tardar el <strong>8 de enero de 2027</strong>.</li>
+      </ul>
         <p>
           <em>Condición Suspensiva de Servicio:</em> Si "EL CLIENTE" no cubre el 100% de los pagos estipulados a las fechas límites, "EL PRESTADOR" quedará facultado de pleno derecho para suspender el montaje técnico y el cronometraje sin responsabilidad legal alguna a su cargo.
         </p>
