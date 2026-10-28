@@ -2034,18 +2034,14 @@
   const tbody = document.getElementById('tbody-mod2');
   tbody.innerHTML = '';
   let sumBase = 0, sumTotalA = 0, sumOutsourcing = 0, sumIva = 0;
-function renderMod2() {
-  const tbody = document.getElementById('tbody-mod2');
-  tbody.innerHTML = '';
-  let sumBase = 0, sumTotalA = 0, sumOutsourcing = 0, sumIva = 0;
 
   catalogData.forEach((item, index) => {
     const costBase = item.cost || 0;
     const units = item.units !== undefined ? item.units : 1;
-    const costoTotalA = costBase * units; // <--- Multiplicación correcta por unidades
+    const costoTotalA = costBase * units; // <--- Multiplicación requerida
     
-    // Comisión de outsourcing estandarizada al 18%
-    const outsourcing = costoTotalA * 0.18; 
+    // Si la comisión y el IVA se calculan sobre el costo total con unidades:
+    const outsourcing = costoTotalA * 0.17;
     const iva = costoTotalA * 0.16;
 
     if (item.selectedAdmin) {
@@ -2064,12 +2060,15 @@ function renderMod2() {
       <td>${item.type}</td>
       <td><input type="text" value="${item.concept}" onchange="catalogData[${index}].concept = this.value; renderMod3();"></td>
       <td><input type="number" value="${item.cost}" onchange="catalogData[${index}].cost = parseFloat(this.value)||0; renderMod2(); renderMod3();"></td>
+      
+      <!-- NUEVAS COLUMNAS -->
       <td>
         <input type="number" min="0" value="${units}" onchange="catalogData[${index}].units = parseFloat(this.value)||0; renderMod2(); renderMod3();">
       </td>
       <td style="color: #38bdf8; font-weight: 600;">
         $${costoTotalA.toLocaleString('es-MX', {minimumFractionDigits: 2})}
       </td>
+      
       <td style="color: #10b981; font-weight: 600;">$${outsourcing.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td>
       <td style="color: #f59e0b; font-weight: 600;">$${iva.toLocaleString('es-MX', {minimumFractionDigits: 2})}</td>
       <td><input type="text" value="${item.detail}" onchange="catalogData[${index}].detail = this.value; renderMod3();"></td>
@@ -2085,7 +2084,7 @@ function renderMod2() {
     tbody.appendChild(tr);
   });
 
-  // Totales y actualización del Dashboard Admin
+  // Totales al pie de tabla y dashboard
   document.getElementById('m2-sum-base').innerText = `$${sumBase.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
   if(document.getElementById('m2-sum-total-a')) {
     document.getElementById('m2-sum-total-a').innerText = `$${sumTotalA.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
@@ -2098,7 +2097,6 @@ function renderMod2() {
   document.getElementById('dash-m2-base').innerText = `$${sumTotalA.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
   document.getElementById('dash-m2-metax').innerText = `$${costoMetax.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
   document.getElementById('dash-m2-total').innerText = `$${costoTotalIva.toLocaleString('es-MX', {minimumFractionDigits: 2})}`;
-}
 }
     
     function renderConsiderationsAdmin() {
@@ -2176,7 +2174,7 @@ function renderMod2() {
         if (isReq) userSelections[item.num] = true;
         const isChecked = userSelections[item.num] || false;
         const units = item.units !== undefined ? item.units : 1;
-        const costoMetaxItem = ((item.cost || 0) * units) * 1.18;
+        const costoMetaxItem = ((item.cost || 0) * units) * 1.17;
 
         if (isChecked) {
           currentTotalMetax += costoMetaxItem;
@@ -2523,7 +2521,7 @@ function triggerContractRequest() {
       catalogData.forEach(item => {
         if (userSelections[item.num] && item.vis !== 'ocultar') {
           const units = item.units !== undefined ? item.units : 1;
-          const costoMetaxItem = ((item.cost || 0) * units) * 1.18;
+          const costoMetaxItem = ((item.cost || 0) * units) * 1.17;
           totalContrato += costoMetaxItem;
           
           const numInt = parseInt(item.num);
