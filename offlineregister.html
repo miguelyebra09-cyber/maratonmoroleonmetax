@@ -1531,10 +1531,11 @@ const registrationData = {
     email: getSafeValue('email'),
     telefono: getSafeValue('telefono'),
     
-    // Datos de carrera y identidad sincronizados con los IDs reales del formulario:
+    // Datos de carrera e identidad:
     distancia: getSafeValue('distancia') || 'No especifica',
-    categoria: getSafeValue('categoriaAuto') || getSafeValue('categoria') || 'No especifica',
+    categoria: getSafeValue('categoriaAuto') || 'No especifica',
     talla_playera: getSafeValue('tallaPlayera') || 'No especifica',
+    perfil_corredor: getSafeValue('perfilCorredor') || 'No especifica',
     
     pais_residencia: getSafeValue('paisResidencia') || 'México',
     estado_residencia: getSafeValue('estadoResidencia') || 'No especifica',
@@ -1544,6 +1545,7 @@ const registrationData = {
     entidad_origen: getSafeValue('entidadOrigenAuto') || 'No especifica',
     rama: getSafeValue('ramaAuto') || 'No especifica',
     
+    // Expediente médico y seguridad:
     tipo_sangre: getSafeValue('tipoSangre') || 'No especifica',
     contacto_nombre: getSafeValue('contactoNombre') || 'No especifica',
     contacto_telefono: getSafeValue('contactoTelefono') || 'No especifica',
