@@ -444,87 +444,65 @@ function isInvalidValue(val) {
 
     // Regla Estricta de Auditoría
     // Regla Estricta de Auditoría
-    function performAudit(r) {
-        const missingFields = [];
-        const missingDocs = [];
-        const attachedDocs = [];
+  function performAudit(r) {
+    const missingFields = [];
+    const missingDocs = [];
+    const attachedDocs = [];
 
-        // Total de puntos a evaluar para la barra de progreso (12 ítems clave)
-        let score = 0;
-        const totalItems = 12;
+    // Total de ítems a evaluar: 21 campos de texto/datos + 3 documentos obligatorios = 24 totales
+    const totalItems = MASTER_FORM_FIELDS.length + 3;
+    let score = 0;
 
-        // 1. CURP
-        if (isInvalidValue(r.curp) || r.curp.length < 18) missingFields.push('CURP Incompleta o con "X"');
-        else score++;
-
-        // 2. Apellido Materno / Segundo Apellido
-        if (isInvalidValue(r.segundo_apellido)) missingFields.push('Segundo Apellido');
-        else score++;
-
-        // 3. Distancia Asignada
-        if (isInvalidValue(r.distancia)) missingFields.push('Distancia de Carrera');
-        else score++;
-
-        // 4. Categoría
-        if (isInvalidValue(r.categoria)) missingFields.push('Categoría');
-        else score++;
-
-        // 5. Talla de Playera
-        if (isInvalidValue(r.talla_playera)) missingFields.push('Talla de Playera');
-        else score++;
-
-        // 6. Correo Electrónico
-        if (isInvalidValue(r.email) || !r.email.includes('@')) missingFields.push('Correo Electrónico');
-        else score++;
-
-        // 7. Teléfono Celular
-        if (isInvalidValue(r.telefono) || r.telefono.length < 10) missingFields.push('Teléfono Celular');
-        else score++;
-
-        // 8. Tipo de Sangre
-        if (isInvalidValue(r.tipo_sangre)) missingFields.push('Tipo de Sangre');
-        else score++;
-
-        // 9. Contacto de Emergencia
-        if (isInvalidValue(r.contacto_nombre) || isInvalidValue(r.contacto_telefono)) missingFields.push('Datos de Emergencia');
-        else score++;
-
-        // 10. Fotografía Oficial
-        if (isInvalidValue(r.foto_url)) {
-            missingDocs.push('Fotografía Oficial');
+    // 1. Evaluación dinámica universal de TODOS los campos del formulario
+    MASTER_FORM_FIELDS.forEach(field => {
+        const val = r[field.key];
+        if (isInvalidValue(val)) {
+            missingFields.push(field.label);
         } else {
-            attachedDocs.push('Fotografía Oficial');
-            score++;
+            // Validaciones adicionales de longitud mínima si aplican
+            if (field.minLength && String(val).trim().length < field.minLength) {
+                missingFields.push(`${field.label} Incompleto`);
+            } else {
+                score++;
+            }
         }
+    });
 
-        // 11. Identificación Oficial / INE (doc1_url)
-        if (isInvalidValue(r.doc1_url)) {
-            missingDocs.push('Identificación Oficial / INE (Doc 1)');
-        } else {
-            attachedDocs.push('Identificación Oficial / INE (Doc 1)');
-            score++;
-        }
-
-        // 12. Carta Responsiva (doc2_url)
-        if (isInvalidValue(r.doc2_url)) {
-            missingDocs.push('Carta Responsiva Firmada (Doc 2)');
-        } else {
-            attachedDocs.push('Carta Responsiva Firmada (Doc 2)');
-            score++;
-        }
-
-        const percentage = Math.round((score / totalItems) * 100);
-        const isComplete = missingFields.length === 0 && missingDocs.length === 0;
-
-        return {
-            raw: r,
-            missingFields,
-            missingDocs,
-            attachedDocs,
-            percentage,
-            isComplete
-        };
+    // 2. Evaluación de Documentos Obligatorios
+    if (isInvalidValue(r.foto_url)) {
+        missingDocs.push('Fotografía Oficial');
+    } else {
+        attachedDocs.push('Fotografía Oficial');
+        score++;
     }
+
+    if (isInvalidValue(r.doc1_url)) {
+        missingDocs.push('Identificación Oficial / INE (Doc 1)');
+    } else {
+        attachedDocs.push('Identificación Oficial / INE (Doc 1)');
+        score++;
+    }
+
+    if (isInvalidValue(r.doc2_url)) {
+        missingDocs.push('Carta Responsiva Firmada (Doc 2)');
+    } else {
+        attachedDocs.push('Carta Responsiva Firmada (Doc 2)');
+        score++;
+    }
+
+    const percentage = Math.round((score / totalItems) * 100);
+    const isComplete = missingFields.length === 0 && missingDocs.length === 0;
+
+    return {
+        raw: r,
+        missingFields,
+        missingDocs,
+        attachedDocs,
+        percentage,
+        isComplete
+    };
+}
+    
     function updateMetrics() {
         let total = cachedAuditData.length;
         let completos = 0;
