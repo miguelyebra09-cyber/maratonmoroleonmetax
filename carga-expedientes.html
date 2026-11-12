@@ -423,51 +423,24 @@
             const updates = {};
             const folio = currentCorredor.folio_oficial || currentCorredor.id;
 
-            // 1. Recolección opcional de textos ingresados
+            // Bucle universal que barre TODOS los campos del Diccionario Maestro automáticamente
+            MASTER_FORM_FIELDS.forEach(field => {
+                const el = document.getElementById(`inp_${field.key}`);
+                if (el && el.value !== null && el.value !== undefined) {
+                    const val = String(el.value).trim();
+                    if (val !== '') {
+                        updates[field.key] = (field.key === 'email') ? val : val.toUpperCase();
+                    }
+                }
+            });
+
+            // Comentarios específicos del atleta
             const elComentarios = document.getElementById('inpAtletaComentarios');
-            if (elComentarios && elComentarios.value.trim()) updates.comentarios = elComentarios.value.trim();
+            if (elComentarios && elComentarios.value.trim()) {
+                updates.comentarios = elComentarios.value.trim();
+            }
 
-            const elCurp = document.getElementById('inp_curp');
-            if (elCurp && elCurp.value.trim()) updates.curp = elCurp.value.trim().toUpperCase();
-
-            const elSegundoApellido = document.getElementById('inp_segundo_apellido');
-            if (elSegundoApellido && elSegundoApellido.value.trim()) updates.segundo_apellido = elSegundoApellido.value.trim().toUpperCase();
-
-            const elDistancia = document.getElementById('inp_distancia');
-            if (elDistancia && elDistancia.value) updates.distancia = elDistancia.value;
-
-            const elCategoria = document.getElementById('inp_categoria');
-            if (elCategoria && elCategoria.value.trim()) updates.categoria = elCategoria.value.trim();
-
-            const elTalla = document.getElementById('inp_talla_playera');
-            if (elTalla && elTalla.value.trim()) updates.talla_playera = elTalla.value.trim().toUpperCase();
-
-            const elPerfil = document.getElementById('inp_perfil_corredor');
-            if (elPerfil && elPerfil.value) updates.perfil_corredor = elPerfil.value;
-            
-            const elEmail = document.getElementById('inp_email');
-            if (elEmail && elEmail.value.trim()) updates.email = elEmail.value.trim();
-
-            const elTelefono = document.getElementById('inp_telefono');
-            if (elTelefono && elTelefono.value.trim()) updates.telefono = elTelefono.value.trim();
-
-            const elSangre = document.getElementById('inp_tipo_sangre');
-            if (elSangre && elSangre.value.trim()) updates.tipo_sangre = elSangre.value.trim().toUpperCase();
-
-            // <-- AGREGAR ESTOS DOS CAMPOS NUEVOS AQUÍ -->
-            const elAlergias = document.getElementById('inp_alergias');
-            if (elAlergias && elAlergias.value.trim()) updates.alergias = elAlergias.value.trim();
-
-            const elPadecimientos = document.getElementById('inp_padecimientos');
-            if (elPadecimientos && elPadecimientos.value.trim()) updates.padecimientos = elPadecimientos.value.trim();
-
-            const elContactoNombre = document.getElementById('inp_contacto_nombre');
-            if (elContactoNombre && elContactoNombre.value.trim()) updates.contacto_nombre = elContactoNombre.value.trim();
-
-            const elContactoTelefono = document.getElementById('inp_contacto_telefono');
-            if (elContactoTelefono && elContactoTelefono.value.trim()) updates.contacto_telefono = elContactoTelefono.value.trim();
-
-            // 2. Envío a Google Drive si el atleta eligió adjuntar archivos
+            // Envío de documentos a Google Drive
             if (elFoto && elFoto.files[0]) {
                 updates.foto_url = await uploadToGoogleDrive(elFoto.files[0], folio, 'FOTO');
             }
@@ -480,15 +453,17 @@
                 updates.doc2_url = await uploadToGoogleDrive(elDoc2.files[0], folio, 'RESPONSIVA');
             }
 
-            // Registrar marca de tiempo de última modificación
+            // Marca de tiempo
             updates.ultima_modificacion = new Date().toISOString();
 
-            // 3. Guardado en Supabase
+            // Guardado en Supabase
             const { error } = await dbClient.from('corredores').update(updates).eq('id', currentCorredor.id);
             if (error) throw error;
 
             alert('¡Información guardada e historial actualizado con éxito!');
             window.location.reload();
+
+        } catch(err) {
 
         } catch(err) {
             alert('Error durante el proceso de guardado: ' + err.message);
@@ -696,7 +671,7 @@
         `;
     }
 
-   function renderPendientesForm(c) {
+  function renderPendientesForm(c) {
     const containerData = document.getElementById('containerDataInputs');
     const containerDoc = document.getElementById('containerDocInputs');
 
@@ -708,181 +683,52 @@
     let pendingData = 0;
     let pendingDocs = 0;
 
-    // 1. CURP
-    if (isMissing(c.curp) || String(c.curp).trim().length < 18) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>CURP *</label>
-                <input type="text" id="inp_curp" class="form-control" style="text-transform:uppercase;" maxlength="18" value="${!isMissing(c.curp) ? c.curp : ''}" required>
-            </div>`;
-    }
+    // Recorrido dinámico universal de TODOS los campos faltantes según el Diccionario Maestro
+    MASTER_FORM_FIELDS.forEach(field => {
+        const val = c[field.key];
+        const isInvalid = isMissing(val) || (field.minLength && String(val).trim().length < field.minLength);
 
-    // 2. Segundo Apellido
-    if (isMissing(c.segundo_apellido)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Segundo Apellido</label>
-                <input type="text" id="inp_segundo_apellido" class="form-control" value="${!isMissing(c.segundo_apellido) ? c.segundo_apellido : ''}">
-            </div>`;
-    }
+        if (isInvalid) {
+            pendingData++;
+            let inputHtml = '';
 
-    // 3. Distancia Asignada
-    if (isMissing(c.distancia)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Distancia Asignada *</label>
-                <select id="inp_distancia" class="form-control" required>
-                    <option value="">-- SELECCIONA DISTANCIA --</option>
-                    <option value="42K Maratón">42K Maratón Completo</option>
-                    <option value="21K Medio Maratón">21K Medio Maratón</option>
-                    <option value="10K Recreativa">10K Recreativa</option>
-                    <option value="5K Recreativa">5K Recreativa</option>
-                </select>
-            </div>`;
-    }
+            if (field.type === 'select' && field.options) {
+                const optionsOpts = field.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+                inputHtml = `
+                    <select id="inp_${field.key}" class="form-control">
+                        <option value="">-- SELECCIONA ${field.label.toUpperCase()} --</option>
+                        ${optionsOpts}
+                    </select>`;
+            } else if (field.type === 'textarea') {
+                inputHtml = `<textarea id="inp_${field.key}" class="form-control" rows="2" style="text-transform:none;"></textarea>`;
+            } else {
+                const maxLenAttr = field.minLength ? `maxlength="${field.minLength}"` : '';
+                const textTransform = field.key === 'email' ? 'style="text-transform:none;"' : 'style="text-transform:uppercase;"';
+                inputHtml = `<input type="${field.type}" id="inp_${field.key}" class="form-control" ${maxLenAttr} ${textTransform} value="${!isMissing(val) ? val : ''}">`;
+            }
 
-    // 4. Categoría
-    if (isMissing(c.categoria)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Categoría *</label>
-                <select id="inp_categoria" class="form-control" required>
-                    <option value="">-- SELECCIONA CATEGORÍA --</option>
-                    <option value="Libre (18-39 años)">Libre (18-39 años)</option>
-                    <option value="Master (40-49 años)">Master (40-49 años)</option>
-                    <option value="Veteranos (50-59 años)">Veteranos (50-59 años)</option>
-                    <option value="Veteranos Plus (60+ años)">Veteranos Plus (60+ años)</option>
-                    <option value="Juvenil (Menores de 18)">Juvenil (Menores de 18)</option>
-                </select>
-            </div>`;
-    }
+            containerData.innerHTML += `
+                <div class="form-group">
+                    <label>${field.label}</label>
+                    ${inputHtml}
+                </div>`;
+        }
+    });
 
-    // 5. Talla de Playera
-    if (isMissing(c.talla_playera)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Talla de Playera *</label>
-                <select id="inp_talla_playera" class="form-control" required>
-                    <option value="">-- SELECCIONA TALLA --</option>
-                    <option value="XS">XS</option>
-                    <option value="S">S</option>
-                    <option value="M">M</option>
-                    <option value="L">L</option>
-                    <option value="XL">XL</option>
-                </select>
-            </div>`;
-    }
-
-       // Perfil del Corredor
-    if (isMissing(c.perfil_corredor)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Perfil del Corredor *</label>
-                <select id="inp_perfil_corredor" class="form-control" required>
-                    <option value="">-- SELECCIONA PERFIL --</option>
-                    <option value="Recreativo">Recreativo</option>
-                    <option value="Amateur">Amateur</option>
-                    <option value="Intermedio">Intermedio</option>
-                    <option value="Semiprofesional">Semiprofesional</option>
-                    <option value="Profesional">Profesional</option>
-                </select>
-            </div>`;
-    }
-
-    // 6. Correo Electrónico
-    if (isMissing(c.email) || !String(c.email).includes('@')) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Correo Electrónico *</label>
-                <input type="email" id="inp_email" class="form-control" style="text-transform:none;" value="${!isMissing(c.email) ? c.email : ''}" required>
-            </div>`;
-    }
-
-    // 7. Teléfono Celular
-    if (isMissing(c.telefono) || String(c.telefono).trim().length < 10) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Teléfono Celular *</label>
-                <input type="tel" id="inp_telefono" class="form-control" maxlength="10" value="${!isMissing(c.telefono) ? c.telefono : ''}" required>
-            </div>`;
-    }
-
-    // 8. Tipo de Sangre
-    if (isMissing(c.tipo_sangre)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Tipo de Sangre *</label>
-                <select id="inp_tipo_sangre" class="form-control" required>
-                    <option value="">-- SELECCIONA TIPO DE SANGRE --</option>
-                    <option value="O+">O Positivo (O+)</option>
-                    <option value="O-">O Negativo (O-)</option>
-                    <option value="A+">A Positivo (A+)</option>
-                    <option value="A-">A Negativo (A-)</option>
-                    <option value="B+">B Positivo (B+)</option>
-                    <option value="B-">B Negativo (B-)</option>
-                    <option value="AB+">AB Positivo (AB+)</option>
-                    <option value="AB-">AB Negativo (AB-)</option>
-                </select>
-            </div>`;
-    }
-
-    // 9. Contacto de Emergencia
-    if (isMissing(c.contacto_nombre) || isMissing(c.contacto_telefono)) {
-        pendingData++;
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Contacto de Emergencia (Nombre) *</label>
-                <input type="text" id="inp_contacto_nombre" class="form-control" value="${!isMissing(c.contacto_nombre) ? c.contacto_nombre : ''}" required>
-            </div>
-            <div class="form-group">
-                <label>Contacto de Emergencia (Teléfono) *</label>
-                <input type="tel" id="inp_contacto_telefono" class="form-control" maxlength="10" value="${!isMissing(c.contacto_telefono) ? c.contacto_telefono : ''}" required>
-            </div>`;
-    }
-
-    // 10. Alergias y Padecimientos (Médicos opcionales / complementarios)
-    if (isMissing(c.alergias)) {
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Alergias Conocidas</label>
-                <input type="text" id="inp_alergias" class="form-control" value="${!isMissing(c.alergias) ? c.alergias : ''}" placeholder="Ej. Medicamentos, alimentos...">
-            </div>`;
-    }
-
-    if (isMissing(c.padecimientos)) {
-        containerData.innerHTML += `
-            <div class="form-group">
-                <label>Padecimientos Crónicos</label>
-                <input type="text" id="inp_padecimientos" class="form-control" value="${!isMissing(c.padecimientos) ? c.padecimientos : ''}" placeholder="Ej. Ninguno, Hipertensión...">
-            </div>`;
-    }
-
-    // --- EVALUACIÓN DE DOCUMENTACIÓN OBLIGATORIA PENDIENTE ---
+    // Documentos Obligatorios
     if (isMissing(c.foto_url)) {
         pendingDocs++;
         containerDoc.innerHTML += renderFileInput('f_foto', '📷 Fotografía Oficial', 'Fotografía clara de rostro.');
     }
-
     if (isMissing(c.doc1_url)) {
         pendingDocs++;
         containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE)', 'Frente y reverso.');
     }
-
     if (isMissing(c.doc2_url)) {
         pendingDocs++;
         containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Documento de deslinde.');
     }
 
-    // Control de visibilidad de tarjetas y botón de envío
     const cardData = document.getElementById('cardDataInputs');
     const cardDoc = document.getElementById('cardDocInputs');
     const cardCompleted = document.getElementById('cardCompleted');
@@ -899,7 +745,6 @@
         if (btnSubmitContainer) btnSubmitContainer.classList.remove('hidden');
     }
 }
-    
     // FUNCIONES DEL PANEL ADMINISTRADOR
     function openAdminLogin() {
         document.getElementById('modalAdminLogin').classList.remove('hidden');
