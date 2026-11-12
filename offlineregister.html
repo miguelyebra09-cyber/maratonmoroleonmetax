@@ -1530,27 +1530,39 @@ const registrationData = {
     nombre_completo: nombreComp,
     email: getSafeValue('email'),
     telefono: getSafeValue('telefono'),
+    
+    // Datos de carrera y identidad sincronizados con los IDs reales del formulario:
     distancia: getSafeValue('distancia') || 'No especifica',
-    categoria: getSafeValue('categoriaAuto') || 'No especifica',
+    categoria: getSafeValue('categoriaAuto') || getSafeValue('categoria') || 'No especifica',
     talla_playera: getSafeValue('tallaPlayera') || 'No especifica',
+    
+    pais_residencia: getSafeValue('paisResidencia') || 'México',
+    estado_residencia: getSafeValue('estadoResidencia') || 'No especifica',
+    edad: getSafeValue('edadAuto') || 'No especifica',
+    fecha_nacimiento: getSafeValue('fechaNacimiento') || 'No especifica',
+    genero: getSafeValue('generoAuto') || 'No especifica',
+    entidad_origen: getSafeValue('entidadOrigenAuto') || 'No especifica',
+    rama: getSafeValue('ramaAuto') || 'No especifica',
+    
     tipo_sangre: getSafeValue('tipoSangre') || 'No especifica',
     contacto_nombre: getSafeValue('contactoNombre') || 'No especifica',
     contacto_telefono: getSafeValue('contactoTelefono') || 'No especifica',
     alergias: getSafeValue('alergias') || 'No especifica',
     padecimientos: padecimientosSelected.length > 0 ? padecimientosSelected.join(', ') : 'No especifica',
-                    situaciones_extra: getSafeValue('situacionesExtra'),
-                    monto_cobrado: parseFloat(getSafeValue('montoCobrado')) || 0,
-                    operador_nombre: getSafeValue('operadorNombre'),
-                    comentarios: getSafeValue('comentarios'),
-                    foto_url: fotoUrl,
-                    pago_url: pagoUrl,
-                    doc1_url: doc1Url,
-                    doc2_url: doc2Url,
-                    metodo_pago: 'Efectivo',
-                    estatus_pago: 'Completado',
-                    fecha_registro: new Date().toISOString()
-                };
-
+    situaciones_extra: getSafeValue('situacionesExtra') || 'No especifica',
+    
+    monto_cobrado: parseFloat(getSafeValue('montoCobrado')) || 0,
+    operador_nombre: getSafeValue('operadorNombre'),
+    comentarios: getSafeValue('comentarios'),
+    
+    foto_url: fotoUrl,
+    pago_url: pagoUrl,
+    doc1_url: doc1Url,
+    doc2_url: doc2Url,
+    metodo_pago: 'Efectivo',
+    estatus_pago: 'Completado',
+    fecha_registro: new Date().toISOString()
+};
                 const { data, error } = await dbClient.from('corredores').insert([registrationData]);
                 if (error) throw error;
 
