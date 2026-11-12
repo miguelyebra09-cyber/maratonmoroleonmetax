@@ -442,6 +442,9 @@
             const elTalla = document.getElementById('inp_talla_playera');
             if (elTalla && elTalla.value.trim()) updates.talla_playera = elTalla.value.trim().toUpperCase();
 
+            const elPerfil = document.getElementById('inp_perfil_corredor');
+            if (elPerfil && elPerfil.value) updates.perfil_corredor = elPerfil.value;
+            
             const elEmail = document.getElementById('inp_email');
             if (elEmail && elEmail.value.trim()) updates.email = elEmail.value.trim();
 
@@ -771,6 +774,23 @@
                     <option value="M">M</option>
                     <option value="L">L</option>
                     <option value="XL">XL</option>
+                </select>
+            </div>`;
+    }
+
+       // Perfil del Corredor
+    if (isMissing(c.perfil_corredor)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Perfil del Corredor *</label>
+                <select id="inp_perfil_corredor" class="form-control" required>
+                    <option value="">-- SELECCIONA PERFIL --</option>
+                    <option value="Recreativo">Recreativo</option>
+                    <option value="Amateur">Amateur</option>
+                    <option value="Intermedio">Intermedio</option>
+                    <option value="Semiprofesional">Semiprofesional</option>
+                    <option value="Profesional">Profesional</option>
                 </select>
             </div>`;
     }
