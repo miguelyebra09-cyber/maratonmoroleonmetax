@@ -451,6 +451,13 @@
             const elSangre = document.getElementById('inp_tipo_sangre');
             if (elSangre && elSangre.value.trim()) updates.tipo_sangre = elSangre.value.trim().toUpperCase();
 
+            // <-- AGREGAR ESTOS DOS CAMPOS NUEVOS AQUÍ -->
+            const elAlergias = document.getElementById('inp_alergias');
+            if (elAlergias && elAlergias.value.trim()) updates.alergias = elAlergias.value.trim();
+
+            const elPadecimientos = document.getElementById('inp_padecimientos');
+            if (elPadecimientos && elPadecimientos.value.trim()) updates.padecimientos = elPadecimientos.value.trim();
+
             const elContactoNombre = document.getElementById('inp_contacto_nombre');
             if (elContactoNombre && elContactoNombre.value.trim()) updates.contacto_nombre = elContactoNombre.value.trim();
 
@@ -686,147 +693,193 @@
         `;
     }
 
-    function renderPendientesForm(c) {
-        const containerData = document.getElementById('containerDataInputs');
-        const containerDoc = document.getElementById('containerDocInputs');
+   function renderPendientesForm(c) {
+    const containerData = document.getElementById('containerDataInputs');
+    const containerDoc = document.getElementById('containerDocInputs');
 
-        if (!containerData || !containerDoc) return;
+    if (!containerData || !containerDoc) return;
 
-        containerData.innerHTML = '';
-        containerDoc.innerHTML = '';
+    containerData.innerHTML = '';
+    containerDoc.innerHTML = '';
 
-        let pendingData = 0;
-        let pendingDocs = 0;
+    let pendingData = 0;
+    let pendingDocs = 0;
 
-        // --- EVALUACIÓN DE DATOS PERSONALES (OPCIONALES PARA PERMITIR ENVÍO PARCIAL) ---
-
-        if (isMissing(c.curp) || String(c.curp).trim().length < 18) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>CURP (Opcional si no la tienes a la mano)</label>
-                    <input type="text" id="inp_curp" class="form-control" style="text-transform:uppercase;" maxlength="18" value="${!isMissing(c.curp) ? c.curp : ''}">
-                </div>`;
-        }
-
-        if (isMissing(c.segundo_apellido)) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Segundo Apellido</label>
-                    <input type="text" id="inp_segundo_apellido" class="form-control" value="${!isMissing(c.segundo_apellido) ? c.segundo_apellido : ''}">
-                </div>`;
-        }
-
-        if (isMissing(c.distancia)) {
-            pendingData++;
-            const distClean = c.distancia ? String(c.distancia).trim().toUpperCase() : '';
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Distancia</label>
-                    <select id="inp_distancia" class="form-control">
-                        <option value="">-- SELECCIONA DISTANCIA --</option>
-                        <option value="5K Recreativa" ${distClean === '5K RECREATIVA' ? 'selected' : ''}>5K Recreativa</option>
-                        <option value="10K" ${distClean === '10K' ? 'selected' : ''}>10K</option>
-                        <option value="21K" ${distClean === '21K' ? 'selected' : ''}>21K (Medio Maratón)</option>
-                        <option value="42K" ${distClean === '42K' ? 'selected' : ''}>42K (Maratón)</option>
-                    </select>
-                </div>`;
-        }
-
-        if (isMissing(c.categoria)) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Categoría</label>
-                    <input type="text" id="inp_categoria" class="form-control" value="${!isMissing(c.categoria) ? c.categoria : ''}">
-                </div>`;
-        }
-
-        if (isMissing(c.talla_playera)) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Talla de Playera</label>
-                    <input type="text" id="inp_talla_playera" class="form-control" value="${!isMissing(c.talla_playera) ? c.talla_playera : ''}">
-                </div>`;
-        }
-
-        if (isMissing(c.email) || !String(c.email).includes('@')) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Correo Electrónico</label>
-                    <input type="email" id="inp_email" class="form-control" style="text-transform:none;" value="${!isMissing(c.email) ? c.email : ''}">
-                </div>`;
-        }
-
-        if (isMissing(c.telefono) || String(c.telefono).trim().length < 10) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Teléfono Celular</label>
-                    <input type="tel" id="inp_telefono" class="form-control" maxlength="10" value="${!isMissing(c.telefono) ? c.telefono : ''}">
-                </div>`;
-        }
-
-        if (isMissing(c.tipo_sangre)) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Tipo de Sangre</label>
-                    <input type="text" id="inp_tipo_sangre" class="form-control" value="${!isMissing(c.tipo_sangre) ? c.tipo_sangre : ''}">
-                </div>`;
-        }
-
-        if (isMissing(c.contacto_nombre) || isMissing(c.contacto_telefono)) {
-            pendingData++;
-            containerData.innerHTML += `
-                <div class="form-group">
-                    <label>Contacto de Emergencia (Nombre)</label>
-                    <input type="text" id="inp_contacto_nombre" class="form-control" value="${!isMissing(c.contacto_nombre) ? c.contacto_nombre : ''}">
-                </div>
-                <div class="form-group">
-                    <label>Contacto de Emergencia (Teléfono)</label>
-                    <input type="tel" id="inp_contacto_telefono" class="form-control" value="${!isMissing(c.contacto_telefono) ? c.contacto_telefono : ''}">
-                </div>`;
-        }
-
-        // --- EVALUACIÓN DE DOCUMENTAL PENDIENTE ---
-
-        if (isMissing(c.foto_url)) {
-            pendingDocs++;
-            containerDoc.innerHTML += renderFileInput('f_foto', '📷 Fotografía Oficial', 'Fotografía clara de rostro.');
-        }
-
-        if (isMissing(c.doc1_url)) {
-            pendingDocs++;
-            containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE)', 'Frente y reverso.');
-        }
-
-        if (isMissing(c.doc2_url)) {
-            pendingDocs++;
-            containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Documento de deslinde.');
-        }
-
-        // Control de visibilidad de tarjetas
-        const cardData = document.getElementById('cardDataInputs');
-        const cardDoc = document.getElementById('cardDocInputs');
-        const cardCompleted = document.getElementById('cardCompleted');
-        const btnSubmitContainer = document.getElementById('btnSubmitContainer');
-
-        if (cardData) cardData.classList.toggle('hidden', pendingData === 0);
-        if (cardDoc) cardDoc.classList.toggle('hidden', pendingDocs === 0);
-
-        if (pendingData === 0 && pendingDocs === 0) {
-            if (cardCompleted) cardCompleted.classList.remove('hidden');
-            if (btnSubmitContainer) btnSubmitContainer.classList.add('hidden');
-        } else {
-            if (cardCompleted) cardCompleted.classList.add('hidden');
-            if (btnSubmitContainer) btnSubmitContainer.classList.remove('hidden');
-        }
+    // 1. CURP
+    if (isMissing(c.curp) || String(c.curp).trim().length < 18) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>CURP *</label>
+                <input type="text" id="inp_curp" class="form-control" style="text-transform:uppercase;" maxlength="18" value="${!isMissing(c.curp) ? c.curp : ''}" required>
+            </div>`;
     }
 
+    // 2. Segundo Apellido
+    if (isMissing(c.segundo_apellido)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Segundo Apellido</label>
+                <input type="text" id="inp_segundo_apellido" class="form-control" value="${!isMissing(c.segundo_apellido) ? c.segundo_apellido : ''}">
+            </div>`;
+    }
+
+    // 3. Distancia Asignada
+    if (isMissing(c.distancia)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Distancia Asignada *</label>
+                <select id="inp_distancia" class="form-control" required>
+                    <option value="">-- SELECCIONA DISTANCIA --</option>
+                    <option value="42K Maratón">42K Maratón Completo</option>
+                    <option value="21K Medio Maratón">21K Medio Maratón</option>
+                    <option value="10K Recreativa">10K Recreativa</option>
+                    <option value="5K Recreativa">5K Recreativa</option>
+                </select>
+            </div>`;
+    }
+
+    // 4. Categoría
+    if (isMissing(c.categoria)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Categoría *</label>
+                <select id="inp_categoria" class="form-control" required>
+                    <option value="">-- SELECCIONA CATEGORÍA --</option>
+                    <option value="Libre (18-39 años)">Libre (18-39 años)</option>
+                    <option value="Master (40-49 años)">Master (40-49 años)</option>
+                    <option value="Veteranos (50-59 años)">Veteranos (50-59 años)</option>
+                    <option value="Veteranos Plus (60+ años)">Veteranos Plus (60+ años)</option>
+                    <option value="Juvenil (Menores de 18)">Juvenil (Menores de 18)</option>
+                </select>
+            </div>`;
+    }
+
+    // 5. Talla de Playera
+    if (isMissing(c.talla_playera)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Talla de Playera *</label>
+                <select id="inp_talla_playera" class="form-control" required>
+                    <option value="">-- SELECCIONA TALLA --</option>
+                    <option value="XS">XS</option>
+                    <option value="S">S</option>
+                    <option value="M">M</option>
+                    <option value="L">L</option>
+                    <option value="XL">XL</option>
+                </select>
+            </div>`;
+    }
+
+    // 6. Correo Electrónico
+    if (isMissing(c.email) || !String(c.email).includes('@')) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Correo Electrónico *</label>
+                <input type="email" id="inp_email" class="form-control" style="text-transform:none;" value="${!isMissing(c.email) ? c.email : ''}" required>
+            </div>`;
+    }
+
+    // 7. Teléfono Celular
+    if (isMissing(c.telefono) || String(c.telefono).trim().length < 10) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Teléfono Celular *</label>
+                <input type="tel" id="inp_telefono" class="form-control" maxlength="10" value="${!isMissing(c.telefono) ? c.telefono : ''}" required>
+            </div>`;
+    }
+
+    // 8. Tipo de Sangre
+    if (isMissing(c.tipo_sangre)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Tipo de Sangre *</label>
+                <select id="inp_tipo_sangre" class="form-control" required>
+                    <option value="">-- SELECCIONA TIPO DE SANGRE --</option>
+                    <option value="O+">O Positivo (O+)</option>
+                    <option value="O-">O Negativo (O-)</option>
+                    <option value="A+">A Positivo (A+)</option>
+                    <option value="A-">A Negativo (A-)</option>
+                    <option value="B+">B Positivo (B+)</option>
+                    <option value="B-">B Negativo (B-)</option>
+                    <option value="AB+">AB Positivo (AB+)</option>
+                    <option value="AB-">AB Negativo (AB-)</option>
+                </select>
+            </div>`;
+    }
+
+    // 9. Contacto de Emergencia
+    if (isMissing(c.contacto_nombre) || isMissing(c.contacto_telefono)) {
+        pendingData++;
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Contacto de Emergencia (Nombre) *</label>
+                <input type="text" id="inp_contacto_nombre" class="form-control" value="${!isMissing(c.contacto_nombre) ? c.contacto_nombre : ''}" required>
+            </div>
+            <div class="form-group">
+                <label>Contacto de Emergencia (Teléfono) *</label>
+                <input type="tel" id="inp_contacto_telefono" class="form-control" maxlength="10" value="${!isMissing(c.contacto_telefono) ? c.contacto_telefono : ''}" required>
+            </div>`;
+    }
+
+    // 10. Alergias y Padecimientos (Médicos opcionales / complementarios)
+    if (isMissing(c.alergias)) {
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Alergias Conocidas</label>
+                <input type="text" id="inp_alergias" class="form-control" value="${!isMissing(c.alergias) ? c.alergias : ''}" placeholder="Ej. Medicamentos, alimentos...">
+            </div>`;
+    }
+
+    if (isMissing(c.padecimientos)) {
+        containerData.innerHTML += `
+            <div class="form-group">
+                <label>Padecimientos Crónicos</label>
+                <input type="text" id="inp_padecimientos" class="form-control" value="${!isMissing(c.padecimientos) ? c.padecimientos : ''}" placeholder="Ej. Ninguno, Hipertensión...">
+            </div>`;
+    }
+
+    // --- EVALUACIÓN DE DOCUMENTACIÓN OBLIGATORIA PENDIENTE ---
+    if (isMissing(c.foto_url)) {
+        pendingDocs++;
+        containerDoc.innerHTML += renderFileInput('f_foto', '📷 Fotografía Oficial', 'Fotografía clara de rostro.');
+    }
+
+    if (isMissing(c.doc1_url)) {
+        pendingDocs++;
+        containerDoc.innerHTML += renderFileInput('f_doc1', '🪪 Identificación Oficial (INE)', 'Frente y reverso.');
+    }
+
+    if (isMissing(c.doc2_url)) {
+        pendingDocs++;
+        containerDoc.innerHTML += renderFileInput('f_doc2', '📄 Carta Responsiva Firmada', 'Documento de deslinde.');
+    }
+
+    // Control de visibilidad de tarjetas y botón de envío
+    const cardData = document.getElementById('cardDataInputs');
+    const cardDoc = document.getElementById('cardDocInputs');
+    const cardCompleted = document.getElementById('cardCompleted');
+    const btnSubmitContainer = document.getElementById('btnSubmitContainer');
+
+    if (cardData) cardData.classList.toggle('hidden', pendingData === 0);
+    if (cardDoc) cardDoc.classList.toggle('hidden', pendingDocs === 0);
+
+    if (pendingData === 0 && pendingDocs === 0) {
+        if (cardCompleted) cardCompleted.classList.remove('hidden');
+        if (btnSubmitContainer) btnSubmitContainer.classList.add('hidden');
+    } else {
+        if (cardCompleted) cardCompleted.classList.add('hidden');
+        if (btnSubmitContainer) btnSubmitContainer.classList.remove('hidden');
+    }
+}
+    
     // FUNCIONES DEL PANEL ADMINISTRADOR
     function openAdminLogin() {
         document.getElementById('modalAdminLogin').classList.remove('hidden');
