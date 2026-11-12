@@ -376,6 +376,32 @@
 </div>
 
 <script>
+
+// DICCIONARIO MAESTRO UNIVERSAL DE CAMPOS
+    const MASTER_FORM_FIELDS = [
+        { key: 'curp', label: 'CURP', type: 'text', minLength: 18 },
+        { key: 'segundo_apellido', label: 'Segundo Apellido', type: 'text' },
+        { key: 'email', label: 'Correo Electrónico', type: 'email' },
+        { key: 'telefono', label: 'Teléfono Celular', type: 'tel', minLength: 10 },
+        { key: 'distancia', label: 'Distancia de Carrera', type: 'select' },
+        { key: 'categoria', label: 'Categoría', type: 'select' },
+        { key: 'talla_playera', label: 'Talla de Playera', type: 'select' },
+        { key: 'perfil_corredor', label: 'Perfil del Corredor', type: 'select' },
+        { key: 'pais_residencia', label: 'País de Residencia', type: 'text' },
+        { key: 'estado_residencia', label: 'Estado de Residencia', type: 'text' },
+        { key: 'edad', label: 'Edad', type: 'text' },
+        { key: 'fecha_nacimiento', label: 'Fecha de Nacimiento', type: 'date' },
+        { key: 'genero', label: 'Género', type: 'text' },
+        { key: 'entidad_origen', label: 'Entidad de Origen', type: 'text' },
+        { key: 'rama', label: 'Rama de Competencia', type: 'text' },
+        { key: 'tipo_sangre', label: 'Tipo de Sangre', type: 'select' },
+        { key: 'contacto_nombre', label: 'Contacto de Emergencia (Nombre)', type: 'text' },
+        { key: 'contacto_telefono', label: 'Contacto de Emergencia (Teléfono)', type: 'tel', minLength: 10 },
+        { key: 'alergias', label: 'Alergias Conocidas', type: 'text' },
+        { key: 'padecimientos', label: 'Padecimientos Crónicos', type: 'text' },
+        { key: 'situaciones_extra', label: 'Situaciones Extraoficiales', type: 'textarea' }
+    ];
+    
     const SUPABASE_URL = 'https://rpcevbxzpfgyobehgjth.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwY2V2Ynh6cGZneW9iZWhnanRoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODYzMDA3MDQsImV4cCI6MjEwMTg3NjcwNH0.hECuSvVKVehKZjZ9jMqwHM1xspD2l1kS3G9X1jfHIuk';
     
